@@ -1,0 +1,89 @@
+@media only screen and (min-width: 37.5em) {
+  /* Only CSS rules that need to be changed to meet the layout needs from small to medium go in here */
+  
+  nav button { display:none; }  /* hamburger button does not need to be shown */
+  
+  section.forecast { display: ???; }  /* show the 10-day forecast with the medium view and up */
+  
+  article p.town-article img { width: 62.666%; float:right; }  /* responsive images */
+
+    #banner {
+        display: block;
+        width: 350px;
+        height:350px;
+        float: left;
+        margin: 50px;
+        padding: 1px;
+    }
+  
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+      overflow: hidden;
+     background-color: deepskyblue;
+}
+
+li {
+    display: inline;
+    float: left;
+}
+    li:last-child{
+        float: right;
+    }
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 18px;
+    border-bottom: 2px solid #555;
+    border-left: 2px solid #555;
+    text-decoration: none;
+   
+}
+li a:hover{
+    background-color: darkorange;
+}
+li.active a {
+    color: chartreuse;
+}
+    /*extra codes*/
+    h3 {
+        text-align: justify;
+        width: 100%;
+        padding-left: 300px;
+        
+    }
+    .forecast {
+        visibility: visible;
+        text-align: center
+         font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        border: 1px solid #ddd;
+        width: 100%;
+    }
+    .conditions {
+        float: inherit;
+    }
+    .forecast td, .forecast th {
+        text-align: center;
+        border: 2px solid #ddd;
+        padding: 8px;
+    }
+    aside{
+        text-align: center;
+    }
+    .leftcol { 
+				width: 48%;
+				flex: 1 0 15em;
+        margin: .5em;}
+    .rightcol { 
+				width: 48%;
+				flex: 1 0 15em;
+        margin: .5em;}
+    #sec1 {
+				display: flex;
+				flex-flow: row wrap;
+				flex: 1;
+}
+}

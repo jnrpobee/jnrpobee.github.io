@@ -1,0 +1,104 @@
+/* This main css file contains the default rules and is geared toward the small/phone view */
+
+* { box-sizing: border-box;}  /* This wildcard applies to all elements ensuring a box layout model */
+
+body {
+  font-size: 16px;
+  /* Declare the base font-family - from google font api or other */
+}
+
+header, nav, main, footer { /* the comma means apply the following CSS declarations to all of the listed elements */
+  /* Declare the maximum width and other main element rules to limit the stretch on wide views */
+}
+
+header {}
+header h1 {
+    text-align: center;
+    font-size: 48px;
+    font-display:auto;
+    padding: 0;
+    margin: 10px;
+}
+header img {
+    width: 120px;
+    float: left;
+    height: 98px;
+}
+header .subheading {
+    font-size: 29px;
+    text-align: center;
+    text-decoration-color: orange;
+    color: orange;
+    margin: 0px;
+}
+
+nav {
+    /*width: 200px;*/
+    padding: 0px;
+}
+ button {
+    
+}
+ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+    border: 1px solid #555;
+     background-color: deepskyblue;
+}
+li {
+    /*display: inline; */
+}
+li a {
+    display: block;
+    color: white;
+    padding: 10px 12px;
+    text-align: center;
+    border-bottom: 1px solid #555;
+    text-decoration: none;
+}
+li.active a {
+    color: chartreuse;
+}
+li a:hover {
+    background-color: darkorange;
+}
+
+main {
+    padding: 10px;
+				line-height: 1.4em;
+				font-size: 1.35em;
+				font-family: 'Playfair Display', sans serif;
+}
+main h2 {}
+main figure { margin: 0 0 .2rem 0%; width:100%; }
+main figure img { width: 100%; }
+
+section {
+   
+}
+ .forecast {
+        visibility: collapse;
+    /* display: none; */
+    }
+
+article p.town-article img {  /* This structure refers to img elements that are the posterity of paragraph elements within artcle elements */
+  width: 100%; /* fill the page in the small/phone view */
+  margin:auto 0;
+}
+
+footer {
+    text-align: center;
+    background-color: darkturquoise;
+}
+footer aside {
+    text-align: center;
+    background-color: skyblue;
+}
+footer>p {} /* This structure refers to p elements that are direct children of the footer element */
+
+/* Other Class Selectors */
+#currentdate{
+    
+}
