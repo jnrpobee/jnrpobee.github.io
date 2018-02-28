@@ -1,0 +1,122 @@
+/* This main css file contains the default rules and is geared toward the small/phone view */
+
+* { box-sizing: border-box;}  /* This wildcard applies to all elements ensuring a box layout model */
+
+body {
+  font-size: 16px;
+  /* Declare the base font-family - from google font api or other */
+}
+
+header, nav, main, footer { /* the comma means apply the following CSS declarations to all of the listed elements */
+  /* Declare the maximum width and other main element rules to limit the stretch on wide views */
+}
+
+header {}
+header h1 {
+    text-align: center;
+    font-size: 48px;
+    font-display:auto;
+    padding: 0;
+    margin: 10px;
+}
+header img {
+    width: 120px;
+    float: left;
+    height: 98px;
+}
+header .subheading {
+    font-size: 29px;
+    text-align: center;
+    text-decoration-color: orange;
+    color: orange;
+    margin: 0px;
+}
+
+nav {
+    background-color: deepskyblue;
+     /* padding: 0px;*/
+}
+ nav button {
+    /*border: none;
+     margin: .2rem 2%;
+     font-size: 1.6rem;
+     background-color: transparent;
+     color: antiquewhite; */
+}
+nav ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+  /*  overflow: hidden;*/
+}
+
+/*ul.primaryNav {
+    list-style: none;
+    padding-left: 0;
+}*/
+/* nav ul li{
+    display: block;
+}*/
+nav ul li a {
+    display: block;
+    padding: 10px 12px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    border-top: 1px solid #555;
+}
+nav ul li.active a {
+    color: darkorange;
+    background-color: lightblue;
+}
+
+nav ul li a:hover {
+    background-color: lightgray;
+}
+nav ul.hide {
+    display: none;
+}
+
+main {
+    padding: 10px;
+				line-height: 1.4em;
+				font-size: 1.35em;
+				font-family: 'Playfair Display', sans serif;
+}
+main h2 {}
+main figure { margin: 0 0 .2rem 0%; width:100%; }
+main figure img { width: 100%;}
+
+section {
+   
+}
+ .forecast {
+        visibility: collapse;
+    /* display: none; */
+    }
+
+article p.town-article img {  /* This structure refers to img elements that are the posterity of paragraph elements within artcle elements */
+  width: 100%; /* fill the page in the small/phone view */
+  margin:auto 0;
+}
+
+footer {
+    text-align: center;
+    background-color: darkturquoise;
+}
+footer aside {
+    text-align: center;
+    background-color: skyblue;
+}
+footer>p {} /* This structure refers to p elements that are direct children of the footer element */
+
+/* Other Class Selectors */
+#currentdate{
+    
+}
+   /*----- Clearfix: Force an Element not to collapse -----*/
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
