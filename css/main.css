@@ -28,13 +28,14 @@ nav ul li a {
     text-align:justify;
    
 }
- body img {
+img {
 width: 200px;
 /*height: 273px;*/
      float: right;
      margin: .5em;
      /*position: relative;*/
      padding-top: 1px;
+     object-position:top;
 }
 main {
     padding: 0 2%;
@@ -62,6 +63,8 @@ footer {
     padding: .2rem 2%;
     text-align: center;
 }
+
+
 
 /*----- Clearfix: Force an Element not to collapse -----*/
 .clearfix:after {
