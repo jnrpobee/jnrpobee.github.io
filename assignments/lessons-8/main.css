@@ -1,0 +1,39 @@
+
+     table, th, td {
+         border-collapse: collapse;
+        border: 2px solid #ddd;
+        width: 50%;
+         text-align: center;
+         padding: 4px;
+         padding-top: -6px;
+         font-family: ubuntu, sans-serif;
+         
+     }
+     h2 {
+         width: 40%;
+         text-align: center;
+         background-color:#7fb9c2;
+         padding: 10px;
+     }
+     .check {
+         margin: 9px;
+         padding: 5px;
+         width:100%
+     }
+     .first {
+         color: white;
+         background-color:#628ca6;
+     }
+     .see {
+         background-color: #e7ffed;
+     }
+     .cut {
+         background-color: #e7f0ed;
+     }
+     #one{
+         border:1px;
+         text-align:right;
+     }
+tfoot {
+    text-align: center;
+}
