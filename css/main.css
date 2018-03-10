@@ -4,6 +4,11 @@ header {
     background-color: cadetblue;
      text-align: center;
     color: white;
+    margin-top: -20px;
+}
+body {
+    margin: auto;
+    padding: -12px;
 }
 H1, h2 {
    
@@ -12,6 +17,9 @@ nav {
     text-decoration: none;
     padding: 0;
     list-style-type: none;
+    background-color: lightyellow;
+    margin-top: -.9rem;
+    margin-bottom: -.5rem;
     
 }
 nav ul {
@@ -39,7 +47,8 @@ width: 200px;
 }
 main {
     padding: 0 2%;
-    min-height: 17rem;
+    min-height: 8rem;
+    background-color: lightyellow;
 }
 
 .leftcol { 
@@ -60,8 +69,9 @@ text-align: center;
 }
 footer {
     background-color: #ddd;
-    padding: .2rem 2%;
+    padding: .8rem 2%;
     text-align: center;
+    
 }
 
 
