@@ -1,0 +1,74 @@
+* { box-sizing: border-box;} 
+
+header {
+    background-color: cadetblue;
+     text-align: center;
+    color: white;
+}
+H1, h2 {
+   
+}
+nav {
+    text-decoration: none;
+    padding: 0;
+    list-style-type: none;
+    
+}
+nav ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+    border: 0px solid #555;
+    list-style-type: none;
+}
+nav ul li a {
+    display: block;
+    padding: 10px 12px;
+    text-align:justify;
+   
+}
+img {
+width: 200px;
+/*height: 273px;*/
+     float: right;
+     margin: .5em;
+     /*position: relative;*/
+     padding-top: 1px;
+     object-position:top;
+}
+main {
+    padding: 0 2%;
+    min-height: 17rem;
+}
+
+.leftcol { 
+				width: 48%;
+				flex: 1 0 15em;
+        margin: .5em;}
+    .rightcol { 
+				width: 48%;
+				flex: 1 0 15em;
+        margin: .5em;}
+    #sec1 {
+				display: flex;
+				flex-flow: row wrap;
+				flex: 1;
+}
+#edu {
+text-align: center;
+}
+footer {
+    background-color: #ddd;
+    padding: .2rem 2%;
+    text-align: center;
+}
+
+
+
+/*----- Clearfix: Force an Element not to collapse -----*/
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
