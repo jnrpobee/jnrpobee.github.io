@@ -1,6 +1,6 @@
 var requestURL = 'http://api.wunderground.com/api/603ff4987cc67f03/conditions/forecast/q/MN/Franklin.json';
 var request = new XMLHttpRequest();
-request.open('GET', requestURL, true);
+request.open('GET', requestURL, true );
 request.send();
 
 request.onload = function() {
@@ -24,3 +24,5 @@ request.onload = function() {
     document.getElementById('relativE').innerHTML = franklinWeather.current_observation.relative_humidity;
     
 }
+
+return function();
