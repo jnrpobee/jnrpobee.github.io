@@ -5,7 +5,6 @@ request.send();
 
 request.onload = function() {
     var franklinWeather = JSON.parse(request.responseText);
-   console.log(franklinWeather);
     
      document.getElementById('desc').innerHTML = franklinWeather.current_observation.display_location.full;
     
