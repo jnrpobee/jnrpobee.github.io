@@ -1,3 +1,4 @@
+
 var requestURL = 'http://api.wunderground.com/api/603ff4987cc67f03/conditions/forecast/q/MN/Franklin.json';
 var request = new XMLHttpRequest();
 request.open('GET', requestURL, true );
@@ -5,6 +6,7 @@ request.send();
 
 request.onload = function() {
     var franklinWeather = JSON.parse(request.responseText);
+    console.log(franklinWeather);
     
      document.getElementById('desc').innerHTML = franklinWeather.current_observation.display_location.full;
     
