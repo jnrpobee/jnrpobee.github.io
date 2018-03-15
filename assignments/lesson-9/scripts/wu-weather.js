@@ -23,7 +23,7 @@ request.onload = function() {
     console.log(found);
     
     if(found>=0) {
-        icon_path = icon_path.replace("https","http");
+        icon_path = icon_path.replace("http","https");
     }
     
     
