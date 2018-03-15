@@ -17,8 +17,6 @@ request.onload = function() {
     
     
     var icon_path = franklinWeather.current_observation.icon_url;
-    
-    document.getElementById('iconImg').src = icon_path;
     var urlString = document.location.href;
     console.log(urlString);
     var found = urlString.indexOf("https");
@@ -28,6 +26,8 @@ request.onload = function() {
         icon_path = icon_path.replace("http","https");
     }
     
+    
+    document.getElementById('iconImg').src = icon_path;
         
     document.getElementById('iconWd').innerHTML = franklinWeather.current_observation.icon;
     
