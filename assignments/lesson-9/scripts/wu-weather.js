@@ -1,12 +1,11 @@
-
-var requestURL = 'http://api.wunderground.com/api/603ff4987cc67f03/conditions/forecast/q/MN/Franklin.json';
+var requestURL = '//api.wunderground.com/api/603ff4987cc67f03/conditions/forecast/q/MN/Franklin.json';
 var request = new XMLHttpRequest();
-request.open('GET', requestURL, true );
+request.open('GET', requestURL, true);
 request.send();
 
 request.onload = function() {
     var franklinWeather = JSON.parse(request.responseText);
-    console.log(franklinWeather);
+   console.log(franklinWeather);
     
      document.getElementById('desc').innerHTML = franklinWeather.current_observation.display_location.full;
     
@@ -16,7 +15,18 @@ request.onload = function() {
     
      document.getElementById('tempF').innerHTML = franklinWeather.current_observation.temp_f;
     
-    document.getElementById('iconImg').src = franklinWeather.current_observation.icon_url;
+    
+    var icon_path = franklinWeather.current_observation.icon_url;
+    
+    document.getElementById('iconImg').src = icon_path;
+    var urlString = document.location.href;
+    console.log(urlString);
+    var found = urlString.indexOf("https");
+    console.log(found);
+    
+    if(found>=0) {
+        icon_path = icon_path.replace("http","https");
+    }
     
         
     document.getElementById('iconWd').innerHTML = franklinWeather.current_observation.icon;
@@ -26,5 +36,3 @@ request.onload = function() {
     document.getElementById('relativE').innerHTML = franklinWeather.current_observation.relative_humidity;
     
 }
-
-return function();
