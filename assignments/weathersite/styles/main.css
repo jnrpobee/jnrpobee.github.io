@@ -15,7 +15,6 @@ header {}
 header h1 {
     text-align: center;
     font-size: 48px;
-    font-display:auto;
     padding: 0;
     margin: 10px;
 }
@@ -122,6 +121,10 @@ article p.town-article img {  /* This structure refers to img elements that are 
   margin:auto 0;
 }
 
+#sec1 {
+    width: auto;
+    margin: auto;
+}
 footer {
     text-align: center;
     background-color: darkturquoise;

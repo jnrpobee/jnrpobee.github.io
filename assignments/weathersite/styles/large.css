@@ -87,6 +87,7 @@ li.active a {
 				display: flex;
 				flex-flow: row wrap;
 				flex: 1;
+        width: auto;
 }
      article.container {
         display: grid;
