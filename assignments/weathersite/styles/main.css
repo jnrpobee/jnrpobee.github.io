@@ -108,8 +108,7 @@ h4.thank {
     padding-top: 20%;
 }
  .forecast {
-        visibility: collapse;
-    /* display: none; */
+            display: none; 
     }
 
 form {
@@ -140,7 +139,7 @@ Span {
 .clor {
     border: 10px;
     background-color: lightgrey;
-    
+    width: 880%;
     margin: 10px;
     
     

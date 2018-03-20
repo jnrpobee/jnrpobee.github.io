@@ -56,14 +56,13 @@ li.active a {
     h3 {
         text-align: center;
         width: 100%;
-        padding-left: 300px;
         
     }
     .forecast {
         visibility: visible;
         text-align: center
          font-family: /*"Trebuchet MS", Arial, Helvetica, */sans-serif;
-        border-collapse: collapse;
+       
         border: 1px solid #ddd;
         width: 100%;
         font-size: 15px;
@@ -71,7 +70,7 @@ li.active a {
     .forecast td, .forecast th {
         text-align: center;
         border: 2px solid #ddd;
-        padding: 8px;
+       
     }
     aside{
         text-align: center;
