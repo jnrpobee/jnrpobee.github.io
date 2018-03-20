@@ -1,0 +1,138 @@
+
+<!doctype html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weather Forecast</title>
+  <meta name="author" content="Solomon Buaku Pobee">
+  <meta name="description" content="page description placeholder">
+  <!-- external style references in the proper cascading order -->    
+  <link href="https://fonts.googleapis.com/css?family=Playfair+Display" rel="stylesheet">  <!-- Google API font reference -->
+  <link href="styles/normalize.css" rel="stylesheet"> <!-- normalize useragent/browser defaults -->
+  <link href="styles/main.css" rel="stylesheet">    <!-- default styles - small/phone views -->
+  <link href="styles/medium.css" rel="stylesheet">  <!-- medium/tablet views -->
+  <link href="styles/large.css" rel="stylesheet">   <!-- large/wide/desktop views --> 
+</head>
+<body>
+
+  <header>
+    <img src="images/56131-clouds-outlined-weather-symbol.png" alt="The-site-logo" width="" height="">
+    <h1>Weather Forecast</h1>
+    <div class="subheading">Weather Forecast, Be aware all Time</div>
+  </header>
+
+  <!-- site navigation use placeholder references -->
+  <nav class="clearfix">
+    <button onclick="toggleNavMenu()">&#9776;</button>
+    <ul id="primaryNav" class="hide">
+    	<li><a href="index.html">Home</a></li>
+    	<li class="active"><a href="franklin.html">Franklin</a></li>
+    	<li><a href="greenville.html">Greenville</a></li>
+    	<li><a href="springfield.html">Springfield</a></li>
+    	<li><a href="stormcenter.html">Storm Center</a></li>
+    	<li><a href="gallery.html">Gallery</a></li>
+    </ul>		
+  </nav>
+    
+  <main>
+    
+    <figure>
+      <img id="banner" src="images/pexels-photo-267151.jpeg" alt="banner" width="" height="">
+    </figure>
+      <h2>The City of <span id="desc"> City, State </span></h2>
+    <section>
+      <h3>Weather Summary</h3>    
+    <!--  <div class="highlow">
+        <p>High:90°F</p>  
+        <p>Low:66°F</p> 
+      </div> -->
+        <div class="clor">
+      <div class="current">
+        <p>Conditions: <span id="iconWd">hot</span> </p>
+        <picture>
+            <img id="iconImg" src="images/sunny.png" alt="sunny-weather">
+        </picture>
+      </div>   
+      <div class="conditions">
+          <p>Current Temperature: <span id="tempF", id="clor">90</span>&deg;F</p>
+          
+        <p>Relative Humidity: <span id="relativE">7%</span>  </p>  
+        <p>Wind Speed: <span id="windSd", id="clor">5</span> mph <span id="windDir"> SW</span></p> 
+         <p>Forecast today: <span id="currentPeriod"></span> </p>
+      </div>  
+            </div>
+        <div class="form">
+        <p>Wind Chill</p>
+            <p>Temperature<input type="text" id="temperature" size="3" maxlength="6">
+                Wind Speed<input type="text" id="windSpeed" size="3" maxlength="6"> </p>
+            <button type="button" onclick="computeNum()">calculate</button>
+            <div id="output">
+            result
+        </div>
+        </div>
+    </section>
+        
+    <section class="forecast">
+      <h3>10 Day Forecast</h3>
+      <table>
+	    <thead>
+          <tr>
+            <th>Day 1</th>
+            <th>Day 2</th>
+            <th>Day 3</th>
+            <th>Day 4</th>
+            <th>Day 5</th>
+            <th>Day 6</th>
+            <th>Day 7</th>
+            <th>Day 8</th>
+            <th>Day 9</th>
+            <th>Day 10</th>
+          </tr>
+		</thead>
+        <tbody>  
+          <tr>
+            <td>89&deg;F</td>
+            <td>87&deg;F</td>
+            <td>78&deg;F</td>
+            <td>75&deg;F</td>
+            <td>72&deg;F</td>
+            <td>72&deg;F</td>
+            <td>79&deg;F</td>
+            <td>83&deg;F</td>
+            <td>85&deg;F</td>
+            <td>89&deg;F</td>
+          </tr>
+		</tbody>
+      </table>
+    </section>
+      
+    <article id="sec1">
+      <h3>Franklin Breaks Record</h3>	
+      <p class="town-article" >
+        <img src="images/franklin-original.jpeg" alt="franklin-image" sizes="50vw"
+             srcset="images/franklin200.jpg 200w,
+                     images/franklin500.jpg 500w,
+                     images/franklin800.jpg 800w,
+                     ">
+        For the first time in 10years the sun has raisen to a level of 90°F celcius making the beach desirable for beach swimmers to experience an interesting days at the beach. As part of the hotness of the sun there would be a little bit of heat in the atmostphere.
+      </p>
+		</article>		  
+  
+  </main>
+    
+  <footer>
+    <aside>
+      weather forecast <br>
+      57 mountain avenue <br>
+      Franklin <br>
+      (233)202117077<br>
+    </aside>
+      <p class="footer-bar">&copy;2017 All Rights Reserved | Weather Forecast|<span id="currentdate"></span></p> 
+  </footer>
+
+  <script src="scripts/hamburger.js"></script>
+  <script src="scripts/currentdate.js"></script>
+    <script src="scripts/wu-weather.js"></script>
+</body>
+</html>

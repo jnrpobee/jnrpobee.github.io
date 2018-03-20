@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weather Forecast</title>
+  <meta name="author" content="Solomon Buaku Pobee">
+  <meta name="description" content="page description placeholder">
+  <!-- external style references in the proper cascading order -->    
+  <link href="https://fonts.googleapis.com/css?family=Playfair+Display" rel="stylesheet">  <!-- Google API font reference -->
+  <link href="styles/normalize.css" rel="stylesheet"> <!-- normalize useragent/browser defaults -->
+  <link href="styles/main.css" rel="stylesheet">    <!-- default styles - small/phone views -->
+  <link href="styles/medium.css" rel="stylesheet">  <!-- medium/tablet views -->
+  <link href="styles/large.css" rel="stylesheet">   <!-- large/wide/desktop views --> 
+</head>
+<body>
+    
+  <header>
+    <img src="images/56131-clouds-outlined-weather-symbol.png" alt="The-site-logo" width="" height="">
+    <h1>Weather Forecast</h1>
+    <div class="subheading">Weather Forecast, Be aware all Time</div>
+  </header>
+
+  <!-- site navigation use placeholder references -->
+  <nav class="clearfix">
+    <button onclick="toggleNavMenu()">&#9776;</button>
+    <ul id="primaryNav" class="hide">
+    	<li><a href="index.html">Home</a></li>
+    	<li class="active"><a href="franklin.html">Franklin</a></li>
+    	<li><a href="greenville.html">Greenville</a></li>
+    	<li><a href="springfield.html">Springfield</a></li>
+    	<li><a href="stormcenter.html">Storm Center</a></li>
+    	<li><a href="gallery.html">Gallery</a></li>
+    </ul>		
+  </nav>
+    
+  <main>
+    
+    <figure>
+      <img id="banner" src="images/pexels-photo-267151.jpeg" alt="banner" width="" height="">
+    </figure>
+      
+      <h4 class="thank">HURRAY!</h4>
+      <p class="thanks">
+          You have successfully submitted your forms</p>
+      </main>
+    
+  <footer>
+    <aside>
+      weather forecast <br>
+      57 mountain avenue <br>
+      Franklin <br>
+      (233)202117077<br>
+    </aside>
+    <p class="footer-bar">&copy;2017 All Rights Reserved | Weather Forecast | <span id="currentdate"></span></p>
+  </footer>
+
+  <script src="scripts/hamburger.js"></script>
+  <script src="scripts/currentdate.js"></script>
+
+</body>
+</html>
