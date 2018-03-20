@@ -61,15 +61,15 @@
         <p>Wind Speed: <span id="windSd", id="clor">5</span> mph <span id="windDir"> SW</span></p> 
          <p>Forecast today: <span id="currentPeriod"></span> </p>
       </div>  
-            </div>
-        <div class="form">
+             <!--        </div>
+       <div class="form">
         <p>Wind Chill</p>
             <p>Temperature<input type="text" id="temperature" size="3" maxlength="6">
                 Wind Speed<input type="text" id="windSpeed" size="3" maxlength="6"> </p>
             <button type="button" onclick="computeNum()">calculate</button>
             <div id="output">
             result
-        </div>
+        </div>-->
         </div>
     </section>
         
@@ -85,23 +85,24 @@
             <th>Day 5</th>
             <th>Day 6</th>
             <th>Day 7</th>
-            <th>Day 8</th>
-            <th>Day 9</th>
-            <th>Day 10</th>
+            
           </tr>
 		</thead>
         <tbody>  
           <tr>
-            <td>89&deg;F</td>
-            <td>87&deg;F</td>
-            <td>78&deg;F</td>
-            <td>75&deg;F</td>
-            <td>72&deg;F</td>
-            <td>72&deg;F</td>
-            <td>79&deg;F</td>
-            <td>83&deg;F</td>
-            <td>85&deg;F</td>
-            <td>89&deg;F</td>
+             <td><span id="daY1">89&deg;F</span><br><img id="iconD1" src="" alt="forecast"></td>
+              
+              <td><span id="daY2">87&deg;F</span><br><img id="iconD2" src="" alt="forecastday2"></td>
+              
+              <td><span id="daY3">78&deg;F</span><br><img id="iconD3" src="" alt="forecastday3"></td>
+              
+              <td><span id="daY4">75&deg;F</span><br><img id="iconD4" src="" alt="forecastday4"></td>
+              
+              <td><span id="daY5">72&deg;F</span><br><img id="iconD5" src="" alt="forecastday5"></td>
+              
+              <td><span id="daY6">72&deg;F</span><br><img id="iconD6" src="" alt="forecastday6"></td>
+              
+          <td><span id="daY7">79&deg;F</span><br><img id="iconD7" src="" alt="forecastday7"></td>
           </tr>
 		</tbody>
       </table>
