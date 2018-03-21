@@ -140,13 +140,17 @@ Span {
     
 }
 .clor {
-    border: 10px;
+    display: flex;
+    flex-flow: column;
+    text-align: center;
+    border: 5px double orange;
     background-color: lightgrey;
-    width: 880%;
-    margin: 10px;
-    
+    width: 60%;
+    margin: auto;  
     
 }
+
+
 .footer-bar {
     color: black;
 }
