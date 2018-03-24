@@ -3,10 +3,10 @@ var request = new XMLHttpRequest();
 request.open('GET', requestURL, true);
 request.send();
 
-request.onload = function() {
+request.onload = function () {
     var franklinWeather = JSON.parse(request.responseText);
-   console.log(franklinWeather);
-    
+    console.log(franklinWeather);
+   
      document.getElementById('desc').innerHTML = franklinWeather.current_observation.display_location.full;
     
     document.getElementById('windSd').innerHTML = franklinWeather.current_observation.wind_mph;
@@ -22,8 +22,8 @@ request.onload = function() {
     var found = urlString.indexOf("https");
     console.log(found);
     
-    if(found>=0) {
-        icon_path = icon_path.replace("http","https");
+    if (found >= 0) {
+        icon_path = icon_path.replace("http", "https");
     }
     
     
@@ -35,4 +35,4 @@ request.onload = function() {
     
     document.getElementById('relativE').innerHTML = franklinWeather.current_observation.relative_humidity;
     
-}
+};
