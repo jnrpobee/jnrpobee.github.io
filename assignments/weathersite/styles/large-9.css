@@ -1,31 +1,31 @@
-@media only screen and (min-width: 37.5em) {
-  /* Only CSS rules that need to be changed to meet the layout needs from small to medium go in here */
+@media only screen and (min-width: 64em) {
+  /* Only CSS rules that need to be changed to meet the layout needs from medium to large/wide go in here */
   
-  nav button { display:none; }  /* hamburger button does not need to be shown */
-  
-  section.forecast { display: inline-table; }  /* show the 10-day forecast with the medium view and up */
-  
-  article p.town-article img { width: 62.666%; float:right; }  /* responsive images */
-
+  article p.town-article img { 
+     width: 29.333%;
+      height: 200px;
+      flex: 1 0 15em;
+      margin: 0.5em;
+    }
+    
     #banner {
         display: block;
-        width: 350px;
-        height:350px;
-        float: left;
-        margin: 20px;
-        padding: 1px;
+        width: 100%;
+        height: 200px;
+        margin: -10px;
+        margin-bottom: 5px;
+    }
+    nav {
+        position: static;
     }
   
-  ul {
+  ul.plat {
     list-style-type: none;
     margin: 0;
     padding: 0;
       overflow: hidden;
      background-color: deepskyblue;
 }
-    ul.hide {
-        display: block;
-    }
 
 li {
     display: inline;
@@ -38,9 +38,8 @@ li a {
     display: block;
     color: white;
     text-align: center;
-    padding: 14px 18px;
-    border-right: 2px solid #555;
-    border-left: 2px solid #555;
+    padding: 12px 16px;
+    border: 2px solid #555;
     text-decoration: none;
    
 }
@@ -50,12 +49,12 @@ li a:hover{
 li.active a {
     color: chartreuse;
 }
-    nav ul.hide {
+    ul.hide  {
         display: block;
     }
     /*extra codes*/
     h3 {
-        text-align: justify;
+        text-align: center;
         width: 100%;
         padding-left: 300px;
         
@@ -63,22 +62,10 @@ li.active a {
     .forecast {
         visibility: visible;
         text-align: center
-         font-family: /*"Trebuchet MS", Arial, Helvetica, */sans-serif;
-        display: flex;
-        flex-flow: column;
+         font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
         border: 1px solid #ddd;
         width: 100%;
-        height: 50%;
-        font-size: 15px;
-            
-    }
-    .forecast table {
-        margin-left: auto;
-        margin-right: auto;
-
-    }
-    .conditions {
-        float: inherit;
     }
     .forecast td, .forecast th {
         text-align: center;
@@ -101,28 +88,43 @@ li.active a {
 				flex-flow: row wrap;
 				flex: 1;
 }
-    .container {
+     article.container {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         grid-gap: 10px;
         grid-auto-rows: minmax(100px, auto);
     margin: auto;
-    margin-top: 450px;    
+    margin-top: 200px;    
     margin-bottom: 10px;
+      
     }
     .form {
     align-content: center;
-    text-align:center;
+    text-align: center;
 }
-    #banna{
+    #banna {
         display: block;
-        max-width: 900px;
-        min-width: 0;
-        height:350px;
-        float: left;
-        margin: 20px;
-        padding: 1px;
+        max-width: 100%;
+        height: 200px;
+        margin: -10px;
+        margin-bottom: 5px;
+    }
+    .conditions {
+           text-align: center;
+    }
+    
+    section.cities {
+        display: flex;
+        flex-flow: row nowrap;
+       justify-content: space-around;
+        align-items: stretch; 
+		font-family: 'sans-serif', serif;
+        font-size-adjust: auto;
+        font-size: 20px;
+		border: double orange 2px;
+        margin: 2%;
     }
     /* this section refers to the main of the index.html page*/
-
-}
+   
+    }
+    
