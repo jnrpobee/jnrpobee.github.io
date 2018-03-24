@@ -115,7 +115,15 @@ h4.thank {
  .forecast {
         visibility: collapse;
     /* display: none; */
-    }
+     display: flex;
+        flex-flow: row nowrap;
+		
+}
+    
+forecast.table {
+    margin-left: auto;
+    margin-right: auto;
+}
 
 form {
     align-content: center;
@@ -145,8 +153,16 @@ Span {
 .clor {
     border: 10px;
     background-color: lightgrey;
-    
-    margin: 10px;
+    display: flex;
+    flex-flow:column;
+    justify-content: space-around;
+     align-items: stretch; 
+     font-family: 'sans-serif', serif;
+        font-size: 20px;
+		border: double orange 5px;
+    width: 60%;
+    align-content: center;
+    margin: auto;
     
     
 }
