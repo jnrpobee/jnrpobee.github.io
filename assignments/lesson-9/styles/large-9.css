@@ -19,7 +19,7 @@
         position: static;
     }
   
-  ul {
+  ul.plat {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -112,8 +112,19 @@ li.active a {
     .conditions {
            text-align: center;
     }
+    
+    section.cities {
+        display: flex;
+        flex-flow: row nowrap;
+       justify-content: space-around;
+        align-items: stretch; 
+		font-family: 'sans-serif', serif;
+        font-size-adjust: auto;
+        font-size: 20px;
+		border: double orange 2px;
+        margin: 2%;
+    }
     /* this section refers to the main of the index.html page*/
    
     }
     
-}
