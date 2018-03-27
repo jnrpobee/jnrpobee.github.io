@@ -63,13 +63,16 @@ li.active a {
         visibility: visible;
         text-align: center
          font-family: sans-serif;
-        border-collapse: collapse;
         border: 1px solid #ddd;
-        width: 100%;
+        width: 50%;
     }
     .forecast table {
         margin-left: auto;
         margin-right: auto;
+        text-align: center;
+         border: 2px solid #ddd;
+        padding: 8px;
+
     }
     aside{
         text-align: center;

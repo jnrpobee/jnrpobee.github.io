@@ -66,18 +66,19 @@ li.active a {
     .forecast {
         visibility: visible;
         text-align: center
-         font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-        border-collapse: collapse;
+         font-family: sans-serif;
         border: 1px solid #ddd;
-        width: 100%;
+        width: 50%;
     }
     .conditions {
         float: inherit;
     }
-    .forecast td, .forecast th {
+    .forecast table {
         text-align: center;
         border: 2px solid #ddd;
         padding: 8px;
+        margin-left: auto;
+        margin-right: auto;
     }
     aside{
         text-align: center;
