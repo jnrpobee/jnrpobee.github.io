@@ -113,7 +113,6 @@ h4.thank {
     padding-top: 20%;
 }
  .forecast {
-     display: flex;
 		
 }
     
@@ -148,8 +147,8 @@ Span {
 }
 .clor {
     background-color: lightgrey;
-    display: flex;
-    flex-flow:column;
+  /*  display: flex;
+   flex-flow:column; */
     justify-content:center;
      font-family: 'sans-serif', serif;
      font-size: 18px;
@@ -157,12 +156,7 @@ Span {
     width: 60%;
     align-content: center;
     margin: auto;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: auto;
-    margin-top: auto;
-    
-    
+      
 }
 .footer-bar {
     color: black;
