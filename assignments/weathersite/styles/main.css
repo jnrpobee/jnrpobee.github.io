@@ -113,7 +113,7 @@ h4.thank {
     padding-top: 20%;
 }
  .forecast {
-        visibility: collapse;
+    /*visibility: collapse; */
     display: none; 
    
 		
