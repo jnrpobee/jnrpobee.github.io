@@ -154,7 +154,7 @@ Span {
     background-color: lightgrey;
     display: flex;
     flex-flow:column;
-    justify-content: space-around;
+    justify-content:center;
      font-family: 'sans-serif', serif;
      font-size: 20px;
     border: double orange 5px;
