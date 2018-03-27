@@ -67,7 +67,8 @@ li.active a {
         text-align: center
          font-family: sans-serif;
         border: 3px double orange;
-        width: 70%;
+        width: auto;
+        margin: auto;
     }
     .forecast td, .forecast th {
         margin-left: auto;
