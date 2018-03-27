@@ -64,6 +64,9 @@ li.active a {
         
     }
     .forecast {
+        display: flex;
+        flex-flow: column;
+        flex-wrap: wrap;
         visibility: visible;
         text-align: center
          font-family: sans-serif;
@@ -75,7 +78,7 @@ li.active a {
     }
     .forecast td, .forecast th {
         text-align: center;
-        border: 2px solid #ddd;
+        border: 2px double orange;
         padding: 8px;
         margin-left: auto;
         margin-right: auto;

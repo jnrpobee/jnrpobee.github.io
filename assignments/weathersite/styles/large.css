@@ -60,10 +60,13 @@ li.active a {
         
     }
     .forecast {
+        display: flex;
+        flex-flow: column;
+        flex-wrap: wrap;
         visibility: visible;
         text-align: center
          font-family: sans-serif;
-        border: 1px solid #ddd;
+        border: 3px double orange;
         width: 70%;
     }
     .forecast td, .forecast th {
