@@ -113,11 +113,14 @@ h4.thank {
     padding-top: 20%;
 }
  .forecast {
+        visibility: collapse;
+    display: none; 
+   
 		
 }
     
 forecast.table {
-   
+
 }
 
 form {
@@ -147,8 +150,8 @@ Span {
 }
 .clor {
     background-color: lightgrey;
-  /*  display: flex;
-   flex-flow:column; */
+    display: flex;
+    flex-flow:column;
     justify-content:center;
      font-family: 'sans-serif', serif;
      font-size: 18px;
@@ -156,7 +159,7 @@ Span {
     width: 60%;
     align-content: center;
     margin: auto;
-      
+    
 }
 .footer-bar {
     color: black;
