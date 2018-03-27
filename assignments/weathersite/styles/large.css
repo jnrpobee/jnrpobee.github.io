@@ -64,7 +64,7 @@ li.active a {
         flex-flow: column;
         flex-wrap: wrap;
         visibility: visible;
-        text-align: center
+        text-align: center;
          font-family: sans-serif;
         border: 3px double orange;
         width: auto;
@@ -75,7 +75,7 @@ li.active a {
         margin-right: auto;
         text-align: center;
          border: 2px solid #ddd;
-        padding: 8px;
+        padding: 4px;
 
     }
     aside{
