@@ -68,12 +68,12 @@ li.active a {
         text-align: center
          font-family: sans-serif;
         border: 1px solid #ddd;
-        width: 50%;
+        width: 70%;
     }
     .conditions {
         float: inherit;
     }
-    .forecast table {
+    .forecast td, .forecast th {
         text-align: center;
         border: 2px solid #ddd;
         padding: 8px;
