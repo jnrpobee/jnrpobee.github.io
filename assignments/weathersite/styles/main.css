@@ -113,16 +113,12 @@ h4.thank {
     padding-top: 20%;
 }
  .forecast {
-        visibility: collapse;
-    /* display: none; */
      display: flex;
-        flex-flow: row nowrap;
 		
 }
     
 forecast.table {
-    margin-left: auto;
-    margin-right: auto;
+   
 }
 
 form {
