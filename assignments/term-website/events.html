@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="author" content="Solomon-Buaku-Pobee">
+        <meta name="description" content="page discription placeholder">
+        <title>The Mountain Spoke</title>
+        
+        <!-- External style references -->
+        
+        <link href="styles/normalize.css" rel="stylesheet">
+        
+        <link href="styles/small.css" rel="stylesheet">
+        <link href="styles/medium.css" rel="stylesheet">
+        <link href="styles/large.css" rel="stylesheet">
+        
+        
+    </head>
+    
+    <body>
+        <header>
+            <img src="image/logo.png" alt="Site-logo">
+            <h1>The Mountain Spoke</h1>
+            <div id="homeBic"> Home of Bicycles </div>
+        </header>
+        
+        
+            <!-- nagivation --> 
+           <nav class="clearfix">
+    <button onclick="toggleNavMenu()">&#9776;</button>
+    <ul id="primaryNav" class="hide plat">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a> </li>
+                    <li><a href="Bicycle-Parts.html">Parts</a> </li>
+                    <li><a href="Repairs.html">Repairs</a> </li>
+                    <li><a href="events.html">Events</a> </li>
+
+                    <li><a href="contact.html">Contact Us</a></li>
+                
+                </ul>
+            </nav>
+            
+        
+        <main>
+            <img id="banner" src="image/banner.jpg" alt="banner">
+            
+           
+            <article id="inforn">
+                <h2>Cycle the Continental Divide</h2>
+                <p>The annual event of the <Strong>cycle the continental divide</Strong> is once again taking place this year with massive participant from countries from the south part of the continent. As part of this years event participants are to take note of the following event and register below:   </p>
+                <ul>
+                    <li>Date: 25th November, 2018</li>
+                    <li>Time: 8:00GMT</li>
+                    <li>Cost: $100.00</li>
+                    
+                    </ul>
+                <div>
+                    <h3>Requirements:</h3>
+                    <ul class="centman">
+                        <li>Helmet</li>
+                        <li>Mountain Bike</li>
+                        <li>Protective Cloves</li>
+                        <li>Protective Shields</li>
+                    
+                    </ul>
+                
+                </div>
+                
+            
+            </article>
+            
+            <!-- Registration Form -->
+            <form action="thank.html" method="get" enctype="multipart/form-data" name="Contiform" >
+      <fieldset>
+      <label> Full Name: <input name="fullname" type="text" value="" placeholder="Full Name" pattern="[a-zA-Z -._]{3,99}" required></label><br><br>
+          
+      <label> Email: <input name="Email" type="email" value="" placeholder="demo@byui.edu" required></label><br><br>
+          
+      <label> Phone Number: <input name="phonenumber" type="tel" size="14px" value="" required></label><br><br>
+          
+          <label> Date of Birth: <input name="dateofbirth" type="date"></label><br><br>
+          
+                 
+      </fieldset>
+   
+                <!--
+                <fieldset>
+        
+          
+          <label> Storm Type: <input name="stormtype" type="text" list="stormtype"><datalist id="stormtype">
+              <option value="Flash Flood"></option>
+              <option value="Hail"></option>
+              <option value="Hurricane"></option>
+              <option value="Thunderstorm"></option>
+              <option value="Tornado"></option>
+              </datalist></label><br><br>
+          
+                  <label for="rating"> storm Severity: 1-10</label>
+          <input type="range" id="rating" value="5" min="1" max="10" step="1" oninput="adjustRating(this.value)" onchange="adjustRating(this.value)">
+          <span id="ratingvalue">5</span><br><br>
+          
+          <label> Storm Rrgion:
+          <select name="region">
+              <option value="Select region..." disabled selected="selected">Select Region...</option>
+              <option value="Franklin">Franklin</option>
+              <option value="Greenville">Greenville</option>
+              <option value="Springfield">Springfield</option>
+              </select> </label><br><br>
+          
+          <label>Are you in Danger?
+		<input type="radio" name="danger" value="Yes" checked> Yes
+		<input type="radio" name="danger" value="Maybe"> Maybe
+		<input type="radio" name="danger" value="No"> No
+		</label><br><br>
+
+-->
+                          <fieldset>
+
+          <label>Additional Information:<br>
+		<textarea name="message" rows="15" cols="30"></textarea></label><br><br>
+      
+            <input type="submit" value="Submit">
+        	<input name="redirect" type="hidden" value="thank.html">
+
+
+      </fieldset>
+
+
+      <input type="submit" value="Submit">
+	
+	<input name="redirect" type="hidden" value="thank.html">
+      </form>
+      
+            
+            
+        </main>
+        
+        <footer>
+            <aside>
+                102 Capital Avenue<br>
+                Bozeman<br>
+                (233)202117077<br>
+            
+            </aside>
+            
+            <p>&copy;2018 All Rights Reserved | The Mountain Spoke | <span id="currentdate"></span></p>
+        </footer>
+        
+        <script src="scripts/hamburger.js"></script>
+        <script src="scripts/currentdate.js"></script>
+    </body>
+
+</html>

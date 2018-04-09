@@ -1,0 +1,52 @@
+@media only screen and (min-width: 64em) {
+    
+    
+    nav {position: static;}
+    
+    nav ul {
+        list-style-type: inherit;
+        overflow: hidden;
+        background-color: lightgreen;
+        margin: 0;
+        padding: 0;
+    }
+    nav li {
+        float: left;
+        display: inline;
+    }
+    nav li:last-child {
+        float: right;
+        margin-left: 50%;
+    }
+    nav li a {
+        display: block;
+        text-align: center;
+        color: darkblue;
+        text-decoration: none;
+        padding: 17px 16px;
+        border: 1px solid white;
+        width: 100%;
+    }
+    nav li a:hover {
+    background-color: coral;
+    color: aliceblue;
+    }
+    nav ul.hide {
+        display: block;
+    }
+    
+    #banner {
+        display: block;
+        width: 100%;
+        height: 200px;
+        margin: -1px;
+        max-width: 100%;
+    border: 0.5px solid black;
+        margin-bottom: 5px;
+    }
+    
+    
+    
+    
+    
+}
