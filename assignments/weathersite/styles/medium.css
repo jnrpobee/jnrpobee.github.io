@@ -69,9 +69,8 @@ li.active a {
         flex-wrap: wrap;
         visibility: visible;
         text-align: center;
-         font: sans-serif 15px;
+         font: sans-serif;
         border: 3px double orange;
-        max-width: auto;
         margin: auto;
     }
     .conditions {
@@ -127,7 +126,7 @@ li.active a {
     section.cities {
        
          visibility: visible;
-        text-align: center
+        text-align: center;
          font-family: sans-serif;
         display: flex;
         flex-flow: column;
