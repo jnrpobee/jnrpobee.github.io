@@ -1,27 +1,76 @@
-<!Doctype html>
+<!doctype html>
 <html>
     <head>
-        <title>JQslider</title>
-        <link href="main.css" rel="stylesheet">
-        <script src="scripts/test.js"></script>
-        <script src="http://code.jquery.com/jquery-3.3.1.js"
-  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-  crossorigin="anonymous"></script>
-    </head>
-    <body>
-        <div class="container">
-            <h1>JQSlider</h1>
-            <div class="slider-outer">
-                <img src="image/handle.png" class="prev" alt="prev">
-                    <div class="slider-inner">
-                        <img src="image/altaire_300.jpg" class="active">
-                        <img src="image/bike-3_350.jpg">
-                        <img src="image/wings_300.jpg">
-            </div>
-                <img src="image/seat.png" class="next" alt="next">
-            </div>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="author" content="Solomon-Buaku-Pobee">
+        <meta name="description" content="page discription placeholder">
+        <title>The Mountain Spoke</title>
         
-        </div>
+        <!-- External style references -->
+        
+        <link href="styles/normalize.css" rel="stylesheet">
+        
+        <link href="styles/small.css" rel="stylesheet">
+        <link href="styles/medium.css" rel="stylesheet">
+        <link href="styles/large.css" rel="stylesheet">
+        
+        
+    </head>
+    
+    <body>
+        <header>
+            <img src="image/logo.png" alt="Site-logo">
+            <h1>The Mountain Spoke</h1>
+            <div id="homeBic"> Home of Bicycles </div>
+        </header>
+        
+        
+            <!-- nagivation --> 
+           <nav class="clearfix">
+    <button onclick="toggleNavMenu()">&#9776;</button>
+    <ul id="primaryNav" class="hide plat">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a> </li>
+                    <li><a href="Bicycle-Parts.html">Tour</a> </li>
+                    <li><a href="Repairs.html">Repairs</a> </li>
+                     <li><a href="events.html">Events</a> </li>
+
+                    <li><a href="contact.html">Contact Us</a></li>
+                          
+
+                
+                </ul>
+            </nav>
+            
+        
+        <main>
+            <img id="banner" src="image/banner.jpg" alt="banner">
+            
+           
+            <article>
+                <video controls>
+                    <source src="term-website.mp4" type="video/mp4">
+                    <source src="term-website.ogg" type="video/ogg">
+                </video>
+            
+            </article>
+            
+        </main>
+        
+        <footer>
+            <aside>
+                102 Capital Avenue<br>
+                Bozeman<br>
+                (233)202117077<br>
+            
+            </aside>
+            
+            <p>&copy;2018 All Rights Reserved | The Mountain Spoke | <span id="currentdate"></span> | <a href="text.html">Overview Video</a></p>
+        </footer>
+        
+        <script src="scripts/hamburger.js"></script>
+        <script src="scripts/currentdate.js"></script>
     </body>
 
 </html>

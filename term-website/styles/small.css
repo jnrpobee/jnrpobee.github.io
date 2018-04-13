@@ -236,6 +236,11 @@ footer>p {
     display: table;
     clear: both;
 }
+video {
+    width: 50%;
+    margin: auto;
+    width: 70%;
+}
 
 
 
