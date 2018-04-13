@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="author" content="Solomon-Buaku-Pobee">
+        <meta name="description" content="page discription placeholder">
+        <title>The Mountain Spoke</title>
+        
+        <!-- External style references -->
+        
+        <link href="styles/normalize.css" rel="stylesheet">
+        
+        <link href="styles/small.css" rel="stylesheet">
+        <link href="styles/medium.css" rel="stylesheet">
+        <link href="styles/large.css" rel="stylesheet">
+        
+        
+    </head>
+    
+    <body>
+        <header>
+            <img src="image/logo.png" alt="Site-logo">
+            <h1>The Mountain Spoke</h1>
+            <div id="homeBic"> Home of Bicycles </div>
+        </header>
+        
+        
+            <!-- nagivation --> 
+           <nav class="clearfix">
+    <button onclick="toggleNavMenu()">&#9776;</button>
+    <ul id="primaryNav" class="hide plat">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a> </li>
+                    <li><a href="Bicycle-Parts.html">Parts</a> </li>
+                    <li><a href="Repairs.html">Repairs</a> </li>
+                     <li><a href="events.html">Events</a> </li>
+
+                    <li><a href="contact.html">Contact Us</a></li>
+                           
+
+                
+                </ul>
+            </nav>
+            
+        
+        <main>
+            <img id="banner" src="image/banner.jpg" alt="banner">
+            
+            <h3>Contant Us</h3>
+             <div id="cont">
+                 For more information on our services at the mountain spoke contact us on: <br><br>
+                 
+                     <li>on phone: (233)202117077</li>
+                     <li>by email: contact@mountainsk.com</li>
+                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2787.9316277611074!2d-111.09290618464823!3d45.672272879103865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5345459ab72cb6df%3A0xbb98968f9648ea88!2s3950+Valley+Commons+Dr%2C+Bozeman%2C+MT+59718%2C+USA!5e0!3m2!1sen!2sgh!4v1523489033537" width="400" height="300" frameborder="0" style="border:0" allowfullscreen></iframe>
+                 
+            </div>
+            
+            <h4>Send us a message</h4>
+            <form action="message.html" method="get" enctype="multipart/form-data" name="Contiform">
+                <fieldset>
+                    <label>Full Name: <input name="fullname" type="text" value="" placeholder="Full Name" pattern="[a-zA-Z -._]{3,99}" required> </label> <br><br>
+                    
+                    <label>Email: <input name="email" type="text" value="" placeholder="johnsmith@mail.com" required> </label><br><br>
+                    
+                    <label> Message: <br> <textarea name="message" rows="10" cols="30"></textarea> </label><br><br>
+                    
+                    <input type="submit" value="submit">
+                    <input name="redirect" type="hidden" value="message.html">
+                </fieldset>
+                
+            
+            </form>
+            
+        </main>
+        
+        <footer>
+            <aside>
+                102 Capital Avenue<br>
+                Bozeman<br>
+                (233)202117077<br>
+            
+            </aside>
+            
+            <p>&copy;2018 All Rights Reserved | The Mountain Spoke | <span id="currentdate"></span></p>
+        </footer>
+        
+        <script src="scripts/hamburger.js"></script>
+        <script src="scripts/currentdate.js"></script>
+    </body>
+
+</html>

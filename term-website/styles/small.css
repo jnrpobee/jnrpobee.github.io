@@ -1,0 +1,308 @@
+/* This main css file contains the default rules and is geared toward the small/phone view */
+
+* { box-sizing: border-box;}  /* This wildcard applies to all elements ensuring a box layout model */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+body {
+  font-size: 17px;
+  font-family: 'Open Sans', sans-serif;
+  /* Declare the base font-family - from google font api or other */
+}
+
+header, nav, main, footer { 
+   max-width: 100%;
+    border: 0.5px solid black;
+}
+/*header*/
+header h1 {
+    text-align: center;
+    margin-bottom: .3px;
+}
+header img {
+    float: left;
+    height: 90px;
+}
+header #homeBic {
+    font-size: 29px;
+    text-align: center;
+    margin-top: 0px;
+    margin-bottom: 12px;
+}
+
+/* nagivation */
+
+nav{
+    background-color: lightgreen;
+    font-size: 1.2rem;
+}
+nav button {
+    margin: .1rem 5%;
+    background-color: transparent;
+    color: black;
+    font-size: 1.4rem;
+}
+ul .navManu {
+    list-style: none;
+    padding-left: 0;
+}
+nav ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+}
+nav ul li a {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    border-top: 1px solid white;
+    padding: 10px 12px;
+    color: darkblue;
+}
+nav ul li a:hover{
+    background-color: coral;
+    color: aliceblue;
+    text-decoration-style: solid;
+    box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.25);
+}
+nav ul.hide{
+    display: none;
+}
+
+/* main */
+
+
+    #banner {
+        display: block;
+        width: 100%;
+        height:150px;
+        padding: 1px;
+          margin: -1px;
+        max-width: 100%;
+    border: 0.5px solid black;
+    }
+
+main {
+    background-color: azure;
+    line-height: normal;
+}
+h1, h2, h3, h4 {
+    text-align: center;
+}
+.centman {
+    text-align: center;
+}
+form {
+    text-align: center;
+    font-size: 1.1em;
+    color: black;
+    width: 70%;
+    margin: auto;
+}
+.thanks{
+    text-align: center;
+    width: 70%;
+    margin: auto;
+    font-size: 20px;
+    
+}
+h2.thank {
+    width: 100%;
+}
+article#regman {
+    border: 3px solid orange;
+    background-color: lightblue;
+    width: 70%;
+    margin: auto;
+}
+article#inforn {
+    border: 1px solid grey;
+    width: 70%;
+    margin: auto;
+}
+#date {
+    width: 70%;
+    margin: auto;
+    border: 40px;
+    border: 2px solid grey;
+}
+#cent {
+    color: red;
+}
+#cont {
+    width: 90%;
+    margin: auto;
+    text-align: center;
+    list-style: none;
+}
+main img:hover {
+    box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.25);
+}
+span img {
+    width: 47%;
+    margin: auto;
+    float: left;
+    padding: 15px;
+}
+.shop1 {
+    color: limegreen;
+    text-decoration: none;
+}
+
+/* table content */
+
+table {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    border-collapse: collapse;
+    border:7px solid orange;
+    box-shadow: 10px 10px 10px orange;
+    font-family: ubuntu, sans-serif;
+    padding: 4px;
+}
+tr:nth-child(odd) {
+    background-color: lightgreen;
+}
+tr:nth-child(even) {
+    background-color: #e7f0ed;
+}
+thead th {
+    color: black;
+    background-color:#7fb9c2;
+
+}
+tbody th {
+    font-size: 20px;
+    background-color: #628ca6;
+    color: white;
+    border: 2px solid #ddd;
+    padding: 4px;
+
+}
+td {
+    font-size: 16px;
+    padding: 6px;
+    border: 2px solid #ddd;
+}
+
+tfoot td {
+    text-align: center;
+    background-color: lightskyblue;
+    font-size: .7em;
+    padding: 0.7em;
+}
+section.sec {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: center;
+    align-items: center;
+}
+.leftcol, .rightcol { 
+	max-width: 48%;
+	flex: 1 0 15em;
+	margin: .5em;
+}
+.sharp {
+    background-color: lightcoral;
+    color: white;
+}
+/* footer */
+footer {
+    text-align: center;
+    margin: auto;
+    background-color: cadetblue;
+}
+footer>p {
+    color: yellow;
+}
+
+/* Create two unequal columns that floats next to each other */
+.column {
+    float: left;
+    padding: 10px;
+}
+
+.left {
+  width: 25%;
+    background-color: lightblue;
+}
+
+.right {
+  width: 75%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+
+
+   /*----- Clearfix: Force an Element not to collapse -----*/
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+/* ----test area ----*/
+
+
+a {
+    color: aqua;
+    text-decoration: none;
+}
+
+h1 {
+    text-align: center;
+}
+
+.container {
+    width: 540px;
+    margin: 40px auto;
+    overflow: auto;
+}
+
+.slider-inner{
+    width: 500px;
+    height: 300px;
+    position: relative;
+    overflow: hidden;
+    float: left;
+    padding: 3px;
+    border: 1px solid red;
+}
+
+.slider-inner img {
+    display: none;
+    width: 500px;
+    height: 300px;
+}
+
+.slider-inner img.active {
+    display: inline-block;
+}
+
+.prev,.next {
+    float: left;
+    margin-top: 130px;
+    cursor: pointer;
+    background-color: brown;
+    color: white;
+    font-size: 22px;
+}
+
+.prev{
+    position: relative;
+    margin-right: -45px;
+    z-index: 100;
+}
+
+.next {
+    position: relative;
+    margin-left: -45px;
+    z-index: 100;
+}
