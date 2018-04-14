@@ -3,7 +3,7 @@
   
   nav button { display:none; }  /* hamburger button does not need to be shown */
   
-  section.forecast { display: ???; }  /* show the 10-day forecast with the medium view and up */
+  section.forecast { display:inline-table; }  /* show the 10-day forecast with the medium view and up */
   
   article p.town-article img { width: 62.666%; float:right; }  /* responsive images */
 
@@ -59,7 +59,7 @@ li.active a {
     }
     .forecast {
         visibility: visible;
-        text-align: center
+        text-align: center;
          font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
         border-collapse: collapse;
         border: 1px solid #ddd;
