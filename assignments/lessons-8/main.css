@@ -41,11 +41,6 @@ td {
     padding: 6px;
     border: 2px solid #ddd;
 }
-tfoot td {
-    background-color: #7fb9c2;
-    font-size: .7em;
-    padding: 0.7em;
-}
 
 .first {
     background-color: #628ca6;
