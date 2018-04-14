@@ -17,7 +17,7 @@
 <body>
 
   <header>
-    <img src="images/56131-clouds-outlined-weather-symbol.png" alt="The-site-logo" width="" height="">
+    <img src="images/56131-clouds-outlined-weather-symbol.png" alt="The-site-logo">
     <h1>Weather Forecast</h1>
     <div class="subheading">Weather Forecast, Be aware all Time</div>
   </header>
@@ -38,10 +38,10 @@
   <main>
     
     <figure>
-      <img id="banner" src="images/pexels-photo-267151.jpeg" alt="banner" width="" height="">
+      <img id="banner" src="images/pexels-photo-267151.jpeg" alt="banner">
     </figure>
       <h2>The City of Franklin</h2>
-    <section>
+    <section class="fist">
       <h3>Weather Summary</h3>    
       <div class="highlow">
         <p>High:90°F</p>  
@@ -50,21 +50,21 @@
       <div class="current">
         Sunny
         <picture>
-            <img src="images/sunny.png" alt="sunny-weather" width="" height="">
+            <img src="images/sunny.png" alt="sunny-weather">
         </picture>
       </div>   
       <div class="conditions">
         <p>Precipitation: 0%</p>  
         <p>Wind Speed:5mph SW</p>  
       </div>  
-        <p>fsdgudfhgiauoga</p>
+
         <div class="form">
         <p>Wind Chill</p>
-            <p>Temperature<input type="text" id="temperature" size="3" maxlength="6">
-                Wind Speed<input type="text" id="windSpeed" size="3" maxlength="6"> </p>
+            <p>Temperature: <input type="text" id="temperature" size="3" maxlength="6">
+                Wind Speed: <input type="text" id="windSpeed" size="3" maxlength="6"> </p>
             <button type="button" onclick="computeNum()">calculate</button>
-            <div id="output">
-            result
+            <div id="outman">
+                <p>result</p>
         </div>
         </div>
     </section>
@@ -129,6 +129,7 @@
 
   <script src="scripts/hamburger.js"></script>
   <script src="scripts/currentdate.js"></script>
+    <script src="scripts/windchill.js"></script>
 
 </body>
 </html>

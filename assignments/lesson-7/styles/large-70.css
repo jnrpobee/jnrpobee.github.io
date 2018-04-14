@@ -61,7 +61,7 @@ li.active a {
     }
     .forecast {
         visibility: visible;
-        text-align: center
+        text-align: center;
          font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
         border-collapse: collapse;
         border: 1px solid #ddd;
