@@ -125,7 +125,6 @@ li.active a {
        justify-content: space-around;
         align-items: stretch; 
 		font-family: 'sans-serif', serif;
-        font-size-adjust: auto;
         font-size: 20px;
 		border: double orange 2px;
         margin: 2%;
