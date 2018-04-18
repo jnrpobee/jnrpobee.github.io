@@ -122,7 +122,7 @@ li.active a {
     section.cities {
        
          visibility: visible;
-        text-align: center
+        text-align: center;
          font-family: sans-serif;
         display: flex;
         flex-flow: column;
