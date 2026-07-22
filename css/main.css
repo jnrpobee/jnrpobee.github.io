@@ -4,22 +4,17 @@ header {
     background-color: cadetblue;
      text-align: center;
     color: white;
-    margin-top: -20px;
+    margin-top: 0;
 }
 body {
-    margin: auto;
-    padding: -12px;
-}
-H1, h2 {
-   
+    margin: 0 auto;
+    padding: 0;
 }
 nav {
-    text-decoration: none;
     padding: 0;
     list-style-type: none;
     background-color: lightyellow;
-    margin-top: -15px;
-    margin-bottom: -.5rem;
+    margin: 0 0 .5rem 0;
     
 }
 nav ul {
@@ -33,7 +28,8 @@ nav ul {
 nav ul li a {
     display: block;
     padding: 10px 12px;
-    text-align:justify;
+    text-align: left;
+    text-decoration: none;
    
 }
 img {
