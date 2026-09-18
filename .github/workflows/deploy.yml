@@ -1,0 +1,67 @@
+name: Deploy to GitHub Pages
+
+# Publishes on every push to main. The repository holds the source — the
+# generator, the link checker, the local-preview helpers — but only the public
+# files are deployed. See the "Assemble" step below for exactly which.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble the public site
+        run: |
+          mkdir -p _site
+          cp *.html styles.css script.js sitemap.xml robots.txt CNAME _site/
+          cp -r assets _site/
+          # build.py, check_links.py, DEPLOY.md, the start-local scripts and the
+          # Cloudflare-only _headers/_redirects files are deliberately left out.
+
+      - name: Verify every link is well-formed
+        run: python3 check_links.py _site
+
+      - name: Confirm every local asset resolves
+        run: |
+          python3 - <<'PY'
+          import os, re, glob, sys
+          os.chdir('_site')
+          pat = re.compile(r'(?:href|src)\s*=\s*["\']([^"\']+)["\']')
+          missing = []
+          for f in glob.glob('*.html'):
+              for r in pat.findall(open(f, encoding='utf-8').read()):
+                  if r.startswith(('http', 'mailto:', 'tel:', 'data:', '#', '//')):
+                      continue
+                  p = r.split('#')[0].split('?')[0].lstrip('/')
+                  if p and not os.path.exists(p):
+                      missing.append(f'{f}: {r}')
+          if missing:
+              print('Missing files referenced by the site:')
+              print('\n'.join('  ' + m for m in missing))
+              sys.exit(1)
+          print('All local references resolve.')
+          PY
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

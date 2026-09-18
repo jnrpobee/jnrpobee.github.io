@@ -1,0 +1,8 @@
+# Send the bare domain to the www hostname, which is what every canonical
+# tag, the sitemap and the Open Graph URLs on this site point at.
+# If this rule does not take effect, use a Redirect Rule in the Cloudflare
+# dashboard instead (Rules -> Redirect Rules); see DEPLOY.md.
+https://solomonbpobee.com/*  https://www.solomonbpobee.com/:splat  301!
+
+# Nothing else is needed here. Cloudflare Pages already serves /research for
+# research.html on its own, so there are no extensionless rules to write.
