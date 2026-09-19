@@ -16,49 +16,5 @@
   "language": {
     "name": "Python 3",
     "solved": 24
-  },
-  "tiers": {
-    "advanced": [
-      {
-        "tag": "Dynamic Programming",
-        "n": 7
-      },
-      {
-        "tag": "Backtracking",
-        "n": 3
-      },
-      {
-        "tag": "Union-Find",
-        "n": 3
-      }
-    ],
-    "intermediate": [
-      {
-        "tag": "Breadth-First Search",
-        "n": 8
-      },
-      {
-        "tag": "Depth-First Search",
-        "n": 6
-      },
-      {
-        "tag": "Tree",
-        "n": 4
-      }
-    ],
-    "fundamental": [
-      {
-        "tag": "Array",
-        "n": 14
-      },
-      {
-        "tag": "Matrix",
-        "n": 4
-      },
-      {
-        "tag": "String",
-        "n": 3
-      }
-    ]
   }
 }

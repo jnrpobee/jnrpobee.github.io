@@ -35,17 +35,9 @@ query profile($u: String!) {
     username
     submitStatsGlobal { acSubmissionNum { difficulty count } }
     languageProblemCount { languageName problemsSolved }
-    tagProblemCounts {
-      advanced { tagName problemsSolved }
-      intermediate { tagName problemsSolved }
-      fundamental { tagName problemsSolved }
-    }
   }
 }
 """
-
-# How many tags to show per tier, matching the page's three-per-tier layout.
-PER_TIER = 3
 
 
 def warn(msg):
@@ -119,16 +111,6 @@ def parse(payload, username):
             label = "Python 3" if name.lower() in ("python3", "python 3") else name
             language = {"name": label, "solved": langs[0]["problemsSolved"]}
 
-    tags = user.get("tagProblemCounts") or {}
-    tiers = {}
-    for tier in ("advanced", "intermediate", "fundamental"):
-        rows = [t for t in (tags.get(tier) or [])
-                if isinstance(t.get("problemsSolved"), int) and t["problemsSolved"] > 0
-                and str(t.get("tagName") or "").strip()]
-        rows.sort(key=lambda t: (-t["problemsSolved"], t["tagName"]))
-        tiers[tier] = [{"tag": t["tagName"].strip(), "n": t["problemsSolved"]}
-                       for t in rows[:PER_TIER]]
-
     return {
         "username": user.get("username") or username,
         "fetched": datetime.date.today().isoformat(),
@@ -142,7 +124,6 @@ def parse(payload, username):
         },
         "totals": totals or None,
         "language": language,
-        "tiers": tiers,
     }
 
 
@@ -159,8 +140,9 @@ def sane_against(new, old):
         # large drop is far more likely to be a partial response.
         if (was - now) > max(5, was * 0.25):
             raise ValueError("solved count fell from %d to %d — too large to trust" % (was, now))
-    if not any(new.get("tiers", {}).values()) and old.get("tiers"):
-        raise ValueError("no topic tags returned, but the previous data had them")
+    had = [k for k in ("easy", "medium", "hard") if isinstance((old.get("solved") or {}).get(k), int)]
+    if had and not all(isinstance((new.get("solved") or {}).get(k), int) for k in had):
+        raise ValueError("the difficulty breakdown went missing from the response")
     return True
 
 
@@ -187,8 +169,9 @@ def main():
     total = data["solved"]["all"]
     lang = (data.get("language") or {}).get("name") or "unknown"
     print("  LeetCode: %d solved, most-used language %s" % (total, lang))
-    for tier, rows in data["tiers"].items():
-        print("    %-13s %s" % (tier, ", ".join("%s %d" % (r["tag"], r["n"]) for r in rows) or "-"))
+    s = data["solved"]
+    print("    easy %s · medium %s · hard %s"
+          % (s.get("easy"), s.get("medium"), s.get("hard")))
 
     if check_only:
         print("  --check given, leetcode.json not written")

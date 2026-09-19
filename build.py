@@ -54,8 +54,6 @@ import json as _json
 import math as _math
 
 LC_MARK = "<!--LEETCODE-->"
-LC_TIERS = [("advanced", "Advanced"), ("intermediate", "Intermediate"),
-            ("fundamental", "Fundamental")]
 LC_DIFF = [("easy", "Easy", "#199e70"),
            ("medium", "Medium", "#3987e5"),
            ("hard", "Hard", "#d95926")]
@@ -148,36 +146,19 @@ def lc_section():
         '        </div>',
     ]
 
-    tiers = d.get("tiers") or {}
-    blocks = []
-    for key, label in LC_TIERS:
-        trows = [r for r in (tiers.get(key) or []) if isinstance(r.get("n"), int)]
-        if not trows:
-            continue
-        items = "\n".join(
-            '            <li style="--n:%d"><span>%s</span><b>%d</b></li>'
-            % (r["n"], _html.escape(str(r.get("tag", ""))), r["n"]) for r in trows)
-        blocks.append(
-            '          <div class="lc-tier">\n'
-            '            <p class="lc-tier-k">%s</p>\n'
-            '            <ul class="lc-tags">\n%s\n            </ul>\n'
-            '          </div>' % (label, items))
-    if blocks:
-        tcounts = [r.get("n", 0) for rws in tiers.values() for r in rws]
-        parts += ['        <div class="lc-tiers" style="--max:%d">' % (max(tcounts) if tcounts else 1),
-                  "\n".join(blocks), '        </div>']
-
-    note = "Topic tags as shown on the profile &mdash; one problem can carry several."
+    bits = []
     if lang:
-        note = "Solved in %s. " % _html.escape(lang).replace(" ", "&nbsp;") + note
+        bits.append("Solved in %s." % _html.escape(lang).replace(" ", "&nbsp;"))
     when = d.get("fetched")
     if when:
         try:
             import datetime as _dt
-            note += " Last checked %s." % _dt.date.fromisoformat(when).strftime("%-d %B %Y")
+            bits.append("Last checked %s." % _dt.date.fromisoformat(when).strftime("%-d %B %Y"))
         except Exception:
             pass
-    parts += ['        <p class="lc-note">%s</p>' % note, '      </section>']
+    if bits:
+        parts.append('        <p class="lc-note">%s</p>' % " ".join(bits))
+    parts.append('      </section>')
     return "\n".join(parts)
 
 # Google Scholar profile.
