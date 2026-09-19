@@ -7,6 +7,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # Daily, so the LeetCode numbers stay current without a push. GitHub
+  # disables scheduled workflows in a repository with no activity for 60
+  # days; any commit re-enables them.
+  schedule:
+    - cron: '17 6 * * *'
   workflow_dispatch:
 
 permissions:
@@ -27,6 +32,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+
+      # Reads LeetCode's GraphQL endpoint, which a browser cannot do, and
+      # writes the figures into leetcode.json. Never fails the build: if
+      # LeetCode is unreachable or answers oddly it warns and leaves the
+      # previous numbers in place.
+      - name: Refresh LeetCode stats
+        run: python3 update_leetcode.py
+
+      # Regenerates the pages so the refreshed numbers reach the HTML. This
+      # makes build.py the source of truth for what gets published — a page
+      # edited by hand without updating build.py would be overwritten here.
+      - name: Rebuild the pages
+        run: python3 build.py
 
       - name: Assemble the public site
         run: |

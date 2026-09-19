@@ -38,6 +38,80 @@ def clean_links(html):
         html,
     )
 
+
+# ── LeetCode panel ────────────────────────────────────────────────
+# The numbers live in leetcode.json, refreshed by update_leetcode.py during
+# the deploy. If that file is missing or unreadable the panel is simply left
+# out rather than rendered with nothing in it.
+import html as _html
+import json as _json
+
+LC_MARK = "<!--LEETCODE-->"
+LC_TIERS = [("advanced", "Advanced"), ("intermediate", "Intermediate"),
+            ("fundamental", "Fundamental")]
+
+
+def lc_section():
+    try:
+        d = _json.loads((OUT / "leetcode.json").read_text(encoding="utf-8"))
+    except Exception:
+        return ""
+
+    total = (d.get("solved") or {}).get("all")
+    if not isinstance(total, int):
+        return ""
+
+    lang = (d.get("language") or {}).get("name")
+    tiers = d.get("tiers") or {}
+    counts = [r.get("n", 0) for rows in tiers.values() for r in rows]
+    top = max(counts) if counts else 1
+
+    blocks = []
+    for key, label in LC_TIERS:
+        rows = [r for r in (tiers.get(key) or []) if isinstance(r.get("n"), int)]
+        if not rows:
+            continue
+        items = "\n".join(
+            '            <li style="--n:%d"><span>%s</span><b>%d</b></li>'
+            % (r["n"], _html.escape(str(r.get("tag", ""))), r["n"])
+            for r in rows)
+        blocks.append(
+            '          <div class="lc-tier">\n'
+            '            <p class="lc-tier-k">%s</p>\n'
+            '            <ul class="lc-tags">\n%s\n            </ul>\n'
+            '          </div>' % (label, items))
+
+    solved_line = "<strong>%d</strong> problems solved" % total
+    if lang:
+        solved_line += " <em>in %s</em>" % _html.escape(lang).replace(" ", "&nbsp;")
+
+    note = ("Topic tags as shown on the profile &mdash; a single problem can carry "
+            "several, so these don&rsquo;t sum to the total.")
+    when = d.get("fetched")
+    if when:
+        try:
+            import datetime as _dt
+            note += " Last checked %s." % _dt.date.fromisoformat(when).strftime("%-d %B %Y")
+        except Exception:
+            pass
+
+    return (
+        '      <section class="lc">\n'
+        '        <div class="lc-head">\n'
+        '          <div>\n'
+        '            <p class="lc-k">LeetCode</p>\n'
+        '            <p class="lc-total">%s</p>\n'
+        '          </div>\n'
+        '          <a class="btn-s btn-go" href="https://leetcode.com/u/%s/" target="_blank" '
+        'rel="noopener">View profile <span aria-hidden="true">&#8599;</span></a>\n'
+        '        </div>\n'
+        '        <div class="lc-tiers" style="--max:%d">\n%s\n        </div>\n'
+        '        <p class="lc-note">%s</p>\n'
+        '      </section>'
+        % (solved_line, _html.escape(str(d.get("username") or "pobee")),
+           top, "\n".join(blocks), note)
+    )
+
 # Google Scholar profile.
 SCHOLAR_URL = "https://scholar.google.com/citations?user=02WgxKoAAAAJ"
 
@@ -549,42 +623,7 @@ BODY["projects"] = """      <section class="pad">
         </div>
       </section>
 
-      <section class="lc">
-        <div class="lc-head">
-          <div>
-            <p class="lc-k">LeetCode</p>
-            <p class="lc-total"><strong>24</strong> problems solved <em>in Python&nbsp;3</em></p>
-          </div>
-          <a class="btn-s btn-go" href="https://leetcode.com/u/pobee/" target="_blank" rel="noopener">View profile <span aria-hidden="true">&#8599;</span></a>
-        </div>
-        <div class="lc-tiers" style="--max:14">
-          <div class="lc-tier">
-            <p class="lc-tier-k">Advanced</p>
-            <ul class="lc-tags">
-            <li style="--n:7"><span>Dynamic Programming</span><b>7</b></li>
-            <li style="--n:3"><span>Backtracking</span><b>3</b></li>
-            <li style="--n:3"><span>Union-Find</span><b>3</b></li>
-            </ul>
-          </div>
-          <div class="lc-tier">
-            <p class="lc-tier-k">Intermediate</p>
-            <ul class="lc-tags">
-            <li style="--n:8"><span>Breadth-First Search</span><b>8</b></li>
-            <li style="--n:6"><span>Depth-First Search</span><b>6</b></li>
-            <li style="--n:4"><span>Tree</span><b>4</b></li>
-            </ul>
-          </div>
-          <div class="lc-tier">
-            <p class="lc-tier-k">Fundamental</p>
-            <ul class="lc-tags">
-            <li style="--n:14"><span>Array</span><b>14</b></li>
-            <li style="--n:4"><span>Matrix</span><b>4</b></li>
-            <li style="--n:3"><span>String</span><b>3</b></li>
-            </ul>
-          </div>
-        </div>
-        <p class="lc-note">Topic tags as shown on the profile &mdash; a single problem can carry several, so these don&rsquo;t sum to the total.</p>
-      </section>
+      <!--LEETCODE-->
 
       <section class="split pad">
         <div class="split-intro">
@@ -606,6 +645,7 @@ BODY["publications"] = """      <section class="pad">
           <button type="button" class="chip" data-filter="nature" aria-pressed="false">Nature Recreation</button>
           <button type="button" class="chip" data-filter="learning" aria-pressed="false">Learning Technology</button>
           <span class="count" id="pub-count" role="status" aria-live="polite">2 publications</span>
+          <span class="count" id="pub-count" role="status" aria-live="polite">5 Peer Reviewed</span>
         </div>
 
         <section class="pub-group" data-group="journal">
@@ -825,6 +865,8 @@ NOT_FOUND_BODY = """      <section class="pad">
       </section>"""
 
 
+_LC = lc_section()
+
 for filename, key, title, desc in PAGES:
     html = SHELL.format(
         desc=desc,
@@ -840,7 +882,7 @@ for filename, key, title, desc in PAGES:
         pager=pager(filename),
         jsonld=(JSONLD if key == "home" else (SCHOLAR_LD if key == "publications" else "")),
     )
-    (OUT / filename).write_text(clean_links(html), encoding="utf-8")
+    (OUT / filename).write_text(clean_links(html.replace(LC_MARK, _LC)), encoding="utf-8")
     print("wrote", filename, len(html), "bytes")
 
 # ── sitemap.xml, robots.txt and a 404 page ────────────────────────
