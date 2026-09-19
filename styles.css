@@ -396,12 +396,15 @@ p:last-child{margin-bottom:0;}
 
 /* ═══════════ cv ═══════════ */
 .cv-row{
-  display:grid;grid-template-columns:200px 1fr;gap:44px;
+  display:grid;grid-template-columns:225px 1fr;gap:44px;
   padding:34px 0;border-bottom:1px solid var(--border);
 }
 .cv-row:first-of-type{border-top:1px solid var(--border);}
 .cv-row h3{margin:0 0 9px;font-size:1.22rem;}
-.cv-row p{margin:0;color:var(--dim);font-size:1rem;line-height:1.7;}
+/* 17px, and a capped measure. Left uncapped these paragraphs run to about
+   120 characters a line on a wide screen, which is roughly double a
+   comfortable reading width and makes the type feel smaller than it is. */
+.cv-row p{margin:0;color:var(--dim);font-size:1.0625rem;line-height:1.75;max-width:68ch;}
 .cv-row a.text-link{border-bottom:1px solid var(--accent);}
 .cv-row a.text-link:hover{color:var(--accent);}
 
