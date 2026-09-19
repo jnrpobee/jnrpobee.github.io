@@ -51,7 +51,13 @@ jobs:
                   if r.startswith(('http', 'mailto:', 'tel:', 'data:', '#', '//')):
                       continue
                   p = r.split('#')[0].split('?')[0].lstrip('/')
-                  if p and not os.path.exists(p):
+                  # Clean paths resolve as the host serves them: "" is the
+                  # homepage, an extensionless path is its .html file.
+                  if not p:
+                      p = 'index.html'
+                  elif not os.path.splitext(p)[1]:
+                      p += '.html'
+                  if not os.path.exists(p):
                       missing.append(f'{f}: {r}')
           if missing:
               print('Missing files referenced by the site:')
