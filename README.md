@@ -1,85 +1,71 @@
-# Solomon B. Pobee — research portfolio (dark)
+# Solomon B. Pobee
 
-A static multi-page research portfolio in the visual language of the original
-`solomon-portfolio` design: dark ground with the 56px grid, lime accent, DM Sans
-and Instrument Serif. Plain HTML, CSS and JavaScript — no framework, no build
-step, no dependencies.
+PhD student in Computer Science at Brigham Young University, working in
+human–computer interaction. My research looks at how interactive systems can
+support youth athletes and coaches — particularly in clubs that operate without
+a support staff, where performance, development and injury prevention all
+compete for the same limited attention.
 
-## Pages
+**[www.solomonbpobee.com](https://www.solomonbpobee.com)** · [Google Scholar](https://scholar.google.com/citations?user=02WgxKoAAAAJ) · [ORCID](https://orcid.org/0009-0007-5172-0410)
+
+## Publications
+
+- **Toward a Framework for the Design of Interactive Technology for Nature
+  Recreation** — Jones, Kari, Reich, Ens, Liu, **Pobee**, Mueller.
+  *International Journal of Human–Computer Interaction*, 41(18), 11691–11711,
+  2025. [doi:10.1080/10447318.2024.2443808](https://doi.org/10.1080/10447318.2024.2443808)
+- **MathBuddy: An LLM-Based Chatbot for Elementary Math Education** — Iqbal,
+  **Pobee**, Adhikari, Schooley. *HCI International 2025 Late Breaking Papers*,
+  LNCS, Springer, 392–403, 2026.
+  [doi:10.1007/978-3-032-13174-4_25](https://doi.org/10.1007/978-3-032-13174-4_25)
+
+---
+
+## About this repository
+
+This repository is the source of the site above. It is plain HTML, CSS and
+JavaScript — no framework, no build tooling, no dependencies.
 
 | File | Page |
 |---|---|
-| `index.html` | Home — hero, focus areas, selected work, recent publications |
-| `research.html` | Research areas and the guiding question |
-| `projects.html` | Projects and GitHub repositories |
-| `publications.html` | Peer-reviewed publications with citations |
-| `about.html` | About, values, and contact |
+| `index.html` | Home |
+| `research.html` | Research areas |
+| `projects.html` | Projects and repositories |
+| `publications.html` | Publications with citations |
+| `about.html` | About and contact |
 | `cv.html` | Short web CV |
 
-Shared files: `styles.css` (all styling) and `script.js` (all behaviour).
+`styles.css` holds all styling and `script.js` all behaviour. The pages
+themselves are generated — see below.
 
-## What's here beyond the original
-
-- **Real publication records**, pulled from Crossref rather than guessed:
-  - *Toward a Framework for the Design of Interactive Technology for Nature
-    Recreation* — Int. J. Human–Computer Interaction, **41(18), 11691–11711,
-    2025** (note: 2025, not 2024).
-  - *MathBuddy: An LLM-Based Chatbot for Elementary Math Education* — HCI
-    International 2025 Late Breaking Papers, LNCS, Springer, **392–403, 2026**.
-  - Full author lists on both, with your name in bold as is convention.
-- **Citation tools** — each publication expands a BibTeX entry with a copy
-  button, plus "Copy DOI" and a "Read paper" link that resolves through
-  `doi.org` so it survives publisher site changes.
-- **Publication filtering** by topic, with a live count and an empty state.
-- **GitHub repositories** on the projects page. They render from values written
-  into `projects.html`, then refresh stars, descriptions and last-push dates
-  from the GitHub API on load. If the request is blocked or rate-limited, the
-  written values stand.
-- **Command palette** — `⌘K` on macOS, `Ctrl+K` elsewhere.
-- **Accessibility** — skip link, focus trap on the mobile menu, `aria-current`
-  on the active page, visible focus rings, `prefers-reduced-motion` respected.
-- **Print stylesheet** and **JSON-LD structured data** on the home page.
-
-## Two deliberate changes from the original
-
-1. **No scroll-reveal animations.** The original parked `.reveal` elements at
-   `opacity: 0` until scrolled into view. That hides everything below the fold
-   from search crawlers, link previews, and anyone with JavaScript disabled —
-   a real cost on an academic site. Entrance animations now run on load instead.
-2. **`overflow-x: clip` on `.shell`, not `overflow: hidden`.** The header is now
-   sticky, and `overflow: hidden` on an ancestor turns it into a scroll
-   container, which silently stops `position: sticky` working.
-
-## Run locally
+### Working on it
 
 ```bash
-python3 -m http.server 8000
+python build.py          # regenerate the pages from build.py
+python check_links.py .  # validate every href and src
+./start-local.sh         # preview at localhost:8000 (start-local.bat on Windows)
 ```
 
-Then open <http://localhost:8000>, or use `start-local.sh` / `start-local.bat`.
-Use the server rather than opening files directly — some browsers block `fetch`
-on `file://`, which disables the GitHub refresh.
+`build.py` is the source of truth: it holds the page content and the shared
+shell, and writes the `.html` files. Editing an `.html` file directly will work
+until the next build, then be overwritten.
 
-## Before publishing
+Pages are written as `.html` but linked without the extension — `/research`
+rather than `/research.html` — which GitHub Pages resolves on its own. The
+local preview server does the same, so it matches production.
 
-1. **Add a portrait.** Replace the `<div class="placeholder">Portrait</div>`
-   inside `.portrait-panel` on `index.html` and `about.html` with
-   `<img src="assets/portrait.jpg" alt="Solomon B. Pobee" style="width:100%;height:100%;object-fit:cover">`
-2. **Fill in the CV.** `cv.html` has three dashed placeholder blocks — education,
-   experience, and service/teaching.
-3. **Write the personal bio.** `about.html` has a "Beyond the lab" placeholder.
-4. **Check the LinkedIn URL.** It assumes `linkedin.com/in/jnrpobee`.
-5. **Confirm author orderings** on both publications.
+### Deploying
 
-## Editing
+Pushing to `main` runs `.github/workflows/deploy.yml`, which refreshes the
+LeetCode figures, rebuilds the pages, checks that every link is well formed and
+every referenced file exists, and publishes to GitHub Pages. If either check
+fails the deploy stops and the previous version stays live. The workflow also
+runs daily so the LeetCode numbers stay current without a push.
 
-The six pages were generated by `build.py`, which holds the shared header,
-footer and per-page content in one place, so the chrome can't drift between
-pages. Either edit `build.py` and re-run `python3 build.py`, or edit the HTML
-directly and delete `build.py` so it can't overwrite your changes.
+`leetcode.json` holds those figures and is refreshed by `update_leetcode.py`.
+That script never blocks a deploy: if LeetCode is unreachable or answers oddly,
+it warns and leaves the last known-good numbers in place.
 
-## Deploying
+### Other branches
 
-Any static host — GitHub Pages, Netlify, Vercel, Cloudflare Pages. Upload the
-folder, then point `solomonbpobee.com` at it. Each page is a real file, so you
-get clean URLs and one indexable page per section.
+`coursework` holds earlier project work from BYU-Idaho, kept for reference.
