@@ -251,12 +251,12 @@
   function nav(href) { window.location.href = href; }
 
   var ITEMS = [
-    { kind: 'Page', label: 'Home', run: function () { nav('index.html'); } },
-    { kind: 'Page', label: 'Research', run: function () { nav('research.html'); } },
-    { kind: 'Page', label: 'Projects', run: function () { nav('projects.html'); } },
-    { kind: 'Page', label: 'Publications', run: function () { nav('publications.html'); } },
-    { kind: 'Page', label: 'About', run: function () { nav('about.html'); } },
-    { kind: 'Page', label: 'CV', run: function () { nav('cv.html'); } },
+    { kind: 'Page', label: 'Home', run: function () { nav('/'); } },
+    { kind: 'Page', label: 'Research', run: function () { nav('/research'); } },
+    { kind: 'Page', label: 'Projects', run: function () { nav('/projects'); } },
+    { kind: 'Page', label: 'Publications', run: function () { nav('/publications'); } },
+    { kind: 'Page', label: 'About', run: function () { nav('/about'); } },
+    { kind: 'Page', label: 'CV', run: function () { nav('/cv'); } },
     { kind: 'Action', label: 'Copy email address', run: function () { copyText(EMAIL, 'Email address copied'); } },
     { kind: 'Action', label: 'Print this page', run: function () { window.print(); } },
     { kind: 'Link', label: 'GitHub profile', run: function () { window.open('https://github.com/jnrpobee', '_blank', 'noopener'); } },

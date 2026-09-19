@@ -1,6 +1,33 @@
 # Publishing solomonbpobee.com with GitHub Pages
 
-Written against your actual setup, looked up on 18 September 2026:
+## Where you are now
+
+The push worked — 42 objects, `main` created and tracking `origin/main`.
+
+One surprise: `jnrpobee.github.io` was not an empty repository. It already held
+your BYU-Idaho coursework (`assignments/`, `term-website/`, `The MONOMYTH.pdf`,
+an `index.html` that redirects to `jnrpobee.html`) on a branch called
+**`master`**, and GitHub Pages was already serving it at
+<https://jnrpobee.github.io>.
+
+Nothing collided and nothing was overwritten. Your site went onto a **new**
+branch, `main`, with a history entirely separate from `master` — which is why
+Git offered you a pull-request link instead of just updating things. The two
+branches coexist.
+
+So the coursework is *already* on its own branch. The steps below rename that
+branch to something you will recognise in a year, promote `main` to default, and
+publish from it.
+
+**About those 2 moderate vulnerabilities GitHub flagged:** they are on the
+default branch, which is currently `master` — so they are in the old
+coursework, almost certainly a bundled jQuery or Bootstrap under
+`term-website/`. Your new site has no dependencies of any kind. Once `main` is
+the default branch, Dependabot rescans and stops reporting them.
+
+---
+
+## Your DNS, looked up 18 September 2026
 
 | | |
 |---|---|
@@ -13,106 +40,81 @@ Written against your actual setup, looked up on 18 September 2026:
 
 **The one thing to be careful about:** those `eforward` MX records are working
 email forwarding for `@solomonbpobee.com`. If you delete them, mail to that
-address stops arriving. Nothing in this guide touches them, and Namecheap's
-Advanced DNS screen lists MX records in a separate section from the host
-records you *will* edit — but it is worth knowing before you start deleting
-rows.
+address stops arriving. Nothing here touches them, and Namecheap lists MX
+records separately from the host records you *will* edit — but know it before
+you start deleting rows.
 
-The good news: the bare domain has no A record at all right now, so adding
-GitHub's is purely additive. The only existing record you remove is the single
-`www` CNAME pointing at Google.
+The bare domain has no A record at all right now, so adding GitHub's is purely
+additive. The only existing record you remove is the single `www` CNAME
+pointing at Google.
 
 ---
 
-## Step 1 — Create the repository
+## Step 1 — Rename `master` to `coursework`
 
-Go to <https://github.com/new>.
+Go to <https://github.com/jnrpobee/jnrpobee.github.io/branches>.
 
-- **Repository name:** `jnrpobee.github.io` — this exact name. A repo named
-  after your account serves from the root of your GitHub domain.
-- **Visibility:** Public. GitHub Pages needs this on the Free plan; private
-  repos require Pro.
-- **Do not** tick "Add a README", a `.gitignore`, or a licence. Your folder
-  already has what it needs, and an initial commit on GitHub's side turns your
-  first push into a merge conflict.
+Find the `master` row and click the pencil (rename) icon at the right. Change
+the name to `coursework` and confirm.
 
-Click **Create repository**.
+This moves nothing and deletes nothing — it relabels the branch your coursework
+already lives on, so that a year from now the repository explains itself.
 
-## Step 2 — Install Git if you have not
+## Step 2 — Make `main` the default branch
 
-Check first — open PowerShell and run `git --version`. If you get a version
-number, skip ahead.
+**Settings** → **General** → scroll to *Default branch* → click the ⇄ switch
+icon → choose **`main`** → **Update**, and confirm.
 
-Otherwise install [Git for Windows](https://git-scm.com/download/win), accept
-the defaults, and close and reopen PowerShell afterwards so it picks up the new
-command.
+GitHub will warn that changing the default branch can affect open pull requests
+and forks. You have neither, so it is safe. It is also reversible — switching
+back is the same two clicks.
 
-## Step 3 — Push the folder
+From this point the repository's front page shows your site rather than the
+coursework, which stays one branch-selector click away.
 
-In PowerShell:
+## Step 3 — Point Pages at the workflow
 
-```powershell
-cd C:\Users\jnrpo\Documents\website_design\v2-dark
+**Settings** → **Pages** → under *Build and deployment*, change **Source** from
+*Deploy from a branch* to **GitHub Actions**.
 
-git init -b main
-git add .
-git commit -m "Personal site"
-git remote add origin https://github.com/jnrpobee/jnrpobee.github.io.git
-git push -u origin main
-```
+This is the step that stops the old coursework being published and hands
+publishing to the workflow already sitting in your repo.
 
-A browser window will open asking you to authorise Git. If instead it asks for
-a password in the terminal, it wants a personal access token, not your account
-password — GitHub stopped accepting passwords over HTTPS years ago. Generate
-one at **Settings → Developer settings → Personal access tokens → Fine-grained
-tokens**, give it read and write access to this repository, and paste it at the
-password prompt.
+## Step 4 — Run the deploy
 
-Refresh the repository page. Your files should be there.
+**Actions** tab → **Deploy to GitHub Pages** in the left sidebar → **Run
+workflow** → **Run workflow**.
 
-## Step 4 — Turn Pages on
+(You can trigger it by hand because the workflow declares `workflow_dispatch`.
+No dummy commit needed.)
 
-In the repository: **Settings** → **Pages** → under *Build and deployment*, set
-**Source** to **GitHub Actions**.
+It takes a minute or two. The workflow does not simply publish the repository —
+it assembles a folder of only the public files, then checks that every link is
+well-formed and that every image and stylesheet the pages reference actually
+exists. If either check fails the deploy stops rather than shipping something
+broken, so a red run means a real problem: open it and read the failing step.
 
-That is the whole configuration. The workflow file already in your folder does
-the rest.
+Green run: open <https://jnrpobee.github.io>. It should now be your site, not
+the coursework redirect.
 
-## Step 5 — Watch the first deploy and check it
+**Click through all six pages before touching DNS.** Check the portrait loads,
+the navigation works on a narrow window, the publications render. Far easier to
+fix now than once the domain points here.
 
-Open the **Actions** tab. A run called *Deploy to GitHub Pages* should be going.
-It takes a minute or two.
+## Step 5 — Change the DNS at Namecheap
 
-The workflow does not simply publish the repository. It assembles a folder of
-only the public files, then runs two checks against it — every link is
-well-formed, and every image and stylesheet the pages reference actually
-exists. If either fails the deploy stops rather than shipping a broken site.
-A red run means one of those caught something; open it and read the failing
-step.
+Sign in → **Domain List** → **Manage** next to `solomonbpobee.com` → the
+**Advanced DNS** tab.
 
-Green run: your site is live at **https://jnrpobee.github.io**.
-
-**Click through all six pages there before you touch DNS.** Check the portrait
-loads, the navigation works, the publications list renders. Fixing things now
-is far easier than after the domain points here.
-
-## Step 6 — Change the DNS at Namecheap
-
-Sign in to Namecheap → **Domain List** → **Manage** next to `solomonbpobee.com`
-→ the **Advanced DNS** tab.
-
-**First, delete one record.** In the *Host Records* table, find the row:
+**Delete one record.** In *Host Records*, find and remove:
 
 ```
 CNAME    www    ghs.googlehosted.com
 ```
 
-Delete that row, and only that row. It is what currently sends visitors to
-Google Sites.
+That row, and only that row. It is what currently sends visitors to Google Sites.
 
-**Then add five records.** Use the **Add New Record** button for each.
-
-Four A records, all with host `@`:
+**Add five records** with **Add New Record**.
 
 | Type | Host | Value |
 |---|---|---|
@@ -120,61 +122,47 @@ Four A records, all with host `@`:
 | A Record | @ | 185.199.109.153 |
 | A Record | @ | 185.199.110.153 |
 | A Record | @ | 185.199.111.153 |
-
-And one CNAME:
-
-| Type | Host | Value |
-|---|---|---|
 | CNAME Record | www | jnrpobee.github.io |
 
-Leave TTL on Automatic. Save with the green tick on each row.
+TTL stays Automatic. Save each row with the green tick.
 
 **Leave everything else alone** — the MX records (your email forwarding), the
-SPF TXT record, and the Google verification TXT. None of them conflict with
-GitHub.
+SPF TXT, and the Google verification TXT. None conflict with GitHub.
 
-If you want IPv6 as well, you can add four AAAA records on `@` pointing at
-`2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153` and
-`2606:50c0:8003::153`. Optional — the site works without them.
+Optional IPv6: four AAAA records on `@` pointing at `2606:50c0:8000::153`,
+`2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153`.
 
-## Step 7 — Tell GitHub about the domain
+## Step 6 — Attach the domain
 
-Back in the repository: **Settings** → **Pages** → **Custom domain**. Enter
-`www.solomonbpobee.com` and click **Save**.
+**Settings** → **Pages** → **Custom domain** → enter `www.solomonbpobee.com` →
+**Save**. Your `CNAME` file already contains this, so it may be pre-filled.
 
-GitHub checks the DNS. Namecheap usually propagates in under thirty minutes,
-sometimes a couple of hours. If it says the domain is not correctly configured,
-that normally means the records have not spread yet — wait rather than change
-anything. <https://dnschecker.org> for `www.solomonbpobee.com` shows you what
-the world currently sees; when it shows `jnrpobee.github.io` you are there.
+GitHub verifies the DNS. Namecheap usually propagates within thirty minutes,
+sometimes a couple of hours. "Domain not correctly configured" almost always
+means the records have not spread yet — wait rather than change anything.
+<https://dnschecker.org> for `www.solomonbpobee.com` shows what the world sees;
+when it shows `jnrpobee.github.io`, you are there.
 
-Once it validates, tick **Enforce HTTPS**. The certificate takes up to an hour
-and a warning before then is normal.
+Then tick **Enforce HTTPS**. The certificate can take up to an hour, and a
+warning before then is normal.
 
-Your `CNAME` file already contains `www.solomonbpobee.com`, so this step may
-already be filled in for you.
-
-## Step 8 — Check the launch, then retire the old site
-
-Confirm each of these:
+## Step 7 — Check the launch, then retire the old site
 
 - `https://www.solomonbpobee.com` loads the new site
-- `https://solomonbpobee.com` redirects to the `www` version — GitHub does this
-  for you
+- `https://solomonbpobee.com` redirects to `www` — GitHub does this for you
 - All six pages work, including on a phone
-- A made-up URL like `/nonsense` shows the styled 404 page
-- **Send yourself an email at your `@solomonbpobee.com` address and confirm it
-  still arrives.** Two minutes, and it is the one thing here that could have
-  gone quietly wrong.
-- Paste the URL into WhatsApp or Slack and check the preview card shows your
+- A made-up URL like `/nonsense` shows the styled 404
+- **Email yourself at your `@solomonbpobee.com` address and confirm it still
+  arrives.** Two minutes, and it is the one thing that could have gone quietly
+  wrong.
+- Paste the URL into WhatsApp or Slack; the preview card should show your
   portrait
 
-Then, in Google Sites, remove the custom domain mapping from the old site.
-Do not delete the old site outright until you are sure nothing on it is lost.
-
-Finally, submit `https://www.solomonbpobee.com/sitemap.xml` at
-<https://search.google.com/search-console>. Without this, Google will keep
-serving the old Google Sites version in results for a while.
+Then remove the custom domain mapping from the old site in Google Sites, and
+submit `https://www.solomonbpobee.com/sitemap.xml` at
+<https://search.google.com/search-console> so results stop pointing at the
+Google Sites version. Do not delete the old Google site until you are sure
+nothing on it is lost.
 
 ---
 
@@ -189,8 +177,11 @@ git commit -m "what changed"
 git push
 ```
 
-The push is the deploy — about a minute. Every version stays in the repository
-history, so a bad change is one `git revert` away.
+The push is the deploy — about a minute. Every version stays in history, so a
+bad change is one `git revert` away.
+
+To look at the old coursework again: `git checkout coursework`, or use the
+branch dropdown on GitHub.
 
 ---
 
@@ -204,5 +195,5 @@ None block the deploy; all three are a one-minute redeploy to fix.
 ## If you would rather use Cloudflare later
 
 `DEPLOY.md` covers that route. The same repository connects to Cloudflare Pages
-in a few minutes — you would turn GitHub Pages off at that point so the two are
-not both claiming the domain.
+in a few minutes — you would turn GitHub Pages off then, so the two are not both
+claiming the domain.

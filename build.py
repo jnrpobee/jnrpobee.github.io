@@ -18,6 +18,26 @@ NAV = [
     ("cv.html", "CV"),
 ]
 
+# Pages are written to disk as .html files, because that is what a static host
+# serves from. They are *linked* without the extension: GitHub Pages resolves
+# /research to research.html on its own, and a visitor should never see a
+# filename in the address bar. clean_links() below does the rewriting, so the
+# page templates can go on referring to plain filenames.
+import re
+
+def public_path(filename):
+    """The address a visitor sees for a given file on disk."""
+    return "/" if filename == "index.html" else "/" + filename[:-len(".html")]
+
+_LINK = re.compile(r'(href|action)="(' + "|".join(f for f, _ in NAV) + r')((?:#|\?)[^"]*)?"')
+
+def clean_links(html):
+    """Rewrite internal links from filenames to the addresses visitors see."""
+    return _LINK.sub(
+        lambda m: '%s="%s%s"' % (m.group(1), public_path(m.group(2)), m.group(3) or ""),
+        html,
+    )
+
 # Google Scholar profile.
 SCHOLAR_URL = "https://scholar.google.com/citations?user=02WgxKoAAAAJ"
 
@@ -445,7 +465,7 @@ BODY["research"] = """      <section class="pad">
 BODY["projects"] = """      <section class="pad">
         <p class="eyebrow enter-1">SELECTED <span>&times;</span> WORK</p>
         <h1 class="enter-1">Projects</h1>
-        <p class="lead enter-2">A growing collection of research and engineering work around HCI, sports technology, data, and human performance.</p>
+        <p class="lead enter-2">Research and engineering work around HCI, sports technology, data, and human performance.</p>
       </section>
 
       <section class="projects pad" style="padding-top:44px;">
@@ -809,7 +829,7 @@ for filename, key, title, desc in PAGES:
     html = SHELL.format(
         desc=desc,
         title=title,
-        canonical=BASE_URL + "/" + ("" if filename == "index.html" else filename),
+        canonical=BASE_URL + public_path(filename),
         ogtitle=title,
         ogtype=("profile" if key in ("home", "about") else "website"),
         base=BASE_URL,
@@ -820,15 +840,15 @@ for filename, key, title, desc in PAGES:
         pager=pager(filename),
         jsonld=(JSONLD if key == "home" else (SCHOLAR_LD if key == "publications" else "")),
     )
-    (OUT / filename).write_text(html, encoding="utf-8")
+    (OUT / filename).write_text(clean_links(html), encoding="utf-8")
     print("wrote", filename, len(html), "bytes")
 
 # ── sitemap.xml, robots.txt and a 404 page ────────────────────────
 import datetime
 _today = datetime.date.today().isoformat()
 _urls = "\n".join(
-    '  <url><loc>%s/%s</loc><lastmod>%s</lastmod><priority>%s</priority></url>'
-    % (BASE_URL, "" if f == "index.html" else f, _today, "1.0" if f == "index.html" else "0.8")
+    '  <url><loc>%s%s</loc><lastmod>%s</lastmod><priority>%s</priority></url>'
+    % (BASE_URL, public_path(f), _today, "1.0" if f == "index.html" else "0.8")
     for f, _ in NAV
 )
 (OUT / "sitemap.xml").write_text(
@@ -855,5 +875,5 @@ _nf = SHELL.format(
     pager="",
     jsonld="",
 )
-(OUT / "404.html").write_text(_nf, encoding="utf-8")
+(OUT / "404.html").write_text(clean_links(_nf), encoding="utf-8")
 print("wrote 404.html")
