@@ -30,6 +30,7 @@ TIMEOUT = 20
 
 QUERY = """
 query profile($u: String!) {
+  allQuestionsCount { difficulty count }
   matchedUser(username: $u) {
     username
     submitStatsGlobal { acSubmissionNum { difficulty count } }
@@ -77,9 +78,18 @@ def parse(payload, username):
     if payload.get("errors"):
         raise ValueError("GraphQL errors: %s" % payload["errors"])
 
-    user = (payload.get("data") or {}).get("matchedUser")
+    data = payload.get("data") or {}
+    user = data.get("matchedUser")
     if not user:
         raise ValueError("no matchedUser for %r — has the username changed?" % username)
+
+    # How many problems exist at each difficulty, for the "19 of 2,115" context.
+    totals = {}
+    for row in data.get("allQuestionsCount") or []:
+        key = str(row.get("difficulty", "")).lower()
+        count = row.get("count")
+        if key in ("easy", "medium", "hard") and isinstance(count, int) and count > 0:
+            totals[key] = count
 
     solved = {}
     for row in (user.get("submitStatsGlobal") or {}).get("acSubmissionNum") or []:
@@ -130,6 +140,7 @@ def parse(payload, username):
             "medium": solved.get("medium"),
             "hard": solved.get("hard"),
         },
+        "totals": totals or None,
         "language": language,
         "tiers": tiers,
     }

@@ -637,6 +637,49 @@ p:last-child{margin-bottom:0;}
 .lc-total{margin:0;font-family:var(--serif);font-size:1.7rem;line-height:1.1;color:var(--text);}
 .lc-total strong{font-weight:400;font-size:2.4rem;color:var(--accent);}
 .lc-total em{font-style:italic;color:var(--muted);font-size:1.25rem;}
+.lc-sub{margin:0;font-family:var(--mono);font-size:.875rem;color:#7f847e;}
+
+/* Donut plus difficulty rows. The donut shows how the solved problems break
+   down; the rows carry the numbers. Each row is labelled in text beside its
+   colour chip, so nothing depends on colour alone. */
+/* Capped, so the label and its number stay near each other. Left to fill the
+   container the rows stretch past 1000px and the eye loses the pairing. */
+.lc-split{
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:36px;
+  align-items:center;margin-top:26px;max-width:660px;
+}
+.lc-donut{position:relative;margin:0;width:128px;height:128px;flex:none;}
+.lc-donut svg{width:100%;height:100%;display:block;}
+.lc-track{fill:none;stroke:var(--border-soft);stroke-width:13;}
+.lc-arc{fill:none;stroke-width:13;stroke-linecap:butt;}
+.lc-donut-n{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;
+}
+.lc-donut-n strong{font-family:var(--serif);font-weight:400;font-size:2.5rem;line-height:1;color:var(--text);}
+.lc-donut-n span{font-family:var(--mono);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:#7f847e;}
+
+.lc-diff{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:15px;}
+.lc-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:baseline;}
+.lc-row-k{margin:0;display:flex;align-items:center;gap:9px;font-size:.9375rem;color:var(--dim);}
+.lc-row-k i{width:9px;height:9px;border-radius:50%;flex:none;}
+.lc-row-n{margin:0;font-family:var(--mono);font-size:.875rem;color:var(--muted);}
+.lc-row-n strong{font-weight:500;font-size:1.0625rem;color:var(--text);}
+.lc-of{color:#7f847e;}
+.lc-bar{
+  grid-column:1 / -1;position:relative;height:4px;border-radius:2px;
+  background:var(--border-soft);overflow:hidden;
+}
+.lc-bar::after{
+  content:"";position:absolute;inset:0 auto 0 0;width:var(--p);
+  background:var(--c);border-radius:2px;
+}
+
+@media (max-width:640px){
+  .lc-split{grid-template-columns:1fr;justify-items:center;gap:24px;}
+  .lc-diff{width:100%;}
+}
+
 .lc-tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:26px;}
 .lc-tier-k{
   margin:0 0 12px;font-family:var(--mono);font-size:.8438rem;letter-spacing:.15em;

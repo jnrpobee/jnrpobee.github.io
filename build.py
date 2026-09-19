@@ -41,14 +41,45 @@ def clean_links(html):
 
 # ── LeetCode panel ────────────────────────────────────────────────
 # The numbers live in leetcode.json, refreshed by update_leetcode.py during
-# the deploy. If that file is missing or unreadable the panel is simply left
-# out rather than rendered with nothing in it.
+# the deploy. If that file is missing or unreadable the panel is left out
+# rather than rendered empty.
+#
+# Difficulty colours: the conventional green/amber/red fails accessibility
+# checks badly — green/amber collide under deuteranopia (ΔE 3.8) and
+# amber/red sit below the normal-vision floor (ΔE 13.0). These three clear
+# every all-pairs gate on a dark surface, and each row is labelled in text
+# so colour is never the only thing carrying identity.
 import html as _html
 import json as _json
+import math as _math
 
 LC_MARK = "<!--LEETCODE-->"
 LC_TIERS = [("advanced", "Advanced"), ("intermediate", "Intermediate"),
             ("fundamental", "Fundamental")]
+LC_DIFF = [("easy", "Easy", "#199e70"),
+           ("medium", "Medium", "#3987e5"),
+           ("hard", "Hard", "#d95926")]
+
+_R, _CX, _GAP = 54.0, 64.0, 3.0          # donut radius, centre, arc gap in px
+_C = 2 * _math.pi * _R
+
+
+def _donut(solved, total):
+    """Composition of the solved problems, as one arc per difficulty."""
+    arcs, at = [], 0.0
+    for key, label, colour in LC_DIFF:
+        n = solved.get(key)
+        if not isinstance(n, int) or n <= 0:
+            continue
+        span = (n / total) * _C
+        drawn = max(span - _GAP, 1.0)
+        arcs.append(
+            '          <circle class="lc-arc" cx="%g" cy="%g" r="%g" stroke="%s" '
+            'stroke-dasharray="%.2f %.2f" stroke-dashoffset="%.2f">'
+            '<title>%s: %d of %d solved</title></circle>'
+            % (_CX, _CX, _R, colour, drawn, _C - drawn, -at, label, n, total))
+        at += span
+    return "\n".join(arcs)
 
 
 def lc_section():
@@ -57,36 +88,88 @@ def lc_section():
     except Exception:
         return ""
 
-    total = (d.get("solved") or {}).get("all")
-    if not isinstance(total, int):
+    solved = d.get("solved") or {}
+    total = solved.get("all")
+    if not isinstance(total, int) or total <= 0:
         return ""
 
+    totals = d.get("totals") or {}
     lang = (d.get("language") or {}).get("name")
-    tiers = d.get("tiers") or {}
-    counts = [r.get("n", 0) for rows in tiers.values() for r in rows]
-    top = max(counts) if counts else 1
+    user = _html.escape(str(d.get("username") or "pobee"))
 
+    # Bars compare the difficulties against each other — scaled to the
+    # largest of them — because a bar against LeetCode's whole catalogue
+    # would be an invisible sliver at every difficulty. The catalogue size
+    # is given as text beside it instead.
+    counts = [solved.get(k) for k, _, _ in LC_DIFF if isinstance(solved.get(k), int)]
+    peak = max(counts) if counts else 1
+
+    rows = []
+    for key, label, colour in LC_DIFF:
+        n = solved.get(key)
+        if not isinstance(n, int):
+            continue
+        pool = totals.get(key)
+        of = ' <span class="lc-of">of %s</span>' % format(pool, ",") if isinstance(pool, int) else ""
+        rows.append(
+            '            <li class="lc-row">\n'
+            '              <p class="lc-row-k"><i style="background:%s"></i>%s</p>\n'
+            '              <p class="lc-row-n"><strong>%d</strong>%s</p>\n'
+            '              <span class="lc-bar" style="--p:%.1f%%;--c:%s"></span>\n'
+            '            </li>' % (colour, label, n, of, 100.0 * n / peak, colour))
+
+    parts = [
+        '      <section class="lc">',
+        '        <div class="lc-head">',
+        '          <div>',
+        '            <p class="lc-k">LeetCode</p>',
+        '            <p class="lc-sub">%s%s</p>' % (
+            "Problems solved on ", "@" + user),
+        '          </div>',
+        '          <a class="btn-s btn-go" href="https://leetcode.com/u/%s/" target="_blank" '
+        'rel="noopener">View profile <span aria-hidden="true">&#8599;</span></a>' % user,
+        '        </div>',
+        '        <div class="lc-split">',
+        '          <figure class="lc-donut">',
+        '            <svg viewBox="0 0 128 128" role="img" aria-label="%s">' % _html.escape(
+            "%d problems solved: %s" % (total, ", ".join(
+                "%d %s" % (solved[k], l.lower()) for k, l, _ in LC_DIFF
+                if isinstance(solved.get(k), int) and solved[k] > 0))),
+        '              <g transform="rotate(-90 64 64)">',
+        '          <circle class="lc-track" cx="64" cy="64" r="54"/>',
+        _donut(solved, total),
+        '              </g>',
+        '            </svg>',
+        '            <figcaption class="lc-donut-n"><strong>%d</strong><span>solved</span></figcaption>' % total,
+        '          </figure>',
+        '          <ul class="lc-diff">',
+        "\n".join(rows),
+        '          </ul>',
+        '        </div>',
+    ]
+
+    tiers = d.get("tiers") or {}
     blocks = []
     for key, label in LC_TIERS:
-        rows = [r for r in (tiers.get(key) or []) if isinstance(r.get("n"), int)]
-        if not rows:
+        trows = [r for r in (tiers.get(key) or []) if isinstance(r.get("n"), int)]
+        if not trows:
             continue
         items = "\n".join(
             '            <li style="--n:%d"><span>%s</span><b>%d</b></li>'
-            % (r["n"], _html.escape(str(r.get("tag", ""))), r["n"])
-            for r in rows)
+            % (r["n"], _html.escape(str(r.get("tag", ""))), r["n"]) for r in trows)
         blocks.append(
             '          <div class="lc-tier">\n'
             '            <p class="lc-tier-k">%s</p>\n'
             '            <ul class="lc-tags">\n%s\n            </ul>\n'
             '          </div>' % (label, items))
+    if blocks:
+        tcounts = [r.get("n", 0) for rws in tiers.values() for r in rws]
+        parts += ['        <div class="lc-tiers" style="--max:%d">' % (max(tcounts) if tcounts else 1),
+                  "\n".join(blocks), '        </div>']
 
-    solved_line = "<strong>%d</strong> problems solved" % total
+    note = "Topic tags as shown on the profile &mdash; one problem can carry several."
     if lang:
-        solved_line += " <em>in %s</em>" % _html.escape(lang).replace(" ", "&nbsp;")
-
-    note = ("Topic tags as shown on the profile &mdash; a single problem can carry "
-            "several, so these don&rsquo;t sum to the total.")
+        note = "Solved in %s. " % _html.escape(lang).replace(" ", "&nbsp;") + note
     when = d.get("fetched")
     if when:
         try:
@@ -94,23 +177,8 @@ def lc_section():
             note += " Last checked %s." % _dt.date.fromisoformat(when).strftime("%-d %B %Y")
         except Exception:
             pass
-
-    return (
-        '      <section class="lc">\n'
-        '        <div class="lc-head">\n'
-        '          <div>\n'
-        '            <p class="lc-k">LeetCode</p>\n'
-        '            <p class="lc-total">%s</p>\n'
-        '          </div>\n'
-        '          <a class="btn-s btn-go" href="https://leetcode.com/u/%s/" target="_blank" '
-        'rel="noopener">View profile <span aria-hidden="true">&#8599;</span></a>\n'
-        '        </div>\n'
-        '        <div class="lc-tiers" style="--max:%d">\n%s\n        </div>\n'
-        '        <p class="lc-note">%s</p>\n'
-        '      </section>'
-        % (solved_line, _html.escape(str(d.get("username") or "pobee")),
-           top, "\n".join(blocks), note)
-    )
+    parts += ['        <p class="lc-note">%s</p>' % note, '      </section>']
+    return "\n".join(parts)
 
 # Google Scholar profile.
 SCHOLAR_URL = "https://scholar.google.com/citations?user=02WgxKoAAAAJ"
