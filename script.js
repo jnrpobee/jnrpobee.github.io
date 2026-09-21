@@ -177,6 +177,41 @@
     });
   }
 
+  /* ── theme ───────────────────────────────────────────────── */
+  (function () {
+    var root = document.documentElement;
+    var buttons = $$('[data-theme-toggle]');
+    if (!buttons.length) return;
+    var mq = null;
+    try { mq = window.matchMedia('(prefers-color-scheme:dark)'); } catch (e) {}
+
+    function current() {
+      var chosen = root.getAttribute('data-theme');
+      if (chosen === 'dark' || chosen === 'light') return chosen;
+      return mq && mq.matches ? 'dark' : 'light';
+    }
+    function label() {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      buttons.forEach(function (b) {
+        b.setAttribute('aria-label', 'Switch to the ' + next + ' theme');
+        var t = $('.theme-btn-t', b);
+        if (t) t.textContent = 'Switch to ' + next;
+      });
+    }
+    buttons.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var next = current() === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch (e) {}
+        label();
+      });
+    });
+    /* With no stored choice the page follows the system, so the label has
+       to keep up if the visitor changes that setting while reading. */
+    if (mq && mq.addEventListener) mq.addEventListener('change', label);
+    label();
+  })();
+
   /* ── publication filters (publications page) ─────────────── */
   var chips = $$('.chip');
   var pubs = $$('.pub');

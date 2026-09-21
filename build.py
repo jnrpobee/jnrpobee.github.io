@@ -54,9 +54,9 @@ import json as _json
 import math as _math
 
 LC_MARK = "<!--LEETCODE-->"
-LC_DIFF = [("easy", "Easy", "#199e70"),
-           ("medium", "Medium", "#3987e5"),
-           ("hard", "Hard", "#d95926")]
+# The colours live in styles.css so they can follow the theme; these
+# are the class suffixes that select them.
+LC_DIFF = [("easy", "Easy"), ("medium", "Medium"), ("hard", "Hard")]
 
 _R, _CX, _GAP = 54.0, 64.0, 3.0          # donut radius, centre, arc gap in px
 _C = 2 * _math.pi * _R
@@ -65,17 +65,17 @@ _C = 2 * _math.pi * _R
 def _donut(solved, total):
     """Composition of the solved problems, as one arc per difficulty."""
     arcs, at = [], 0.0
-    for key, label, colour in LC_DIFF:
+    for key, label in LC_DIFF:
         n = solved.get(key)
         if not isinstance(n, int) or n <= 0:
             continue
         span = (n / total) * _C
         drawn = max(span - _GAP, 1.0)
         arcs.append(
-            '          <circle class="lc-arc" cx="%g" cy="%g" r="%g" stroke="%s" '
+            '          <circle class="lc-arc lc-%s" cx="%g" cy="%g" r="%g" '
             'stroke-dasharray="%.2f %.2f" stroke-dashoffset="%.2f">'
             '<title>%s: %d of %d solved</title></circle>'
-            % (_CX, _CX, _R, colour, drawn, _C - drawn, -at, label, n, total))
+            % (key, _CX, _CX, _R, drawn, _C - drawn, -at, label, n, total))
         at += span
     return "\n".join(arcs)
 
@@ -99,22 +99,22 @@ def lc_section():
     # largest of them — because a bar against LeetCode's whole catalogue
     # would be an invisible sliver at every difficulty. The catalogue size
     # is given as text beside it instead.
-    counts = [solved.get(k) for k, _, _ in LC_DIFF if isinstance(solved.get(k), int)]
+    counts = [solved.get(k) for k, _ in LC_DIFF if isinstance(solved.get(k), int)]
     peak = max(counts) if counts else 1
 
     rows = []
-    for key, label, colour in LC_DIFF:
+    for key, label in LC_DIFF:
         n = solved.get(key)
         if not isinstance(n, int):
             continue
         pool = totals.get(key)
         of = ' <span class="lc-of">of %s</span>' % format(pool, ",") if isinstance(pool, int) else ""
         rows.append(
-            '            <li class="lc-row">\n'
-            '              <p class="lc-row-k"><i style="background:%s"></i>%s</p>\n'
+            '            <li class="lc-row lc-%s">\n'
+            '              <p class="lc-row-k"><i></i>%s</p>\n'
             '              <p class="lc-row-n"><strong>%d</strong>%s</p>\n'
-            '              <span class="lc-bar" style="--p:%.1f%%;--c:%s"></span>\n'
-            '            </li>' % (colour, label, n, of, 100.0 * n / peak, colour))
+            '              <span class="lc-bar" style="--p:%.1f%%"></span>\n'
+            '            </li>' % (key, label, n, of, 100.0 * n / peak))
 
     parts = [
         '      <section class="lc">',
@@ -131,7 +131,7 @@ def lc_section():
         '          <figure class="lc-donut">',
         '            <svg viewBox="0 0 128 128" role="img" aria-label="%s">' % _html.escape(
             "%d problems solved: %s" % (total, ", ".join(
-                "%d %s" % (solved[k], l.lower()) for k, l, _ in LC_DIFF
+                "%d %s" % (solved[k], l.lower()) for k, l in LC_DIFF
                 if isinstance(solved.get(k), int) and solved[k] > 0))),
         '              <g transform="rotate(-90 64 64)">',
         '          <circle class="lc-track" cx="64" cy="64" r="54"/>',
@@ -259,25 +259,25 @@ JSONLD = """<script type="application/ld+json">
 </script>"""
 
 ART_PERFORMANCE = """<svg viewBox="0 0 400 150" role="presentation">
-              <g stroke="rgba(245,243,237,.10)" stroke-width="1">
+              <g stroke="currentColor" opacity=".10" stroke-width="1">
                 <line x1="0" y1="38" x2="400" y2="38"/><line x1="0" y1="75" x2="400" y2="75"/><line x1="0" y1="112" x2="400" y2="112"/>
               </g>
-              <polyline points="30,118 90,100 150,106 210,66 270,56 330,32 372,38" fill="none" stroke="#8bff43" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <g fill="#8bff43">
+              <polyline points="30,118 90,100 150,106 210,66 270,56 330,32 372,38" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <g fill="currentColor">
                 <circle cx="90" cy="100" r="4"/><circle cx="210" cy="66" r="4"/><circle cx="330" cy="32" r="5.5"/>
               </g>
             </svg>"""
 
 ART_COACH = """<svg viewBox="0 0 400 150" role="presentation">
-              <g stroke="#8bff43" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".85">
+              <g stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".85">
                 <path d="M104 75 L192 42"/><path d="M104 75 L192 75"/><path d="M104 75 L192 108"/>
                 <path d="M192 42 L286 42"/><path d="M192 75 L286 75"/><path d="M192 108 L286 108"/>
               </g>
-              <circle cx="104" cy="75" r="10" fill="#8bff43"/>
-              <g fill="none" stroke="#8bff43" stroke-width="1.8">
+              <circle cx="104" cy="75" r="10" fill="currentColor"/>
+              <g fill="none" stroke="currentColor" stroke-width="1.8">
                 <circle cx="192" cy="42" r="6"/><circle cx="192" cy="75" r="6"/><circle cx="192" cy="108" r="6"/>
               </g>
-              <g fill="rgba(245,243,237,.16)">
+              <g fill="currentColor" opacity=".16">
                 <rect x="286" y="34" width="48" height="16" rx="3"/><rect x="286" y="67" width="64" height="16" rx="3"/><rect x="286" y="100" width="40" height="16" rx="3"/>
               </g>
             </svg>"""
@@ -335,7 +335,8 @@ SHELL = """<!DOCTYPE html>
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <link rel="manifest" href="assets/site.webmanifest">
-  <meta name="theme-color" content="#07100e">
+  <meta name="theme-color" content="#f1efe9" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#07100e" media="(prefers-color-scheme: dark)">
 
   <script>
     /* only hide blocks for the scroll reveal when JS is running and the
@@ -344,6 +345,13 @@ SHELL = """<!DOCTYPE html>
       if (!window.matchMedia('(prefers-reduced-motion:reduce)').matches) {{
         document.documentElement.classList.add('js-reveal');
       }}
+    }} catch (e) {{}}
+    /* An explicit theme choice, applied before first paint so the page
+       never flashes the other one. No stored choice means the CSS decides,
+       which keeps the site following the visitor's system setting. */
+    try {{
+      var t = localStorage.getItem('theme');
+      if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
     }} catch (e) {{}}
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -368,7 +376,10 @@ SHELL = """<!DOCTYPE html>
 {nav}
       </nav>
 
-      <p class="header-note"><span class="status-dot"></span>Building technology<br>for more human potential.</p>
+      <div class="header-end">
+        <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><g class="i-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/></g><path class="i-moon" d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.4 8.4 0 1 0 10.2 10.2z"/></svg></button>
+        <p class="header-note"><span class="status-dot"></span>Building technology<br>for more human potential.</p>
+      </div>
 
       <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open navigation">
         <i></i><i></i><i></i>
