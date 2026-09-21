@@ -48,6 +48,10 @@
   --border-strong:rgba(22,20,15,.38);
   --portrait-ink:rgba(22,20,15,.72);
   --glow:rgba(52,87,213,.16);
+  /* On paper the corner glow is a home-page flourish; the inner pages are
+     plain. --glow-inner is what every page except home uses, so the choice
+     lives in the theme block rather than in a per-page rule. */
+  --glow-inner:transparent;
   --ring:rgba(52,87,213,.22);
   --accent-35:rgba(52,87,213,.35);
   --accent-40:rgba(52,87,213,.4);
@@ -120,6 +124,7 @@
     --border-strong:rgba(245,243,237,.35);
     --portrait-ink:rgba(245,243,237,.62);
     --glow:rgba(139,255,67,.045);
+    --glow-inner:rgba(139,255,67,.045);
     --ring:rgba(139,255,67,.07);
     --accent-35:rgba(139,255,67,.35);
     --accent-40:rgba(139,255,67,.4);
@@ -183,6 +188,7 @@
   --border-strong:rgba(245,243,237,.35);
   --portrait-ink:rgba(245,243,237,.62);
   --glow:rgba(139,255,67,.045);
+  --glow-inner:rgba(139,255,67,.045);
   --ring:rgba(139,255,67,.07);
   --accent-35:rgba(139,255,67,.35);
   --accent-40:rgba(139,255,67,.4);
@@ -226,6 +232,11 @@ body{
   line-height:1.65;
   -webkit-font-smoothing:antialiased;
 }
+/* Every page but home takes --glow-inner. In the dark theme that is the same
+   green as --glow, so nothing changes there; on paper it is transparent, so
+   the corner wash stays a home-page flourish and the inner pages are flat. */
+body:not([data-page="home"]){--glow:var(--glow-inner);}
+
 body.menu-open{overflow:hidden;}
 a{color:inherit;text-decoration:none;}
 img{display:block;max-width:100%;}
