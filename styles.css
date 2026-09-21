@@ -67,6 +67,7 @@
   --drawer-bg:rgba(241,239,233,.94);
   --logo-glow:rgba(52,87,213,.22);
   --glow-size:26rem;
+  --glow-top:14rem;
   --header-blur:14px;
   --easy:#1baf7a;
   --medium:#2a78d6;
@@ -211,7 +212,11 @@ html{scroll-behavior:smooth;}
 body{
   margin:0;
   background:
-    radial-gradient(circle at 82% 8%, var(--glow), transparent var(--glow-size)),
+    /* The vertical anchor is an absolute length, not a percentage. A percentage
+       here resolves against the page's own height, so the glow drifted from
+       151px down on a short page to 395px on the CV — every page wore a
+       different background. --glow-top keeps it identical everywhere. */
+    radial-gradient(circle at 82% var(--glow-top), var(--glow), transparent var(--glow-size)),
     linear-gradient(var(--hairline) 1px, transparent 1px),
     linear-gradient(90deg, var(--hairline) 1px, transparent 1px),
     var(--bg);
@@ -920,6 +925,6 @@ p:last-child{margin-bottom:0;}
    sweeps across the copy. Both were invisible at the dark theme's alphas,
    so this only started mattering once paper gave them real presence. */
 @media (max-width:980px){
-  :root{--glow-size:17rem;}
+  :root{--glow-size:17rem;--glow-top:11rem;}
   .hero::after{border-color:var(--border-soft);}
 }
