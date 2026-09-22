@@ -44,7 +44,11 @@ def public_path(filename):
     """The address a visitor sees for a given file on disk."""
     return "/" if filename == "index.html" else "/" + filename[:-len(".html")]
 
-_LINK = re.compile(r'(href|action)="(' + "|".join(f for f, _ in NAV) + r')((?:#|\?)[^"]*)?"')
+# Unlisted pages: generated and linked with clean URLs like everything
+# else, but kept out of the nav, the pager and sitemap.xml.
+UNLISTED = ["blog.html"]
+
+_LINK = re.compile(r'(href|action)="(' + "|".join([f for f, _ in NAV] + UNLISTED) + r')((?:#|\?)[^"]*)?"')
 
 def clean_links(html):
     """Rewrite internal links from filenames to the addresses visitors see."""
@@ -343,6 +347,66 @@ def pub_groups():
     return "\n".join(out).rstrip("\n")
 
 
+# ── the blog ──────────────────────────────────────────────────────────────
+# An unlisted page. It is not in the nav, not in sitemap.xml, and carries
+# a noindex tag, so it will not turn up in a search. It is reached by the
+# little dot beside the header note. That makes it unlisted rather than
+# private: anyone given the address, or reading the page source, can open
+# it. Do not put anything on it you would mind a stranger reading.
+#
+# ─── HOW TO ADD A POST ─────────────────────────────────────────────────
+#
+# Newest first. Add an entry at the top of POSTS:
+#
+#     {
+#         "date": "2026-10-04",          # ISO; shown in the reader's format
+#         "title": "What I learned watching coaches ignore dashboards",
+#         "body": """
+#           <p>First paragraph.</p>
+#           <p>Second paragraph. Links look like
+#              <a class="text-link" href="https://example.org/">this</a>.</p>
+# """,
+#     },
+#
+# The body is HTML so a post can hold a list or a quote. Keep it to the
+# tags already styled on the site: p, a.text-link, strong, em, ul, li,
+# blockquote. Then run `python build.py` and `python check.py`.
+POSTS = [
+]
+POSTS_MARK = "<!--POSTS-->"
+
+_MONTHS = ("January", "February", "March", "April", "May", "June", "July",
+           "August", "September", "October", "November", "December")
+
+
+def blog_posts():
+    """The posts, newest first, or a quiet note when there are none."""
+    if not POSTS:
+        return ('        <div class="empty">Nothing here yet. This is where '
+                'the writing will go.</div>')
+    import datetime as _dt
+    out = []
+    for post in sorted(POSTS, key=lambda x: x.get("date", ""), reverse=True):
+        when, shown = post.get("date", ""), ""
+        try:
+            d = _dt.date.fromisoformat(when)
+            # Spelled out as the fallback; script.js rewrites it to the
+            # reader's own format, the same as the LeetCode date.
+            shown = ('<time datetime="%s">%d %s %d</time>'
+                     % (_html.escape(when), d.day, _MONTHS[d.month - 1], d.year))
+        except Exception:
+            when = ""
+        out.append('        <article class="post">')
+        if shown:
+            out.append('          <p class="post-date">%s</p>' % shown)
+        out.append('          <h2 class="post-title">%s</h2>'
+                   % _html.escape(post.get("title", "Untitled")))
+        out.append('          <div class="post-body">%s</div>'
+                   % post.get("body", "").rstrip("\n"))
+        out.append('        </article>')
+    return "\n".join(out)
+
+
 # ── the CV download ──────────────────────────────────────────────────────
 # Drop a PDF into assets/cv/ and both buttons on the CV page point at it:
 # Download saves it, Print sends that file to the printer rather than the web
@@ -525,6 +589,10 @@ PAGES = [
      "About Solomon B. Pobee, Computer Science PhD student and human–computer interaction researcher."),
     ("cv.html", "cv", "CV — Solomon B. Pobee",
      "Curriculum vitae for Solomon B. Pobee, Computer Science PhD student and HCI researcher."),
+    # Unlisted — see UNLISTED above. Generated like any other page, but
+    # absent from the nav, the pager and sitemap.xml, and marked noindex.
+    ("blog.html", "blog", "Notes — Solomon B. Pobee",
+     "Occasional notes by Solomon B. Pobee."),
 ]
 
 SCHOLAR_LD = """<script type="application/ld+json">
@@ -632,6 +700,10 @@ def nav_links(active):
 
 def pager(active):
     ids = [h for h, _ in NAV]
+    # A page that is deliberately not in the nav — the blog — gets no
+    # prev/next footer, because it sits outside the sequence.
+    if active not in ids:
+        return ""
     i = ids.index(active)
     prev = NAV[i - 1] if i > 0 else None
     nxt = NAV[i + 1] if i < len(NAV) - 1 else None
@@ -653,6 +725,7 @@ SHELL = """<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="description" content="{desc}" />
   <title>{title}</title>
+{robots}
 
 
   <link rel="canonical" href="{canonical}">
@@ -718,7 +791,7 @@ SHELL = """<!DOCTYPE html>
 
       <div class="header-end">
         <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><g class="i-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/></g><path class="i-moon" d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.4 8.4 0 1 0 10.2 10.2z"/></svg></button>
-        <p class="header-note"><span class="status-dot"></span>Building technology<br>for more human potential.</p>
+        <p class="header-note"><a class="status-dot" href="blog.html" aria-label="Notes"></a><span class="header-note-text">Building technology<br>for more human potential.</span></p>
       </div>
 
       <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open navigation">
@@ -1132,6 +1205,20 @@ BODY["about"] = """      <section class="pad">
         </div>
       </section>"""
 
+BODY["blog"] = """      <section class="pad">
+        <p class="eyebrow enter-1">NOTES <span>&times;</span> IN PROGRESS</p>
+        <h1 class="enter-1">Notes</h1>
+        <p class="lead enter-2">Half-formed thoughts about research, coaching, and building things that people actually use.</p>
+      </section>
+
+      <section class="pad posts" style="padding-top:12px;">
+<!--POSTS-->
+      </section>
+
+      <section class="pad" style="padding-top:0;">
+        <p class="note">You found this by clicking the dot. <a class="text-link" href="index.html">Back to the front</a>.</p>
+      </section>"""
+
 BODY["cv"] = """      <section class="pad">
         <p class="eyebrow enter-1">CURRICULUM <span>&times;</span> VITAE</p>
         <h1 class="enter-1">Solomon B. Pobee</h1>
@@ -1320,9 +1407,12 @@ for filename, key, title, desc in PAGES:
         body=BODY[key],
         pager=pager(filename),
         jsonld=(JSONLD if key == "home" else (SCHOLAR_LD if key == "publications" else "")),
+        robots=('  <meta name="robots" content="noindex, nofollow">'
+                if filename in UNLISTED else ""),
     )
     page = html.replace(LC_MARK, _LC).replace(CV_MARK, cv_actions())
     page = page.replace(PUB_MARK, pub_groups())
+    page = page.replace(POSTS_MARK, blog_posts())
     for _pid in CITATIONS:
         page = page.replace("<!--CITE:%s-->" % _pid, cite_panel(_pid))
     page = clean_links(page)
@@ -1364,6 +1454,7 @@ _nf = SHELL.format(
     body=NOT_FOUND_BODY,
     pager="",
     jsonld="",
+    robots='  <meta name="robots" content="noindex">',
 )
 write(OUT / "404.html", clean_links(_nf))
 print("wrote 404.html")

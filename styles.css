@@ -313,6 +313,43 @@ button{font-family:inherit;}
 .status-dot{
   width:8px;height:8px;margin-top:4px;flex:0 0 auto;border-radius:999px;
   background:var(--accent);box-shadow:0 0 18px var(--dot-glow);
+  position:relative;
+}
+/* The dot is the way into the unlisted notes page. It stays 8px to look at,
+   but an 8px target is unusable on a phone, so a transparent ::before pads
+   the hit area out to 28px without moving anything around it. */
+a.status-dot{display:block;cursor:pointer;}
+a.status-dot::before{
+  content:"";position:absolute;top:50%;left:50%;
+  width:28px;height:28px;transform:translate(-50%,-50%);
+  border-radius:999px;
+}
+a.status-dot:hover{box-shadow:0 0 22px var(--accent-50);}
+/* Hold still while it is being aimed at: a target that is scaling up
+   and down is harder to hit, and worse for anyone whose pointing is
+   not precise. */
+a.status-dot:hover,a.status-dot:focus-visible{animation:none;transform:none;}
+a.status-dot:focus-visible{
+  outline:2px solid var(--accent);outline-offset:4px;
+}
+
+/* ─── the notes page ───────────────────────────────────────────────── */
+.posts{display:flex;flex-direction:column;gap:56px;}
+.post{max-width:68ch;}
+.post-date{
+  margin:0 0 10px;font-family:var(--mono);font-size:.8438rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--faint);
+}
+.post-title{
+  margin:0 0 16px;font-family:var(--serif);font-size:1.9rem;
+  font-weight:400;letter-spacing:0;line-height:1.15;
+}
+.post-body p{margin:0 0 16px;color:var(--dim);font-size:1.03rem;line-height:1.75;}
+.post-body p:last-child{margin-bottom:0;}
+.post-body ul{margin:0 0 16px;padding-left:20px;color:var(--dim);font-size:1.03rem;line-height:1.75;}
+.post-body blockquote{
+  margin:0 0 16px;padding-left:18px;border-left:2px solid var(--border);
+  color:var(--muted);font-family:var(--serif);font-size:1.15rem;
 }
 @media (prefers-reduced-motion:no-preference){
   .status-dot{animation:pulse 2.6s ease-in-out infinite;}
@@ -833,7 +870,11 @@ p:last-child{margin-bottom:0;}
      no way to find a setting. */
   .site-header{grid-template-columns:1fr auto auto;}
   .header-end{display:flex;gap:10px;}
-  .header-note{display:none;}
+  /* The sentence does not fit beside the menu button on a phone, but
+     the dot does — and it is the only way to the notes page, so it
+     stays. The text goes, not the link. */
+  .header-note{display:flex;}
+  .header-note-text{display:none;}
   .theme-toggle{width:44px;height:44px;}
   .site-nav{display:none;}
   .menu-toggle{
