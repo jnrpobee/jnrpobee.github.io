@@ -1,0 +1,20 @@
+# The generated files are written with Unix line endings by build.py, and CI
+# rebuilds them on Linux. Without this, git on Windows would convert them on
+# checkout and every rebuild would look like every line had changed.
+*.html   text eol=lf
+*.css    text eol=lf
+*.js     text eol=lf
+*.py     text eol=lf
+*.xml    text eol=lf
+*.txt    text eol=lf
+*.json   text eol=lf
+*.md     text eol=lf
+*.yml    text eol=lf
+CNAME    text eol=lf
+
+hooks/*  text eol=lf
+
+*.pdf    binary
+*.jpg    binary
+*.png    binary
+*.ico    binary

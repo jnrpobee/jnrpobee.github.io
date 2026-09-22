@@ -19,7 +19,7 @@ VALID = re.compile(
     r'|mailto:[^\s"\'<>]+'             # mail
     r'|#[\w/\-]*'                      # in-page / route
     r'|data:[a-z]+/[a-z.+\-]+;base64,[A-Za-z0-9+/=]+'   # embedded asset
-    r'|[\w\-./]+\.(html|css|js|svg|jpg|png|ico|xml|txt|pdf|webmanifest)(\?[\w=&\-]*)?'
+    r'|[\w\-./%]+\.(html|css|js|svg|jpg|png|ico|xml|txt|pdf|webmanifest)(\?[\w=&\-]*)?'
     r'|/(?:[\w\-]+(?:/[\w\-]+)*)?(?:[#?][^\s"\'<>]*)?'  # clean path: / or /research
     r')$'
 )

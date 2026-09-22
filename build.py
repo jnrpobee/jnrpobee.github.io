@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Generate the static pages from one shared shell."""
+import io
 import pathlib
 
 OUT = pathlib.Path(__file__).parent
@@ -9,13 +10,15 @@ OUT = pathlib.Path(__file__).parent
 BASE_URL = "https://www.solomonbpobee.com"
 
 
+# Nav order drives the header, the prev/next pager at the foot of each page
+# and the order of sitemap.xml, so changing it here changes all three.
 NAV = [
     ("index.html", "Home"),
     ("research.html", "Research"),
-    ("projects.html", "Projects"),
     ("publications.html", "Publications"),
     ("about.html", "About"),
     ("cv.html", "CV"),
+    ("projects.html", "Projects"),
 ]
 
 # Pages are written to disk as .html files, because that is what a static host
@@ -24,6 +27,18 @@ NAV = [
 # filename in the address bar. clean_links() below does the rewriting, so the
 # page templates can go on referring to plain filenames.
 import re
+
+def write(path, text):
+    """Write a generated file with Unix line endings on every platform.
+
+    Python's text mode turns "\n" into "\r\n" on Windows, so the same
+    build.py produced CRLF files there and LF files in CI. Git then saw
+    every line of every page as changed, and the pre-push check read that
+    as the pages being out of date. newline="" stops the translation.
+    """
+    with io.open(str(path), "w", encoding="utf-8", newline="") as fh:
+        fh.write(text)
+
 
 def public_path(filename):
     """The address a visitor sees for a given file on disk."""
@@ -52,6 +67,7 @@ def clean_links(html):
 import html as _html
 import json as _json
 import math as _math
+from urllib.parse import quote as _quote
 
 # ── citations ────────────────────────────────────────────────────────────
 # One entry per publication. The styles below are written out by hand rather
@@ -171,6 +187,83 @@ def cite_panel(pid):
         % (pid, "\n".join(tabs), "\n".join(blocks), pid))
 
 
+# ── publications ────────────────────────────────────────────────────────
+# The kinds of publication the page can show, in the order they appear.
+# A kind with nothing in it is not rendered at all — an empty "Posters"
+# heading would read as a gap rather than a section waiting to be filled.
+# To add one, append the article markup to the right list; the heading,
+# the count and the topic filter all follow from that.
+PUB_GROUPS = [
+    ("journal", "Journal Articles"),
+    ("conference", "Conference Papers"),
+    ("chapter", "Book Chapters"),
+    ("workshop", "Workshop Papers"),
+    ("poster", "Posters &amp; Extended Abstracts"),
+]
+PUB_MARK = "<!--PUBGROUPS-->"
+
+PUBS = {
+    "journal": [
+        """\
+          <article class="pub" data-topic="nature">
+            <div class="pub-kind">Journal<br>2025</div>
+            <div>
+              <a class="pub-title" href="https://doi.org/10.1080/10447318.2024.2443808" target="_blank" rel="noopener">Toward a Framework for the Design of Interactive Technology for Nature Recreation</a>
+              <p class="pub-authors">Michael Jones, Tuomas Kari, Daniel Reich, Barrett Ens, Siyi Liu, <strong>Solomon B. Pobee</strong>, Florian Mueller</p>
+              <p class="pub-venue">Int. Journal of Human&ndash;Computer Interaction &middot; 41(18), 11691&ndash;11711</p>
+              <p class="pub-desc">A framework for building technology that enhances rather than diminishes the wellness benefits of outdoor recreation, decomposing engagement into nine facets tied to place, time, and community, and grounded in philosophy-of-technology perspectives.</p>
+              <div class="cite-row">
+                <a class="btn-s btn-go" href="https://doi.org/10.1080/10447318.2024.2443808" target="_blank" rel="noopener">Read paper <span aria-hidden="true">&#8599;</span></a>
+                <button type="button" class="btn-s" data-cite="c1" aria-expanded="false" aria-controls="c1">Cite</button>
+                <button type="button" class="btn-s" data-copy-doi="10.1080/10447318.2024.2443808">Copy DOI</button>
+              </div>
+<!--CITE:c1-->
+            </div>
+          </article>
+""",
+    ],
+    "conference": [],
+    "chapter": [
+        """\
+          <article class="pub" data-topic="learning">
+            <div class="pub-kind">Chapter<br>2026</div>
+            <div>
+              <a class="pub-title" href="https://doi.org/10.1007/978-3-032-13174-4_25" target="_blank" rel="noopener">MathBuddy: An LLM-Based Chatbot for Elementary Math Education</a>
+              <p class="pub-authors">Saba Iqbal, <strong>Solomon Pobee</strong>, Akriti Adhikari, Benjamin Schooley</p>
+              <p class="pub-venue">HCI International 2025 &ndash; Late Breaking Papers &middot; LNCS, Springer &middot; 392&ndash;403</p>
+              <p class="pub-desc">A chatbot that gives students in grades 5&ndash;7 step-by-step guidance as they work through math problems. Testing found it made practice more engaging, while surfacing real questions about AI accuracy for young learners.</p>
+              <div class="cite-row">
+                <a class="btn-s btn-go" href="https://doi.org/10.1007/978-3-032-13174-4_25" target="_blank" rel="noopener">Read paper <span aria-hidden="true">&#8599;</span></a>
+                <button type="button" class="btn-s" data-cite="c2" aria-expanded="false" aria-controls="c2">Cite</button>
+                <button type="button" class="btn-s" data-copy-doi="10.1007/978-3-032-13174-4_25">Copy DOI</button>
+              </div>
+<!--CITE:c2-->
+            </div>
+          </article>
+""",
+    ],
+    "workshop": [],
+    "poster": [],
+}
+
+
+def pub_groups():
+    out = []
+    for key, label in PUB_GROUPS:
+        items = PUBS.get(key) or []
+        if not items:
+            continue
+        out.append('        <section class="pub-group" data-group="%s">' % key)
+        out.append('          <h3 class="group-head">%s <span class="group-count" '
+                   'data-group-count>%d</span></h3>' % (label, len(items)))
+        out.append('          <div class="pubs">')
+        out.extend(a.rstrip("\n") for a in items)
+        out.append('          </div>')
+        out.append('        </section>')
+        out.append('')
+    return "\n".join(out).rstrip("\n")
+
+
 # ── the CV download ──────────────────────────────────────────────────────
 # Drop a PDF into assets/cv/ and both buttons on the CV page point at it:
 # Download saves it, Print sends that file to the printer rather than the web
@@ -188,7 +281,10 @@ def cv_actions():
     pdfs = sorted(p.name for p in CV_DIR.glob("*.pdf")) if CV_DIR.is_dir() else []
     out = []
     if pdfs:
-        href = "assets/cv/%s" % pdfs[-1]
+        # Percent-encode the filename. Real CV files are called things like
+        # "Solo-Resume-Aug 2026.pdf", and a raw space in an href is not a
+        # valid URL — it broke the deploy's link check once already.
+        href = "assets/cv/%s" % _quote(pdfs[-1])
         out.append('<a class="button button-primary" href="%s" download>'
                    'Download PDF <span aria-hidden="true">&darr;</span></a>' % href)
         out.append('<button type="button" class="button button-secondary" '
@@ -299,7 +395,18 @@ def lc_section():
     if when:
         try:
             import datetime as _dt
-            bits.append("Last checked %s." % _dt.date.fromisoformat(when).strftime("%-d %B %Y"))
+            _d = _dt.date.fromisoformat(when)
+            # Built by hand rather than with strftime. "%-d" (no leading zero)
+            # is a glibc extension: it raises on Windows, the except below
+            # swallowed it, and this whole line silently vanished from the
+            # page — so a Windows build and a CI build produced different
+            # HTML. Month names are spelled out for the same reason, since
+            # "%B" follows the machine's locale.
+            _months = ("January", "February", "March", "April", "May", "June",
+                       "July", "August", "September", "October", "November",
+                       "December")
+            bits.append("Last checked %d %s %d."
+                        % (_d.day, _months[_d.month - 1], _d.year))
         except Exception:
             pass
     if bits:
@@ -465,7 +572,7 @@ SHELL = """<!DOCTYPE html>
   <meta property="og:type" content="{ogtype}">
   <meta property="og:site_name" content="Solomon B. Pobee">
   <meta property="og:title" content="{ogtitle}">
-  <meta property="og:description" content="{{desc}}">
+  <meta property="og:description" content="{desc}">
   <meta property="og:url" content="{canonical}">
   <meta property="og:image" content="{base}/assets/og-image.jpg">
   <meta property="og:image:width" content="1200">
@@ -856,47 +963,7 @@ BODY["publications"] = """      <section class="pad">
           </div>
         </div>
 
-        <section class="pub-group" data-group="journal">
-          <h3 class="group-head">Journal Articles <span class="group-count" data-group-count>1</span></h3>
-          <div class="pubs">
-          <article class="pub" data-topic="nature">
-            <div class="pub-kind">Journal<br>2025</div>
-            <div>
-              <a class="pub-title" href="https://doi.org/10.1080/10447318.2024.2443808" target="_blank" rel="noopener">Toward a Framework for the Design of Interactive Technology for Nature Recreation</a>
-              <p class="pub-authors">Michael Jones, Tuomas Kari, Daniel Reich, Barrett Ens, Siyi Liu, <strong>Solomon B. Pobee</strong>, Florian Mueller</p>
-              <p class="pub-venue">Int. Journal of Human&ndash;Computer Interaction &middot; 41(18), 11691&ndash;11711</p>
-              <p class="pub-desc">A framework for building technology that enhances rather than diminishes the wellness benefits of outdoor recreation, decomposing engagement into nine facets tied to place, time, and community, and grounded in philosophy-of-technology perspectives.</p>
-              <div class="cite-row">
-                <a class="btn-s btn-go" href="https://doi.org/10.1080/10447318.2024.2443808" target="_blank" rel="noopener">Read paper <span aria-hidden="true">&#8599;</span></a>
-                <button type="button" class="btn-s" data-cite="c1" aria-expanded="false" aria-controls="c1">Cite</button>
-                <button type="button" class="btn-s" data-copy-doi="10.1080/10447318.2024.2443808">Copy DOI</button>
-              </div>
-<!--CITE:c1-->
-            </div>
-          </article>
-          </div>
-        </section>
-
-        <section class="pub-group" data-group="conference">
-          <h3 class="group-head">Conference Papers &amp; Chapters <span class="group-count" data-group-count>1</span></h3>
-          <div class="pubs">
-          <article class="pub" data-topic="learning">
-            <div class="pub-kind">Chapter<br>2026</div>
-            <div>
-              <a class="pub-title" href="https://doi.org/10.1007/978-3-032-13174-4_25" target="_blank" rel="noopener">MathBuddy: An LLM-Based Chatbot for Elementary Math Education</a>
-              <p class="pub-authors">Saba Iqbal, <strong>Solomon Pobee</strong>, Akriti Adhikari, Benjamin Schooley</p>
-              <p class="pub-venue">HCI International 2025 &ndash; Late Breaking Papers &middot; LNCS, Springer &middot; 392&ndash;403</p>
-              <p class="pub-desc">A chatbot that gives students in grades 5&ndash;7 step-by-step guidance as they work through math problems. Testing found it made practice more engaging, while surfacing real questions about AI accuracy for young learners.</p>
-              <div class="cite-row">
-                <a class="btn-s btn-go" href="https://doi.org/10.1007/978-3-032-13174-4_25" target="_blank" rel="noopener">Read paper <span aria-hidden="true">&#8599;</span></a>
-                <button type="button" class="btn-s" data-cite="c2" aria-expanded="false" aria-controls="c2">Cite</button>
-                <button type="button" class="btn-s" data-copy-doi="10.1007/978-3-032-13174-4_25">Copy DOI</button>
-              </div>
-<!--CITE:c2-->
-            </div>
-          </article>
-          </div>
-        </section>
+        <!--PUBGROUPS-->
 
         <div class="empty" id="pub-empty" hidden>No publications in this area yet.</div>
 
@@ -1160,28 +1227,33 @@ for filename, key, title, desc in PAGES:
         jsonld=(JSONLD if key == "home" else (SCHOLAR_LD if key == "publications" else "")),
     )
     page = html.replace(LC_MARK, _LC).replace(CV_MARK, cv_actions())
+    page = page.replace(PUB_MARK, pub_groups())
     for _pid in CITATIONS:
         page = page.replace("<!--CITE:%s-->" % _pid, cite_panel(_pid))
     page = clean_links(page)
-    (OUT / filename).write_text(page, encoding="utf-8")
+    write(OUT / filename, page)
     print("wrote", filename, len(page), "bytes")
 
 # ── sitemap.xml, robots.txt and a 404 page ────────────────────────
-import datetime
-_today = datetime.date.today().isoformat()
+# No <lastmod>. It used to be today's date, stamped afresh on every build,
+# which made the file differ every time it was generated on a different day
+# from the one it was committed on — and told search engines that every page
+# had changed on every deploy, which was never true. Google ignores a lastmod
+# it cannot trust, so an inaccurate one buys nothing and costs a build that is
+# not reproducible. The sitemap is valid without it.
 _urls = "\n".join(
-    '  <url><loc>%s%s</loc><lastmod>%s</lastmod><priority>%s</priority></url>'
-    % (BASE_URL, public_path(f), _today, "1.0" if f == "index.html" else "0.8")
+    '  <url><loc>%s%s</loc><priority>%s</priority></url>'
+    % (BASE_URL, public_path(f), "1.0" if f == "index.html" else "0.8")
     for f, _ in NAV
 )
-(OUT / "sitemap.xml").write_text(
+write(OUT / "sitemap.xml",
     '<?xml version="1.0" encoding="UTF-8"?>\n'
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    + _urls + '\n</urlset>\n', encoding="utf-8")
+    + _urls + '\n</urlset>\n')
 print("wrote sitemap.xml")
 
-(OUT / "robots.txt").write_text(
-    "User-agent: *\nAllow: /\n\nSitemap: " + BASE_URL + "/sitemap.xml\n", encoding="utf-8")
+write(OUT / "robots.txt",
+    "User-agent: *\nAllow: /\n\nSitemap: " + BASE_URL + "/sitemap.xml\n")
 print("wrote robots.txt")
 
 _nf = SHELL.format(
@@ -1198,5 +1270,5 @@ _nf = SHELL.format(
     pager="",
     jsonld="",
 )
-(OUT / "404.html").write_text(clean_links(_nf), encoding="utf-8")
+write(OUT / "404.html", clean_links(_nf))
 print("wrote 404.html")

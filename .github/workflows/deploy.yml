@@ -54,35 +54,11 @@ jobs:
           # build.py, check_links.py, DEPLOY.md, the start-local scripts and the
           # Cloudflare-only _headers/_redirects files are deliberately left out.
 
-      - name: Verify every link is well-formed
-        run: python3 check_links.py _site
-
-      - name: Confirm every local asset resolves
-        run: |
-          python3 - <<'PY'
-          import os, re, glob, sys
-          os.chdir('_site')
-          pat = re.compile(r'(?:href|src)\s*=\s*["\']([^"\']+)["\']')
-          missing = []
-          for f in glob.glob('*.html'):
-              for r in pat.findall(open(f, encoding='utf-8').read()):
-                  if r.startswith(('http', 'mailto:', 'tel:', 'data:', '#', '//')):
-                      continue
-                  p = r.split('#')[0].split('?')[0].lstrip('/')
-                  # Clean paths resolve as the host serves them: "" is the
-                  # homepage, an extensionless path is its .html file.
-                  if not p:
-                      p = 'index.html'
-                  elif not os.path.splitext(p)[1]:
-                      p += '.html'
-                  if not os.path.exists(p):
-                      missing.append(f'{f}: {r}')
-          if missing:
-              print('Missing files referenced by the site:')
-              print('\n'.join('  ' + m for m in missing))
-              sys.exit(1)
-          print('All local references resolve.')
-          PY
+      # The same checks check.py runs locally, so CI and a pre-push run
+      # can never disagree about whether the site is publishable. If this
+      # fails the deploy stops here and the previous site stays live.
+      - name: Check the assembled site
+        run: python3 check.py --site _site
 
       - uses: actions/upload-pages-artifact@v3
         with:
