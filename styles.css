@@ -78,7 +78,7 @@
   --hard:#eb6834;
   color-scheme:light;
   --max:1200px;
-  --sans:"DM Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
 }
@@ -347,11 +347,13 @@ button{font-family:inherit;}
 }
 
 /* ═══════════ shared type ═══════════ */
+/* The accent, the way BYU News runs its section line above the headline.
+   5.3:1 on paper and 15:1 in the dark theme, so it clears AA at this size. */
 .eyebrow,.kicker{
-  margin:0;color:var(--muted-2);font-size:.875rem;letter-spacing:.30em;font-weight:600;
+  margin:0;color:var(--accent);font-size:.875rem;letter-spacing:.30em;font-weight:600;
   text-transform:uppercase;
 }
-.eyebrow span{margin:0 10px;color:var(--ghost);}
+.eyebrow span{margin:0 10px;color:var(--accent-50);}
 .accent-line{display:block;width:34px;height:2px;background:var(--accent);}
 
 .pad{padding-block:64px;}
@@ -366,7 +368,13 @@ main > .pad:first-child:not(.hero) .eyebrow{margin-bottom:6px;}
   main > .pad:first-child:not(.hero) h1{margin-bottom:20px;}
 }
 
-h1{margin:14px 0 10px;font-size:clamp(3rem,7vw,6rem);line-height:.96;letter-spacing:-.065em;}
+/* Set the way BYU News sets a headline: IBM Plex Sans at 700, tight tracking.
+   The leading is 1.04 rather than the .96 DM Sans carried — Plex has taller
+   ascenders and rounder counters, and two-line titles close up at .96. */
+h1{
+  margin:14px 0 10px;font-size:clamp(3rem,7vw,6rem);
+  font-weight:700;line-height:1.04;letter-spacing:-.045em;
+}
 h2{margin:0;font-size:1.5rem;letter-spacing:-.03em;}
 h3{margin:0;font-size:1.2rem;letter-spacing:-.02em;}
 p{margin:0 0 16px;}
