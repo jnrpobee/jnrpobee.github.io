@@ -46,7 +46,7 @@ def public_path(filename):
 
 # Unlisted pages: generated and linked with clean URLs like everything
 # else, but kept out of the nav, the pager and sitemap.xml.
-UNLISTED = ["blog.html"]
+UNLISTED = ["blog.html", "campus.html"]
 
 _LINK = re.compile(r'(href|action)="(' + "|".join([f for f, _ in NAV] + UNLISTED) + r')((?:#|\?)[^"]*)?"')
 
@@ -372,34 +372,61 @@ def pub_groups():
 # tags already styled on the site: p, a.text-link, strong, em, ul, li,
 # blockquote. Then run `python build.py` and `python check.py`.
 #======== Test Posts =========
-    {
-        "date": "2026-10-04",          # ISO; shown in the reader's format
-        "title": "What I learned watching coaches ignore dashboards",
-        "body": """
-          <p>First paragraph.</p>
-          <p>Second paragraph. Links look like
-             <a class="text-link" href="https://example.org/">this</a>.</p>
-""",
-    },
+
 
 #==========================
+BLOG_CATEGORIES = {
+    "lifestyle": "Lifestyle",
+    "campus": "Campus Life",
+}
+
 POSTS = [
+    {
+        "date": "2026-09-21",
+        "category": "lifestyle",
+        "title": "Why I am keeping these notes",
+        "body": """
+          <p>Research usually reaches people after the questions have been narrowed, the methods have been settled, and the writing has been polished. A great deal of useful thinking happens before that point. I want this page to hold some of it.</p>
+          <p>My work sits at the intersection of human&ndash;computer interaction, youth sport, and coaching. These settings make a people-first approach essential. Athletes and coaches do not simply need more data or another dashboard; a tool has to earn its place by reducing friction, clarifying a decision, or making limited time more useful.</p>
+          <p>I will use these notes for ideas from building and studying systems, connections from things I am reading, and lessons that may not belong in a formal paper. The ideas will sometimes be provisional. The goal is to make the process more visible and give the thinking room to develop.</p>
+""",
+    },
+    {
+        "date": "2026-09-15",
+        "category": "campus",
+        "title": "Useful technology should reduce the work",
+        "body": """
+          <p>A system can present accurate information and still fail the people it was designed to help. This often happens when getting the insight requires more recording, organizing, and reviewing than a coach or athlete can reasonably sustain.</p>
+          <p>Before adding a feature, I find it useful to ask a smaller set of questions: What decision will this support? What information already exists? Who has to do extra work? What happens when the data is incomplete?</p>
+          <p>The most useful system may not be the one that collects the most data. It may be the one that asks for the minimum useful input, communicates uncertainty clearly, and fits into a routine that is already under pressure. Usability is not only whether someone can operate a tool; it is also whether using it remains worthwhile.</p>
+""",
+    },
 ]
-POSTS_MARK = "<!--POSTS-->"
+LIFESTYLE_POSTS_MARK = "<!--LIFESTYLEPOSTS-->"
+CAMPUS_POSTS_MARK = "<!--CAMPUSPOSTS-->"
 
 _MONTHS = ("January", "February", "March", "April", "May", "June", "July",
            "August", "September", "October", "November", "December")
 
 
-def blog_posts():
-    """The posts, newest first, or a quiet note when there are none."""
-    if not POSTS:
+def blog_posts(category):
+    """One blog category's posts, newest first, or a quiet empty state."""
+    if category not in BLOG_CATEGORIES:
+        raise ValueError("Unknown blog category %r" % category)
+    posts = [post for post in POSTS if post.get("category", "lifestyle") == category]
+    if not posts:
         return ('        <div class="empty">Nothing here yet. This is where '
                 'the writing will go.</div>')
     import datetime as _dt
     out = []
-    for post in sorted(POSTS, key=lambda x: x.get("date", ""), reverse=True):
+    for post in sorted(posts, key=lambda x: x.get("date", ""), reverse=True):
         when, shown = post.get("date", ""), ""
+        category = post.get("category", "lifestyle")
+        if category not in BLOG_CATEGORIES:
+            raise ValueError(
+                "Unknown blog category %r. Use one of: %s"
+                % (category, ", ".join(sorted(BLOG_CATEGORIES)))
+            )
         try:
             d = _dt.date.fromisoformat(when)
             # Spelled out as the fallback; script.js rewrites it to the
@@ -408,9 +435,14 @@ def blog_posts():
                      % (_html.escape(when), d.day, _MONTHS[d.month - 1], d.year))
         except Exception:
             when = ""
-        out.append('        <article class="post">')
+        out.append('        <article class="post" data-blog-topic="%s">'
+                   % _html.escape(category))
+        out.append('          <div class="post-meta">')
         if shown:
-            out.append('          <p class="post-date">%s</p>' % shown)
+            out.append('            <p class="post-date">%s</p>' % shown)
+        out.append('            <p class="post-category">%s</p>'
+                   % _html.escape(BLOG_CATEGORIES[category]))
+        out.append('          </div>')
         out.append('          <h2 class="post-title">%s</h2>'
                    % _html.escape(post.get("title", "Untitled")))
         out.append('          <div class="post-body">%s</div>'
@@ -603,8 +635,10 @@ PAGES = [
      "Curriculum vitae for Solomon B. Pobee, Computer Science PhD student and HCI researcher."),
     # Unlisted — see UNLISTED above. Generated like any other page, but
     # absent from the nav, the pager and sitemap.xml, and marked noindex.
-    ("blog.html", "blog", "Notes — Solomon B. Pobee",
-     "Occasional notes by Solomon B. Pobee."),
+    ("blog.html", "blog", "Lifestyle — Solomon B. Pobee",
+     "Lifestyle notes and personal reflections by Solomon B. Pobee."),
+    ("campus.html", "campus", "Campus — Solomon B. Pobee",
+     "Notes from campus and PhD life by Solomon B. Pobee."),
 ]
 
 SCHOLAR_LD = """<script type="application/ld+json">
@@ -703,11 +737,36 @@ ART_COACH = """<svg viewBox="0 0 400 150" role="presentation">
             </svg>"""
 
 
+BLOG_NAV = [
+    ("blog.html", "Lifestyle"),
+    ("campus.html", "Campus"),
+]
+
+
 def nav_links(active):
+    links = BLOG_NAV if active in (h for h, _ in BLOG_NAV) else NAV
     return "\n".join(
         '        <a href="%s"%s>%s</a>' % (h, ' aria-current="page"' if h == active else "", l)
-        for h, l in NAV
+        for h, l in links
     )
+
+
+def header_brand(active):
+    if active in (h for h, _ in BLOG_NAV):
+        return """      <a class="brand blog-home-brand" href="index.html" aria-label="Exit the blog and return to the main homepage">
+        <span class="blog-home-mark" aria-hidden="true">&larr;</span>
+        <span class="brand-text">
+          <strong>Home</strong>
+          <em>Exit the blog</em>
+        </span>
+      </a>"""
+    return """      <a class="brand" href="index.html" aria-label="Solomon B. Pobee &mdash; home">
+        <img class="logo-mark" src="assets/logo-mark.svg" alt="" width="44" height="44" fetchpriority="high">
+        <span class="brand-text">
+          <strong>Solomon B. Pobee</strong>
+          <em>PhD Student &middot; HCI &middot; BYU</em>
+        </span>
+      </a>"""
 
 
 def pager(active):
@@ -789,13 +848,7 @@ SHELL = """<!DOCTYPE html>
 
   <div class="shell">
     <header class="site-header">
-      <a class="brand" href="index.html" aria-label="Solomon B. Pobee &mdash; home">
-        <img class="logo-mark" src="assets/logo-mark.svg" alt="" width="44" height="44" fetchpriority="high">
-        <span class="brand-text">
-          <strong>Solomon B. Pobee</strong>
-          <em>PhD Student &middot; HCI &middot; BYU</em>
-        </span>
-      </a>
+{brand}
 
       <nav class="site-nav" aria-label="Primary">
 {nav}
@@ -803,7 +856,7 @@ SHELL = """<!DOCTYPE html>
 
       <div class="header-end">
         <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><g class="i-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/></g><path class="i-moon" d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.4 8.4 0 1 0 10.2 10.2z"/></svg></button>
-        <p class="header-note"><a class="status-dot" href="blog.html" aria-label="Notes"></a><span class="header-note-text">Building technology<br>for more human potential.</span></p>
+        <p class="header-note"><a class="status-dot" href="blog.html" aria-label="Lifestyle blog"></a><span class="header-note-text">Building technology<br>for more human potential.</span></p>
       </div>
 
       <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open navigation">
@@ -1217,18 +1270,126 @@ BODY["about"] = """      <section class="pad">
         </div>
       </section>"""
 
-BODY["blog"] = """      <section class="pad">
-        <p class="eyebrow enter-1">NOTES <span>&times;</span> IN PROGRESS</p>
-        <h1 class="enter-1">Notes</h1>
-        <p class="lead enter-2">Half-formed thoughts about research, coaching, and building things that people actually use.</p>
+BODY["blog"] = """      <section class="notes-hero pad" aria-labelledby="notes-title">
+        <div class="notes-hero-copy enter-1">
+          <p class="eyebrow">LIFESTYLE <span>&times;</span> IN PROGRESS</p>
+          <h1 id="notes-title">Lifestyle, lately.</h1>
+          <p class="lead">Small reflections on work, routines, curiosity, and the parts of life that shape how I think.</p>
+          <div class="notes-topics" aria-label="Topics covered">
+            <span>Lifestyle</span>
+            <span>Campus life</span>
+            <span>Field notes</span>
+          </div>
+        </div>
+
+        <div class="notes-playground enter-2" aria-hidden="true">
+          <p class="notes-board-label">FIELD NOTES / LIFE IN MOTION</p>
+          <svg class="notes-thread" viewBox="0 0 440 390" role="presentation">
+            <path d="M72 104 C162 26 224 178 352 92 S384 262 248 286 S106 246 76 326"/>
+          </svg>
+          <div class="note-paper note-paper-one">
+            <span>01 / NOTICE</span>
+            <strong>Look closer.</strong>
+            <p>Start with the ordinary details.</p>
+          </div>
+          <div class="note-paper note-paper-two">
+            <span>02 / RESET</span>
+            <strong>Make room.</strong>
+            <p>Rest belongs in the process.</p>
+          </div>
+          <div class="note-paper note-paper-three">
+            <span>03 / CARRY</span>
+            <strong>Keep what matters.</strong>
+            <p>Less noise. More intention.</p>
+          </div>
+          <span class="notes-spark notes-spark-one">&#10022;</span>
+          <span class="notes-spark notes-spark-two">&#10022;</span>
+          <p class="notes-mantra">notice <i>&rarr;</i> pause <i>&rarr;</i> learn <i>&rarr;</i> repeat</p>
+        </div>
       </section>
 
-      <section class="pad posts" style="padding-top:12px;">
-<!--POSTS-->
+      <section class="focus-strip notes-focus pad" aria-labelledby="notes-focus-title">
+        <p class="kicker" id="notes-focus-title">A FEW GUIDING IDEAS</p>
+        <div class="focus-list">
+          <p>Stay curious.</p>
+          <p>Make room.</p>
+          <p>Notice the ordinary.</p>
+        </div>
       </section>
 
-      <section class="pad" style="padding-top:0;">
+      <section class="notes-feed pad" aria-labelledby="recent-notes-title">
+        <div class="section-heading">
+          <p class="kicker" id="recent-notes-title">LIFESTYLE NOTES</p>
+          <p class="notes-order">NEWEST FIRST</p>
+        </div>
+        <div class="posts" id="blog-posts">
+<!--LIFESTYLEPOSTS-->
+        </div>
+      </section>
+
+      <section class="notes-return pad">
         <p class="note">You found this by clicking the dot. <a class="text-link" href="index.html">Back to the front</a>.</p>
+      </section>"""
+
+BODY["campus"] = """      <section class="notes-hero pad" aria-labelledby="campus-title">
+        <div class="notes-hero-copy enter-1">
+          <p class="eyebrow">CAMPUS <span>&times;</span> IN PROGRESS</p>
+          <h1 id="campus-title">Campus, between classes.</h1>
+          <p class="lead">Notes from PhD life at BYU &mdash; research questions, lessons in progress, and the people and places around the work.</p>
+          <div class="notes-topics" aria-label="Topics covered">
+            <span>PhD life</span>
+            <span>BYU</span>
+            <span>Research</span>
+          </div>
+        </div>
+
+        <div class="notes-playground enter-2" aria-hidden="true">
+          <p class="notes-board-label">FIELD NOTES / CAMPUS EDITION</p>
+          <svg class="notes-thread" viewBox="0 0 440 390" role="presentation">
+            <path d="M72 104 C162 26 224 178 352 92 S384 262 248 286 S106 246 76 326"/>
+          </svg>
+          <div class="note-paper note-paper-one">
+            <span>01 / ARRIVE</span>
+            <strong>Show up curious.</strong>
+            <p>Good questions can start anywhere.</p>
+          </div>
+          <div class="note-paper note-paper-two">
+            <span>02 / LEARN</span>
+            <strong>Ask again.</strong>
+            <p>The first answer is rarely the whole one.</p>
+          </div>
+          <div class="note-paper note-paper-three">
+            <span>03 / CONNECT</span>
+            <strong>Share the work.</strong>
+            <p>Ideas get better around people.</p>
+          </div>
+          <span class="notes-spark notes-spark-one">&#10022;</span>
+          <span class="notes-spark notes-spark-two">&#10022;</span>
+          <p class="notes-mantra">learn <i>&rarr;</i> question <i>&rarr;</i> share <i>&rarr;</i> repeat</p>
+        </div>
+      </section>
+
+      <section class="focus-strip notes-focus pad" aria-labelledby="campus-focus-title">
+        <p class="kicker" id="campus-focus-title">CAMPUS RHYTHMS</p>
+        <div class="focus-list">
+          <p>Learn in public.</p>
+          <p>Questions everywhere.</p>
+          <p>Ideas need people.</p>
+        </div>
+      </section>
+
+      <section class="notes-feed pad" aria-labelledby="campus-notes-title">
+        <div class="section-heading">
+          <p class="kicker" id="campus-notes-title">CAMPUS NOTES</p>
+          <p class="notes-order">NEWEST FIRST</p>
+        </div>
+        <div class="posts">
+<!--CAMPUSPOSTS-->
+        </div>
+      </section>
+
+      <section class="notes-return pad">
+        <p class="note">A quieter corner of the site. <a class="text-link" href="index.html">Back to the front</a>.</p>
       </section>"""
 
 BODY["cv"] = """      <section class="pad">
@@ -1414,6 +1575,7 @@ for filename, key, title, desc in PAGES:
         ogtype=("profile" if key in ("home", "about") else "website"),
         base=BASE_URL,
         key=key,
+        brand=header_brand(filename),
         nav=nav_links(filename),
         socials=socials_html,
         body=BODY[key],
@@ -1424,7 +1586,8 @@ for filename, key, title, desc in PAGES:
     )
     page = html.replace(LC_MARK, _LC).replace(CV_MARK, cv_actions())
     page = page.replace(PUB_MARK, pub_groups())
-    page = page.replace(POSTS_MARK, blog_posts())
+    page = page.replace(LIFESTYLE_POSTS_MARK, blog_posts("lifestyle"))
+    page = page.replace(CAMPUS_POSTS_MARK, blog_posts("campus"))
     for _pid in CITATIONS:
         page = page.replace("<!--CITE:%s-->" % _pid, cite_panel(_pid))
     page = clean_links(page)
@@ -1457,6 +1620,7 @@ _nf = SHELL.format(
     desc="That page doesn't exist.",
     title="Page not found \u2014 Solomon B. Pobee",
     key="notfound",
+    brand=header_brand("404.html"),
     canonical=BASE_URL + "/404.html",
     ogtitle="Page not found \u2014 Solomon B. Pobee",
     ogtype="website",

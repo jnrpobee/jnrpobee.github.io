@@ -48,9 +48,9 @@ python3 check.py
 ./start-local.sh
 ```
 
-Open <http://localhost:8000> to preview the site. Press `Ctrl+C` in the server
-window to stop it. If port 8000 is already in use, run `python serve.py 8001`
-and open <http://localhost:8001>.
+Open <http://localhost:8001> to preview the site. Press `Ctrl+C` in the server
+window to stop it. If port 8001 is already in use, run `python serve.py 8002`
+and open <http://localhost:8002>.
 
 `check.py` runs the build itself, so it is the most important command before a
 commit. Running `build.py` separately is still useful when you want to preview
@@ -204,9 +204,9 @@ Keep newest publications first within their group.
 
 ## Add a note or blog post
 
-The notes page is intentionally unlisted: it is not in the main navigation or
-sitemap, but anyone with its address can read it. Do not use it for private
-information.
+The Lifestyle and Campus pages are intentionally unlisted: they are not in the
+main navigation or sitemap, but anyone with their addresses can read them. Do
+not use them for private information.
 
 Add a dictionary inside the `POSTS = [...]` list in `build.py`:
 
@@ -214,6 +214,7 @@ Add a dictionary inside the `POSTS = [...]` list in `build.py`:
 POSTS = [
     {
         "date": "2026-10-04",
+        "category": "lifestyle",
         "title": "Post title",
         "body": """
           <p>First paragraph.</p>
@@ -224,9 +225,11 @@ POSTS = [
 ]
 ```
 
-Use an ISO date in `YYYY-MM-DD` form. Posts are sorted newest first during the
-build. The post body may use the HTML elements already styled for notes:
-`p`, `a.text-link`, `strong`, `em`, `ul`, `li`, and `blockquote`.
+Use an ISO date in `YYYY-MM-DD` form and set `category` to `lifestyle` or
+`campus`. Lifestyle entries appear on the main `/blog` page; campus entries
+appear on `/campus`. Posts are sorted newest first during the build. The post
+body may use the HTML elements already styled for notes: `p`, `a.text-link`,
+`strong`, `em`, `ul`, `li`, and `blockquote`.
 
 ## Update the CV
 

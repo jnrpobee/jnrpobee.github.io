@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 cd "$(dirname "$0")"
-python3 serve.py 8000
+python3 serve.py 8001

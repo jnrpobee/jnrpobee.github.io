@@ -142,7 +142,10 @@ def check_placeholders(site):
     # JS braces are always followed by whitespace, a newline or another rule,
     # so a word tightly wrapped in braces is a leftover format field.
     field = re.compile(r"\{[a-z_][a-z0-9_]*\}")
-    marker = re.compile(r"<!--\s*(CITE:[^>]*|LEETCODE|CVACTIONS|PUBGROUPS)\s*-->")
+    marker = re.compile(
+        r"<!--\s*(CITE:[^>]*|LEETCODE|CVACTIONS|PUBGROUPS|"
+        r"LIFESTYLEPOSTS|CAMPUSPOSTS)\s*-->"
+    )
     found = []
     for page in sorted(site.glob("*.html")):
         text = page.read_text(encoding="utf-8")
