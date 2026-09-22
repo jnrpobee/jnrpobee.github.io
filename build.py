@@ -53,6 +53,152 @@ import html as _html
 import json as _json
 import math as _math
 
+# ── citations ────────────────────────────────────────────────────────────
+# One entry per publication. The styles below are written out by hand rather
+# than generated from a template, because the conventions differ in ways a
+# formatter gets wrong: APA sentence-cases the article title, MLA shortens
+# the closing page number and collapses four authors to "et al.", IEEE
+# abbreviates both given names and the journal. They are plain text so that
+# copying gives something clean to paste; italics do not survive a copy
+# anyway. To add a publication, add a dict here and call cite_panel().
+CITE_STYLES = [("bibtex", "BibTeX"), ("apa", "APA"), ("mla", "MLA"),
+               ("chicago", "Chicago"), ("ieee", "IEEE")]
+
+CITATIONS = {
+    "c1": {
+        "bibtex": """@article{jones2025nature,
+  author  = {Jones, Michael and Kari, Tuomas and Reich, Daniel and
+             Ens, Barrett and Liu, Siyi and Pobee, Solomon B. and
+             Mueller, Florian},
+  title   = {Toward a Framework for the Design of Interactive
+             Technology for Nature Recreation},
+  journal = {International Journal of Human--Computer Interaction},
+  volume  = {41},
+  number  = {18},
+  pages   = {11691--11711},
+  year    = {2025},
+  doi     = {10.1080/10447318.2024.2443808},
+  url     = {https://doi.org/10.1080/10447318.2024.2443808}
+}""",
+        "apa": "Jones, M., Kari, T., Reich, D., Ens, B., Liu, S., Pobee, S. B., "
+               "& Mueller, F. (2025). Toward a framework for the design of "
+               "interactive technology for nature recreation. International "
+               "Journal of Human–Computer Interaction, 41(18), "
+               "11691–11711. https://doi.org/10.1080/10447318.2024.2443808",
+        "mla": "Jones, Michael, et al. “Toward a Framework for the Design of "
+               "Interactive Technology for Nature Recreation.” International "
+               "Journal of Human–Computer Interaction, vol. 41, no. 18, 2025, "
+               "pp. 11691–711. https://doi.org/10.1080/10447318.2024.2443808.",
+        "chicago": "Jones, Michael, Tuomas Kari, Daniel Reich, Barrett Ens, Siyi Liu, "
+                   "Solomon B. Pobee, and Florian Mueller. “Toward a Framework for "
+                   "the Design of Interactive Technology for Nature Recreation.” "
+                   "International Journal of Human–Computer Interaction 41, no. 18 "
+                   "(2025): 11691–11711. "
+                   "https://doi.org/10.1080/10447318.2024.2443808.",
+        "ieee": "M. Jones, T. Kari, D. Reich, B. Ens, S. Liu, S. B. Pobee, and "
+                "F. Mueller, “Toward a framework for the design of interactive "
+                "technology for nature recreation,” Int. J. Human–Computer "
+                "Interaction, vol. 41, no. 18, pp. 11691–11711, 2025, "
+                "doi: 10.1080/10447318.2024.2443808.",
+    },
+    "c2": {
+        "bibtex": """@incollection{iqbal2026mathbuddy,
+  author    = {Iqbal, Saba and Pobee, Solomon and
+               Adhikari, Akriti and Schooley, Benjamin},
+  title     = {MathBuddy: An LLM-Based Chatbot for Elementary
+               Math Education},
+  booktitle = {HCI International 2025 -- Late Breaking Papers},
+  series    = {Lecture Notes in Computer Science},
+  publisher = {Springer Nature Switzerland},
+  pages     = {392--403},
+  year      = {2026},
+  doi       = {10.1007/978-3-032-13174-4_25},
+  url       = {https://doi.org/10.1007/978-3-032-13174-4_25}
+}""",
+        "apa": "Iqbal, S., Pobee, S., Adhikari, A., & Schooley, B. (2026). "
+               "MathBuddy: An LLM-based chatbot for elementary math education. "
+               "In HCI International 2025 – Late breaking papers (Lecture Notes "
+               "in Computer Science, pp. 392–403). Springer Nature Switzerland. "
+               "https://doi.org/10.1007/978-3-032-13174-4_25",
+        "mla": "Iqbal, Saba, et al. “MathBuddy: An LLM-Based Chatbot for "
+               "Elementary Math Education.” HCI International 2025 – Late "
+               "Breaking Papers, Lecture Notes in Computer Science, Springer "
+               "Nature Switzerland, 2026, pp. 392–403. "
+               "https://doi.org/10.1007/978-3-032-13174-4_25.",
+        "chicago": "Iqbal, Saba, Solomon Pobee, Akriti Adhikari, and Benjamin Schooley. "
+                   "“MathBuddy: An LLM-Based Chatbot for Elementary Math "
+                   "Education.” In HCI International 2025 – Late Breaking "
+                   "Papers, 392–403. Lecture Notes in Computer Science. Springer "
+                   "Nature Switzerland, 2026. "
+                   "https://doi.org/10.1007/978-3-032-13174-4_25.",
+        "ieee": "S. Iqbal, S. Pobee, A. Adhikari, and B. Schooley, “MathBuddy: "
+                "An LLM-based chatbot for elementary math education,” in HCI "
+                "International 2025 – Late Breaking Papers, ser. Lecture Notes in "
+                "Computer Science. Springer Nature Switzerland, 2026, pp. 392–403, "
+                "doi: 10.1007/978-3-032-13174-4_25.",
+    },
+}
+
+
+def cite_panel(pid):
+    """The citation block for one publication: a format switcher and one
+    <pre> per format, all but the first hidden."""
+    entry = CITATIONS[pid]
+    tabs, blocks = [], []
+    for i, (key, label) in enumerate(CITE_STYLES):
+        first = (i == 0)
+        tabs.append(
+            '          <button type="button" class="cite-tab" role="tab" '
+            'id="%s-%s-tab" aria-controls="%s-%s" aria-selected="%s" '
+            'data-cite-style="%s" data-cite-panel="%s">%s</button>'
+            % (pid, key, pid, key, "true" if first else "false", key, pid, label))
+        blocks.append(
+            '<pre id="%s-%s" role="tabpanel" aria-labelledby="%s-%s" '
+            'data-cite-style="%s"%s%s>%s</pre>'
+            % (pid, key, pid, key, key,
+               "" if key == "bibtex" else ' class="cite-prose"',
+               "" if first else " hidden",
+               _html.escape(entry[key])))
+    return (
+        '              <div class="cite-panel" id="%s" hidden>\n'
+        '        <div class="cite-tabs" role="tablist" aria-label="Citation format">\n'
+        '%s\n'
+        '        </div>\n'
+        '%s\n'
+        '                <div class="copy-wrap"><button type="button" class="btn-s" '
+        'data-copy-bib="%s">Copy citation</button></div>\n'
+        '              </div>'
+        % (pid, "\n".join(tabs), "\n".join(blocks), pid))
+
+
+# ── the CV download ──────────────────────────────────────────────────────
+# Drop a PDF into assets/cv/ and both buttons on the CV page point at it:
+# Download saves it, Print sends that file to the printer rather than the web
+# page. Leave the folder empty and the Download button is left out entirely
+# rather than linking to a file that is not there — a dead reference fails
+# the deploy's asset check and stops the whole site publishing — and Print
+# falls back to printing the page, so the button is never dead. The filename
+# is yours to choose; if there is more than one PDF the last by name wins, so
+# dated names like cv-2026-09.pdf sort the newest to the end.
+CV_DIR = OUT / "assets" / "cv"
+CV_MARK = "<!--CVACTIONS-->"
+
+
+def cv_actions():
+    pdfs = sorted(p.name for p in CV_DIR.glob("*.pdf")) if CV_DIR.is_dir() else []
+    out = []
+    if pdfs:
+        href = "assets/cv/%s" % pdfs[-1]
+        out.append('<a class="button button-primary" href="%s" download>'
+                   'Download PDF <span aria-hidden="true">&darr;</span></a>' % href)
+        out.append('<button type="button" class="button button-secondary" '
+                   'data-print="%s">Print CV</button>' % href)
+    else:
+        out.append('<button type="button" class="button button-secondary" '
+                   'data-print="">Print this page</button>')
+    return "\n          " + "\n          ".join(out)
+
+
 LC_MARK = "<!--LEETCODE-->"
 # The colours live in styles.css so they can follow the theme; these
 # are the class suffixes that select them.
@@ -725,23 +871,7 @@ BODY["publications"] = """      <section class="pad">
                 <button type="button" class="btn-s" data-cite="c1" aria-expanded="false" aria-controls="c1">Cite</button>
                 <button type="button" class="btn-s" data-copy-doi="10.1080/10447318.2024.2443808">Copy DOI</button>
               </div>
-              <div class="cite-panel" id="c1" hidden>
-<pre>@article{jones2025nature,
-  author  = {Jones, Michael and Kari, Tuomas and Reich, Daniel and
-             Ens, Barrett and Liu, Siyi and Pobee, Solomon B. and
-             Mueller, Florian},
-  title   = {Toward a Framework for the Design of Interactive
-             Technology for Nature Recreation},
-  journal = {International Journal of Human--Computer Interaction},
-  volume  = {41},
-  number  = {18},
-  pages   = {11691--11711},
-  year    = {2025},
-  doi     = {10.1080/10447318.2024.2443808},
-  url     = {https://doi.org/10.1080/10447318.2024.2443808}
-}</pre>
-                <div class="copy-wrap"><button type="button" class="btn-s" data-copy-bib="c1">Copy BibTeX</button></div>
-              </div>
+<!--CITE:c1-->
             </div>
           </article>
           </div>
@@ -762,22 +892,7 @@ BODY["publications"] = """      <section class="pad">
                 <button type="button" class="btn-s" data-cite="c2" aria-expanded="false" aria-controls="c2">Cite</button>
                 <button type="button" class="btn-s" data-copy-doi="10.1007/978-3-032-13174-4_25">Copy DOI</button>
               </div>
-              <div class="cite-panel" id="c2" hidden>
-<pre>@incollection{iqbal2026mathbuddy,
-  author    = {Iqbal, Saba and Pobee, Solomon and
-               Adhikari, Akriti and Schooley, Benjamin},
-  title     = {MathBuddy: An LLM-Based Chatbot for Elementary
-               Math Education},
-  booktitle = {HCI International 2025 -- Late Breaking Papers},
-  series    = {Lecture Notes in Computer Science},
-  publisher = {Springer Nature Switzerland},
-  pages     = {392--403},
-  year      = {2026},
-  doi       = {10.1007/978-3-032-13174-4_25},
-  url       = {https://doi.org/10.1007/978-3-032-13174-4_25}
-}</pre>
-                <div class="copy-wrap"><button type="button" class="btn-s" data-copy-bib="c2">Copy BibTeX</button></div>
-              </div>
+<!--CITE:c2-->
             </div>
           </article>
           </div>
@@ -859,6 +974,8 @@ BODY["cv"] = """      <section class="pad">
         <p class="eyebrow enter-1">CURRICULUM <span>&times;</span> VITAE</p>
         <h1 class="enter-1">Solomon B. Pobee</h1>
         <p class="lead enter-2">Computer Science PhD student &middot; Human&ndash;Computer Interaction &middot; Brigham Young University</p>
+        <div class="cv-actions enter-2"><!--CVACTIONS-->
+        </div>
       </section>
 
       <section class="pad" style="padding-top:20px;">
@@ -1042,8 +1159,12 @@ for filename, key, title, desc in PAGES:
         pager=pager(filename),
         jsonld=(JSONLD if key == "home" else (SCHOLAR_LD if key == "publications" else "")),
     )
-    (OUT / filename).write_text(clean_links(html.replace(LC_MARK, _LC)), encoding="utf-8")
-    print("wrote", filename, len(html), "bytes")
+    page = html.replace(LC_MARK, _LC).replace(CV_MARK, cv_actions())
+    for _pid in CITATIONS:
+        page = page.replace("<!--CITE:%s-->" % _pid, cite_panel(_pid))
+    page = clean_links(page)
+    (OUT / filename).write_text(page, encoding="utf-8")
+    print("wrote", filename, len(page), "bytes")
 
 # ── sitemap.xml, robots.txt and a 404 page ────────────────────────
 import datetime

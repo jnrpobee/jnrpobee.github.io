@@ -253,10 +253,87 @@
       btn.textContent = open ? 'Cite' : 'Hide';
     });
   });
+  /* Citation format switcher. Each panel holds one <pre> per style and shows
+     one at a time; the copy button takes whichever is visible, so there is a
+     single source of truth for what gets copied. */
+  function showCiteStyle(panelId, style) {
+    var panel = document.getElementById(panelId);
+    if (!panel) return;
+    $$('pre[data-cite-style]', panel).forEach(function (pre) {
+      pre.hidden = pre.getAttribute('data-cite-style') !== style;
+    });
+    $$('[data-cite-style][data-cite-panel]', panel).forEach(function (tab) {
+      tab.setAttribute('aria-selected',
+        String(tab.getAttribute('data-cite-style') === style));
+    });
+  }
+  $$('[data-cite-panel]').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      showCiteStyle(tab.getAttribute('data-cite-panel'),
+                    tab.getAttribute('data-cite-style'));
+    });
+    tab.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      var tabs = $$('[data-cite-panel="' + tab.getAttribute('data-cite-panel') + '"]');
+      var i = tabs.indexOf(tab);
+      var next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+      if (!next) return;
+      e.preventDefault();
+      next.click();
+      next.focus();
+    });
+  });
+
   $$('[data-copy-bib]').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var pre = $('pre', document.getElementById(btn.getAttribute('data-copy-bib')));
-      copyText(pre.textContent, 'BibTeX copied');
+      var panel = document.getElementById(btn.getAttribute('data-copy-bib'));
+      var pre = $$('pre[data-cite-style]', panel).filter(function (p) { return !p.hidden; })[0]
+             || $('pre', panel);
+      var label = pre.getAttribute('data-cite-style') === 'bibtex' ? 'BibTeX' : 'Citation';
+      copyText(pre.textContent, label + ' copied');
+    });
+  });
+
+  /* Print. With a CV PDF in assets/cv/ the button carries its path and that
+     file is what gets printed, not the web page. The PDF goes into an
+     offscreen iframe and we print that; Chrome, Edge and Firefox all handle
+     it. Safari will not print a PDF in an iframe, so if the call throws, or
+     the frame has not loaded after a moment, the file is opened in a tab
+     instead and the reader prints from the viewer. An empty data-print means
+     no PDF has been added yet, and the page itself is printed. */
+  function printPdf(url) {
+    var done = false;
+    var frame = document.createElement('iframe');
+    frame.setAttribute('aria-hidden', 'true');
+    frame.style.cssText =
+      'position:fixed;right:0;bottom:0;width:1px;height:1px;opacity:0;border:0;';
+    function fallback() {
+      if (done) return;
+      done = true;
+      if (frame.parentNode) frame.parentNode.removeChild(frame);
+      window.open(url, '_blank', 'noopener');
+    }
+    var timer = setTimeout(fallback, 4000);
+    frame.onload = function () {
+      clearTimeout(timer);
+      if (done) return;
+      try {
+        frame.contentWindow.focus();
+        frame.contentWindow.print();
+        done = true;
+      } catch (e) {
+        fallback();
+      }
+    };
+    frame.onerror = fallback;
+    frame.src = url;
+    document.body.appendChild(frame);
+  }
+
+  $$('[data-print]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var url = btn.getAttribute('data-print');
+      if (url) printPdf(url); else window.print();
     });
   });
   $$('[data-copy-doi]').forEach(function (btn) {

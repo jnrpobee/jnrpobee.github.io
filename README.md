@@ -66,6 +66,26 @@ runs daily so the LeetCode numbers stay current without a push.
 That script never blocks a deploy: if LeetCode is unreachable or answers oddly,
 it warns and leaves the last known-good numbers in place.
 
+### The CV download and print
+
+Put a PDF in `assets/cv/` and both buttons on the CV page use it: **Download
+PDF** saves it, and **Print CV** sends that file to the printer rather than
+the web page.
+
+Leave the folder empty and the Download button is left out, so the page never
+links to a file that is not there — a dead reference fails the deploy's asset
+check and stops the site publishing. Print then falls back to printing the CV
+page itself, using the print rules in `styles.css`, so the button is never
+dead.
+
+The filename is yours to choose. If there is more than one PDF the last by
+name wins, so dated names like `cv-2026-09.pdf` sort the newest to the end and
+older versions can stay in the folder.
+
+Printing the PDF loads it in an offscreen iframe and prints that. Safari will
+not print a PDF in an iframe, so there it opens in a new tab instead and the
+reader prints from the PDF viewer.
+
 ### Other branches
 
 `coursework` holds earlier project work from BYU-Idaho, kept for reference.
