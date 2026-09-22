@@ -244,13 +244,45 @@
   var pubs = $$('.pub');
   var countEl = $('#pub-count');
   var emptyEl = $('#pub-empty');
+  var searchEl = $('#pub-search');
+  var activeTopic = 'all';
+
+  /* The searchable text of each entry, gathered once. Title, authors and
+     venue — not the description, so typing a common word like "design"
+     does not match half the page through its prose. */
+  var haystack = pubs.map(function (p) {
+    return ['.pub-title', '.pub-authors', '.pub-venue'].map(function (sel) {
+      var el = $(sel, p);
+      return el ? el.textContent : '';
+    }).join(' \u0001 ').toLowerCase();
+  });
+
+  /* Every whitespace-separated word has to appear somewhere, so "pobee
+     nature" finds the paper that is both, in either order. */
+  function matchesQuery(i, terms) {
+    for (var t = 0; t < terms.length; t++) {
+      if (haystack[i].indexOf(terms[t]) === -1) return false;
+    }
+    return true;
+  }
+
   function applyFilter(f) {
+    if (f) activeTopic = f;
+    f = activeTopic;
+    var q = searchEl ? searchEl.value.trim().toLowerCase() : '';
+    var terms = q ? q.split(/\s+/) : [];
     var shown = 0;
-    pubs.forEach(function (p) {
-      var match = (f === 'all') || (p.getAttribute('data-topic') === f);
+    pubs.forEach(function (p, i) {
+      var match = ((f === 'all') || (p.getAttribute('data-topic') === f))
+                  && (!terms.length || matchesQuery(i, terms));
       p.hidden = !match;
       if (match) shown++;
     });
+    if (emptyEl) {
+      emptyEl.textContent = q
+        ? 'Nothing matches “' + q + '”.'
+        : 'No publications in this area yet.';
+    }
     // a venue group with nothing left in it shouldn't sit there empty
     $$('.pub-group').forEach(function (g) {
       var visible = $$('.pub', g).filter(function (p) { return !p.hidden; }).length;
@@ -269,6 +301,31 @@
   chips.forEach(function (c) {
     c.addEventListener('click', function () { applyFilter(c.getAttribute('data-filter')); });
   });
+
+  if (searchEl) {
+    searchEl.addEventListener('input', function () { applyFilter(); });
+    /* Escape clears rather than closing anything, which is what a search
+       field inside a page is expected to do. */
+    searchEl.addEventListener('keydown', function (e) {
+      if ((e.key || '') !== 'Escape') return;
+      e.stopPropagation();
+      if (searchEl.value) { e.preventDefault(); searchEl.value = ''; applyFilter(); }
+      else { searchEl.blur(); }
+    });
+    /* "/" jumps to the field, the way it does on GitHub — but not while
+       the reader is already typing somewhere, or a slash could never be
+       typed into any other field on the page. The command palette is on
+       Cmd/Ctrl-K, so there is no clash. */
+    document.addEventListener('keydown', function (e) {
+      if ((e.key || '') !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+      var t = e.target || {};
+      var tag = (t.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'select' || t.isContentEditable) return;
+      e.preventDefault();
+      searchEl.focus();
+      searchEl.select();
+    });
+  }
 
   /* ── citations ───────────────────────────────────────────── */
   $$('[data-cite]').forEach(function (btn) {
