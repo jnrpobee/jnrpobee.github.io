@@ -383,7 +383,7 @@ p:last-child{margin-bottom:0;}
   max-width:820px;margin:0;color:var(--dim-lead);font-family:var(--serif);
   font-size:clamp(1.65rem,3vw,2.55rem);line-height:1.22;
 }
-.body-copy p{color:var(--dim);font-size:1.03rem;line-height:1.75;max-width:62ch;}
+.body-copy p{color:var(--dim);font-size:16px;line-height:1.75;max-width:62ch;}
 .body-copy strong{color:var(--text);}
 
 /* ═══════════ home hero ═══════════ */
