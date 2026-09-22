@@ -1115,7 +1115,7 @@ BODY["about"] = """      <section class="pad">
           <ul class="links">
             <li><a href="https://github.com/jnrpobee" target="_blank" rel="noopener"><span>GitHub</span><span class="h">jnrpobee</span></a></li>
             <li><a href="https://scholar.google.com/citations?user=02WgxKoAAAAJ" target="_blank" rel="noopener"><span>Google Scholar</span><span class="h">Publications</span></a></li>
-            <li><a href="https://orcid.org/0009-0007-5172-0410" target="_blank" rel="noopener"><span>ORCID</span><span class="h">0009-0007-5172-0410</span></a></li>
+            <li><a href="https://orcid.org/0009-0007-5172-0410" target="_blank" rel="noopener"><span>ORCID</span><span class="h">Solomon B. Pobee</span></a></li>
             <li><a href="https://www.researchgate.net/profile/Solomon-Pobee" target="_blank" rel="noopener"><span>ResearchGate</span><span class="h">Solomon-Pobee</span></a></li>
             <li><a href="https://linkedin.com/in/jnrpobee" target="_blank" rel="noopener"><span>LinkedIn</span><span class="h">in/jnrpobee</span></a></li>
             <li><a href="https://leetcode.com/u/pobee/" target="_blank" rel="noopener"><span>LeetCode</span><span class="h">pobee</span></a></li>
