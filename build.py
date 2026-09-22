@@ -371,6 +371,18 @@ def pub_groups():
 # The body is HTML so a post can hold a list or a quote. Keep it to the
 # tags already styled on the site: p, a.text-link, strong, em, ul, li,
 # blockquote. Then run `python build.py` and `python check.py`.
+#======== Test Posts =========
+    {
+        "date": "2026-10-04",          # ISO; shown in the reader's format
+        "title": "What I learned watching coaches ignore dashboards",
+        "body": """
+          <p>First paragraph.</p>
+          <p>Second paragraph. Links look like
+             <a class="text-link" href="https://example.org/">this</a>.</p>
+""",
+    },
+
+#==========================
 POSTS = [
 ]
 POSTS_MARK = "<!--POSTS-->"
