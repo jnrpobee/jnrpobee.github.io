@@ -66,6 +66,25 @@ runs daily so the LeetCode numbers stay current without a push.
 That script never blocks a deploy: if LeetCode is unreachable or answers oddly,
 it warns and leaves the last known-good numbers in place.
 
+### Adding a publication
+
+Publications are grouped by kind on the page: Journal Articles, Conference
+Papers, Book Chapters, Workshop Papers, and Posters & Extended Abstracts, in
+that order. A kind with nothing in it is not shown at all, so the page never
+carries an empty heading — add the first conference paper and the Conference
+Papers section appears in the right place on the next build.
+
+Both live in `build.py`, with a worked template in the comments:
+
+1. Add the citation to `CITATIONS` under a new id (`"c3"`, then `"c4"`).
+2. Copy the template from the comment above `PUB_GROUPS` into the matching
+   list in `PUBS`, and fill in the parts in capitals.
+3. `python build.py`, then `python check.py`.
+
+The comments there say which kind is which, what `TOPIC` has to match, and
+what to change if you would rather file the MathBuddy paper as a conference
+paper than a book chapter.
+
 ### The CV download and print
 
 Put a PDF in `assets/cv/` and both buttons on the CV page use it: **Download

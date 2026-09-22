@@ -32,7 +32,15 @@
     var d = new Date(+m[1], +m[2] - 1, +m[3]);
     if (isNaN(d.getTime())) return;
     try {
-      el.textContent = d.toLocaleDateString();
+      /* Month spelled out, not numeric: "September 21, 2026" for a US reader
+         and "21 September 2026" for a British one. The locale still decides
+         the order, so it stays the reader's own convention, but nobody has to
+         work out whether 9/21 means September or the 9th. The explicit
+         options are used rather than dateStyle:'long' because they are
+         supported further back and produce the same result. */
+      el.textContent = d.toLocaleDateString(undefined, {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
     } catch (e) { /* keep the spelled-out date */ }
   });
 

@@ -76,7 +76,16 @@ from urllib.parse import quote as _quote
 # the closing page number and collapses four authors to "et al.", IEEE
 # abbreviates both given names and the journal. They are plain text so that
 # copying gives something clean to paste; italics do not survive a copy
-# anyway. To add a publication, add a dict here and call cite_panel().
+# anyway.
+#
+# Each key here is a publication id — "c1", "c2", and the next one is
+# "c3". The id ties three things together: the entry in PUBS below, the
+# Cite button's data-cite attribute, and the <!--CITE:id--> comment that
+# cite_panel() replaces with the panel. See HOW TO ADD A PUBLICATION under
+# "publications" further down.
+#
+# A format you leave out simply has no tab, so it is fine to add an entry
+# with only BibTeX at first and fill in the rest later.
 CITE_STYLES = [("bibtex", "BibTeX"), ("apa", "APA"), ("mla", "MLA"),
                ("chicago", "Chicago"), ("ieee", "IEEE")]
 
@@ -160,8 +169,16 @@ def cite_panel(pid):
     """The citation block for one publication: a format switcher and one
     <pre> per format, all but the first hidden."""
     entry = CITATIONS[pid]
+    # Only the formats this entry actually has, in CITE_STYLES order, so a
+    # publication can go up with BibTeX alone and gain the others later.
+    # The first one present is the tab that opens.
+    styles = [(k, l) for k, l in CITE_STYLES if entry.get(k)]
+    if not styles:
+        raise ValueError(
+            "CITATIONS[%r] has no citation formats — the Cite button would "
+            "open an empty panel. Give it at least a bibtex entry." % pid)
     tabs, blocks = [], []
-    for i, (key, label) in enumerate(CITE_STYLES):
+    for i, (key, label) in enumerate(styles):
         first = (i == 0)
         tabs.append(
             '          <button type="button" class="cite-tab" role="tab" '
@@ -188,11 +205,54 @@ def cite_panel(pid):
 
 
 # ── publications ────────────────────────────────────────────────────────
-# The kinds of publication the page can show, in the order they appear.
-# A kind with nothing in it is not rendered at all — an empty "Posters"
+# The kinds of publication the page can show, in the order they appear on
+# it. A kind with nothing in it is not rendered at all: an empty "Posters"
 # heading would read as a gap rather than a section waiting to be filled.
-# To add one, append the article markup to the right list; the heading,
-# the count and the topic filter all follow from that.
+# The heading, the count beside it and the topic filter all follow from
+# whatever is in PUBS below, so adding an entry is the only step.
+#
+# ─── HOW TO ADD A PUBLICATION ───────────────────────────────────────────
+#
+# 1. Add its citation to CITATIONS above, under a new id: "c3", then "c4",
+#    and so on. Give it whichever of the five formats you have; the tabs
+#    are generated from the keys that are present.
+#
+# 2. Copy the template below into the list for its kind in PUBS, and fill
+#    in the parts in CAPITALS. The three places that carry the id must all
+#    say the same thing: data-cite, aria-controls and the CITE comment.
+#
+# 3. Run `python build.py`, then `python check.py` before pushing.
+#
+#     """\
+#       <article class="pub" data-topic="TOPIC">
+#         <div class="pub-kind">KIND<br>YEAR</div>
+#         <div>
+#           <a class="pub-title" href="DOI-URL" target="_blank" rel="noopener">TITLE</a>
+#           <p class="pub-authors">Co Author, <strong>Solomon B. Pobee</strong>, Another Author</p>
+#           <p class="pub-venue">VENUE &middot; PAGES</p>
+#           <p class="pub-desc">A sentence or two on what the work found.</p>
+#           <div class="cite-row">
+#             <a class="btn-s btn-go" href="DOI-URL" target="_blank" rel="noopener">Read paper <span aria-hidden="true">&#8599;</span></a>
+#             <button type="button" class="btn-s" data-cite="c3" aria-expanded="false" aria-controls="c3">Cite</button>
+#             <button type="button" class="btn-s" data-copy-doi="10.XXXX/YYYYY">Copy DOI</button>
+#           </div>
+#           <!--CITE:c3-->
+#         </div>
+#       </article>
+# """,
+#
+#   KIND is the small label down the left: Journal, Conference, Chapter,
+#   Workshop, Poster. It is free text, so it can read "Late Breaking" or
+#   anything else that fits.
+#
+#   TOPIC must match one of the filter chips on the page — "nature" or
+#   "learning" today. If the work is about something else, add a chip in
+#   BODY["publications"] first, or the entry will disappear whenever a
+#   visitor uses the filter.
+#
+#   data-copy-doi takes the bare DOI with no https://doi.org/ in front of
+#   it; the Copy DOI button adds that itself.
+# ────────────────────────────────────────────────────────────────────────
 PUB_GROUPS = [
     ("journal", "Journal Articles"),
     ("conference", "Conference Papers"),
@@ -203,6 +263,8 @@ PUB_GROUPS = [
 PUB_MARK = "<!--PUBGROUPS-->"
 
 PUBS = {
+    # ── JOURNAL ARTICLES ────────────────────────────────────────────────
+    # A peer-reviewed article in a journal.
     "journal": [
         """\
           <article class="pub" data-topic="nature">
@@ -222,7 +284,18 @@ PUBS = {
           </article>
 """,
     ],
+    # ── CONFERENCE PAPERS ───────────────────────────────────────────────
+    # A full paper presented at a conference: CHI, CSCW, UIST, IEEE VR,
+    # ASSETS and the like. Not the same as a Book Chapter below, even when
+    # the proceedings are published as a book — file it by how you would
+    # cite it. Paste the template from the comment above between these
+    # brackets.
     "conference": [],
+    # ── BOOK CHAPTERS ───────────────────────────────────────────────────
+    # A chapter in an edited volume. The MathBuddy paper sits here because
+    # it is published as an LNCS chapter; if you would rather cite it as a
+    # conference paper, move it to "conference" and change its pub-kind
+    # label from "Chapter" to "Conference".
     "chapter": [
         """\
           <article class="pub" data-topic="learning">
@@ -242,7 +315,13 @@ PUBS = {
           </article>
 """,
     ],
+    # ── WORKSHOP PAPERS ─────────────────────────────────────────────────
+    # A paper at a workshop attached to a conference, usually shorter and
+    # not in the main proceedings.
     "workshop": [],
+    # ── POSTERS AND EXTENDED ABSTRACTS ──────────────────────────────────
+    # Short-format contributions: posters, late-breaking work, extended
+    # abstracts, demos.
     "poster": [],
 }
 
