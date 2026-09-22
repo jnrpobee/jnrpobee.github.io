@@ -401,7 +401,7 @@ p:last-child{margin-bottom:0;}
   margin:0;max-width:780px;font-family:var(--serif);
   font-size:clamp(2.1rem,4vw,3.7rem);line-height:1.02;color:var(--text-2);
 }
-.hero-summary{max-width:640px;margin:26px 0 0;color:var(--dim);font-size:1.05rem;line-height:1.7;}
+.hero-summary{max-width:640px;margin:26px 0 0;color:var(--dim);font-size:16.8px;line-height:1.7;}
 .hero-actions{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap;}
 
 .button{
