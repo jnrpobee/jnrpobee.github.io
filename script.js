@@ -17,6 +17,25 @@
     return Array.prototype.slice.call((ctx || document).querySelectorAll(sel));
   }
 
+  /* ── dates in the reader's own format ────────────────────── */
+  /* Every real date on the site carries its ISO value in datetime="". The
+     page ships with the month spelled out, which is unambiguous anywhere;
+     here it becomes whatever the reader's machine uses — 9/19/2026 in the
+     US, 19/09/2026 in most other places. If anything below fails the
+     spelled-out text simply stays, which is why it is the fallback. */
+  $$('time[datetime]').forEach(function (el) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(el.getAttribute('datetime') || '');
+    if (!m) return;
+    /* Built from the parts, not from the string: new Date('2026-09-19') is
+       parsed as UTC midnight, which is still the 18th anywhere west of
+       Greenwich — the date would read a day early across the Americas. */
+    var d = new Date(+m[1], +m[2] - 1, +m[3]);
+    if (isNaN(d.getTime())) return;
+    try {
+      el.textContent = d.toLocaleDateString();
+    } catch (e) { /* keep the spelled-out date */ }
+  });
+
   /* ── current year ────────────────────────────────────────── */
   $$('[data-year]').forEach(function (el) {
     el.textContent = new Date().getFullYear();

@@ -405,8 +405,16 @@ def lc_section():
             _months = ("January", "February", "March", "April", "May", "June",
                        "July", "August", "September", "October", "November",
                        "December")
-            bits.append("Last checked %d %s %d."
-                        % (_d.day, _months[_d.month - 1], _d.year))
+            # The ISO date goes in datetime="" and script.js rewrites the text
+            # to however the reader's own machine writes dates — 9/19/2026 in
+            # the US, 19/09/2026 in most of the rest of the world. That has to
+            # happen in the browser: one file is served to every visitor, so
+            # the build cannot know whose convention to use. The spelled-out
+            # form below is what stays if scripting is off, and it reads the
+            # same either way round.
+            bits.append('Last checked <time datetime="%s">%d %s %d</time>.'
+                        % (_html.escape(when), _d.day,
+                           _months[_d.month - 1], _d.year))
         except Exception:
             pass
     if bits:
