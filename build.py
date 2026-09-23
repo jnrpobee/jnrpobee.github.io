@@ -796,7 +796,10 @@ def _month_select():
 
     It renders even when there is only one, so the row is the same row on
     a young page as on an old one. With one month it is a menu with one
-    thing in it, which is honest about how much has been written."""
+    thing in it, which is honest about how much has been written.
+
+    The newest month is selected, so the page opens on the current
+    edition; "Every month" is always there to see the whole archive."""
     months = _months_in_use()
     if not months:
         return ""
@@ -804,9 +807,15 @@ def _month_select():
     out.append('            <span class="sr-only">Month</span>')
     out.append('            <select>')
     out.append('              <option value="">Every month</option>')
-    for key, count in months:
-        out.append('              <option value="%s">%s &middot; %d</option>'
-                   % (_html.escape(key), _html.escape(key), count))
+    for i, (key, count) in enumerate(months):
+        # The page opens on the newest month that has writing in it, which
+        # is the current month whenever there is anything from this month.
+        # Deliberately not today's actual month: post nothing in October
+        # and a page defaulting to October would open empty and look
+        # broken. The newest month with notes always has notes.
+        out.append('              <option value="%s"%s>%s &middot; %d</option>'
+                   % (_html.escape(key), ' selected' if i == 0 else "",
+                      _html.escape(key), count))
     out.append('            </select>')
     out.append('          </label>')
     return "\n".join(out)

@@ -662,7 +662,7 @@
     var countOut = filters && filters.querySelector('[data-filter-count]');
     var heads = [].slice.call(document.querySelectorAll('[data-month-head]'));
     var picked = '';          /* '' means every category */
-    var month = '';           /* '' means every month */
+    var month = '';           /* '' means every month; set below */
     var perPage = STEP;       /* 0 means everything */
     var shown = perPage;
 
@@ -742,6 +742,11 @@
     var monthPick = document.querySelector('[data-month-pick]');
     if (monthPick) {
       monthPick.hidden = false;
+      /* The markup marks the newest month selected, so the page opens on
+         the current edition. Reading it back from the select rather than
+         assuming keeps one source of truth: change the default in
+         build.py and this follows without being told. */
+      month = monthPick.querySelector('select').value;
       monthPick.querySelector('select').addEventListener('change', function (e) {
         month = e.target.value;
         shown = perPage;
