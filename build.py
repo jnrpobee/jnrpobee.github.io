@@ -48,6 +48,13 @@ def public_path(filename):
 # else, but kept out of the nav, the pager and sitemap.xml.
 UNLISTED = ["blog.html"]
 
+# What the blog is called. It appears in the browser tab, in the blog's own
+# nav, and in the labels a screen reader reads out on the two doors into it
+# (the status dot in the header, the copyright line in the footer). The
+# masthead in BODY["blog"] carries it too and is written out in full there,
+# since it is set as display type rather than a label.
+BLOG_NAME = "Marginalia"
+
 _LINK = re.compile(r'(href|action)="(' + "|".join([f for f, _ in NAV] + UNLISTED) + r')((?:#|\?)[^"]*)?"')
 
 def clean_links(html):
@@ -763,8 +770,8 @@ PAGES = [
      "Curriculum vitae for Solomon B. Pobee, Computer Science PhD student and HCI researcher."),
     # Unlisted — see UNLISTED above. Generated like any other page, but
     # absent from the nav, the pager and sitemap.xml, and marked noindex.
-    ("blog.html", "blog", "Lifestyle — Solomon B. Pobee",
-     "Lifestyle notes and personal reflections by Solomon B. Pobee."),
+    ("blog.html", "blog", BLOG_NAME + " — Solomon B. Pobee",
+     "Marginalia: notes on lifestyle, campus and the PhD, kept by Solomon B. Pobee."),
 ]
 
 SCHOLAR_LD = """<script type="application/ld+json">
@@ -866,7 +873,7 @@ ART_COACH = """<svg viewBox="0 0 400 150" role="presentation">
 # One page now, so there is nothing to navigate between. The header
 # still shows the "Exit the blog" brand, which is the only way out.
 BLOG_NAV = [
-    ("blog.html", "Notes"),
+    ("blog.html", BLOG_NAME),
 ]
 
 
@@ -983,7 +990,7 @@ SHELL = """<!DOCTYPE html>
 
       <div class="header-end">
         <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><g class="i-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/></g><path class="i-moon" d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.4 8.4 0 1 0 10.2 10.2z"/></svg></button>
-        <p class="header-note"><a class="status-dot" href="blog.html" aria-label="Lifestyle blog"></a><span class="header-note-text">Building technology<br>for more human potential.</span></p>
+        <p class="header-note"><a class="status-dot" href="blog.html" aria-label="{blogname}"></a><span class="header-note-text">Building technology<br>for more human potential.</span></p>
       </div>
 
       <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open navigation">
@@ -1016,7 +1023,7 @@ SHELL = """<!DOCTYPE html>
       <div class="footer-brand">
         <img class="logo-mark logo-mark-sm" src="assets/logo-mark.svg" alt="" width="34" height="34" loading="lazy">
         <span class="footer-divider"></span>
-        <a class="footer-copy" href="blog.html" aria-label="Lifestyle blog">Solomon B. Pobee &middot; &copy; <span data-year>2026</span></a>
+        <a class="footer-copy" href="blog.html" aria-label="{blogname}">Solomon B. Pobee &middot; &copy; <span data-year>2026</span></a>
       </div>
       <div class="footer-links">
         <a href="mailto:jnrpobee@byu.edu">jnrpobee@byu.edu</a>
@@ -1402,9 +1409,14 @@ BODY["about"] = """      <section class="pad">
 
 BODY["blog"] = """      <section class="notes-hero pad" aria-labelledby="notes-title">
         <div class="notes-hero-copy enter-1">
-          <p class="eyebrow">NOTES <span>&times;</span> IN PROGRESS</p>
-          <h1 id="notes-title">Lifestyle, lately.</h1>
-          <p class="lead">Small reflections on work, routines, curiosity, and the parts of life that shape how I think.</p>
+          <!-- The masthead. The name is set in the serif at display size over
+               a hairline rule, with a dateline above it and the standfirst
+               below, the way a magazine opens a section. Change the name in
+               one place and the nav label, the <title> and the two secret
+               doors follow — see BLOG_NAME near the top of this file. -->
+          <p class="eyebrow">KEPT SINCE 2026 <span>&times;</span> PROVO, UTAH</p>
+          <h1 id="notes-title" class="masthead-name">Marginalia</h1>
+          <p class="masthead-standfirst">Small reflections on work, routines, curiosity, and the parts of life that shape how I think.</p>
           <div class="notes-topics" aria-label="Topics covered">
             <span>Lifestyle</span>
             <span>Campus life</span>
@@ -1625,6 +1637,7 @@ _LC = lc_section()
 
 for filename, key, title, desc in PAGES:
     html = SHELL.format(
+        blogname=BLOG_NAME,
         desc=desc,
         title=title,
         canonical=BASE_URL + public_path(filename),
@@ -1675,6 +1688,7 @@ write(OUT / "robots.txt",
 print("wrote robots.txt")
 
 _nf = SHELL.format(
+    blogname=BLOG_NAME,
     desc="That page doesn't exist.",
     title="Page not found \u2014 Solomon B. Pobee",
     key="notfound",

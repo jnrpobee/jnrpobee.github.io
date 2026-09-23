@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 34" role="img" aria-hidden="true">
+  <!-- A pushpin, drawn head-on: dome, neck, and the short length of needle
+       that shows before it enters the paper. Fixed colours, not themed -
+       a red pin is a red pin in either theme. -->
+  <path d="M13.9 17 h2.2 l-.85 9 h-.5 z" fill="#7f858d"/>
+  <path d="M15 17 h1.1 l-.85 9 h-.25 z" fill="#c9ced5"/>
+  <path d="M10.6 11 h8.8 l-1.1 8.4 q-.3 1.5 -3.3 1.5 q-3 0 -3.3 -1.5 z" fill="#9d241e"/>
+  <ellipse cx="15" cy="11.6" rx="11.4" ry="3.4" fill="#8f1f1a"/>
+  <path d="M3.6 11.6 a11.4 9.6 0 0 1 22.8 0 z" fill="#d23a30"/>
+  <ellipse cx="10.4" cy="6.2" rx="3.6" ry="2.3" fill="#fff" opacity=".5" transform="rotate(-25 10.4 6.2)"/>
+</svg>

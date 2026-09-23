@@ -353,6 +353,27 @@ a.status-dot:focus-visible{
 .notes-hero-copy{position:relative;z-index:2;}
 .notes-hero h1{font-size:clamp(3.2rem,6vw,5.8rem);}
 .notes-hero .lead{max-width:680px;font-size:clamp(1.45rem,2.6vw,2.25rem);}
+
+/* ─── the masthead ──────────────────────────────────────────────────────
+   The blog opens the way a magazine opens a section rather than the way
+   the rest of the site opens a page: a dateline, the name set large in the
+   serif, a hairline rule under it, and a standfirst in italic beneath.
+
+   The rule is drawn on the heading but sized to the standfirst column, so
+   it runs the width of the text block instead of stopping at the end of
+   the word. That is what makes it read as a masthead rule and not as an
+   underlined heading. */
+.notes-hero h1.masthead-name{
+  max-width:680px;margin:.14em 0 0;padding-bottom:.14em;
+  border-bottom:1px solid var(--border);
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(3.9rem,8vw,7.2rem);line-height:.94;letter-spacing:-.015em;
+}
+.masthead-standfirst{
+  max-width:640px;margin:20px 0 0;color:var(--muted-2);
+  font-family:var(--serif);font-style:italic;
+  font-size:clamp(1.28rem,2.1vw,1.72rem);line-height:1.4;
+}
 /* These are labels, not filters — nothing happens if you press one. A pill
    with a border and a filled background is the shape the rest of the site
    uses for buttons (.chip), so wearing it here promises a click that never
@@ -392,14 +413,39 @@ a.status-dot:focus-visible{
 .notes-thread{position:absolute;z-index:1;inset:34px 12px 30px;width:calc(100% - 24px);height:calc(100% - 64px);}
 .notes-thread path{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:7 9;opacity:.42;}
 .note-paper{
-  position:absolute;z-index:3;width:190px;padding:18px 18px 20px;
+  /* The top padding leaves room for the needle, which enters the paper
+     about 13px down; text starting at 18px ran straight through it. */
+  position:absolute;z-index:3;width:190px;padding:27px 18px 20px;
   border:1px solid var(--border);border-radius:8px;background:var(--bg-soft);
   box-shadow:0 18px 46px rgba(0,0,0,.15);
 }
+/* ─── the pin ──────────────────────────────────────────────────────────
+   A real pushpin: dome, neck, and the short length of needle that shows
+   before it enters the paper. It is an SVG file rather than a stack of
+   gradients because the silhouette is the thing that reads, and a file
+   can be cached and checked by check.py like any other asset.
+
+   The head sits above the card's top edge, the way a pin stands proud of
+   the paper it holds. The colours are fixed rather than themed - a pin is
+   hardware, the same red in either theme, and staying off the accent
+   keeps it visible when the card behind it lights up. */
 .note-paper::before{
-  content:"";position:absolute;width:9px;height:9px;left:50%;top:9px;
-  border-radius:50%;background:var(--accent);box-shadow:0 2px 0 rgba(0,0,0,.18);
+  content:"";position:absolute;width:28px;height:32px;left:50%;top:-13px;
+  margin-left:-14px;
+  background:url(assets/pin.svg) center top/contain no-repeat;
+  filter:drop-shadow(0 3px 3px rgba(0,0,0,.34));
 }
+/* Nobody pushes a pin in straight. Each one leans, and by a different
+   amount, so the board looks pinned by hand rather than laid out.
+
+   The pivot is the needle's tip - about 24px down the 32px box - because
+   that is the one point of the pin that does not move when you tilt it.
+   Turning it about its centre instead would slide the needle out of the
+   paper and leave it hanging in the air. */
+.note-paper::before{transform-origin:14px 24px;}
+.note-paper-one::before{transform:rotate(24deg);}
+.note-paper-two::before{transform:rotate(-27deg);}
+.note-paper-three::before{transform:rotate(19deg);}
 .note-paper span{
   display:block;margin-bottom:9px;color:var(--faint-2);font-family:var(--mono);
   font-size:.66rem;letter-spacing:.1em;
@@ -423,7 +469,6 @@ a.status-dot:focus-visible{
   --turn:3.6s;
   transition:background 420ms ease,color 420ms ease,border-color 420ms ease;
 }
-.note-paper .note-dot{background:var(--accent);}
 
 @keyframes note-turn-2{
   0%,42%   {background:var(--accent);color:var(--accent-ink);border-color:transparent;}
@@ -442,8 +487,8 @@ a.status-dot:focus-visible{
     animation:note-turn-3 calc(var(--turn) * 3) infinite;
     animation-delay:calc(var(--i) * var(--turn));
   }
-  /* The small marks inside follow the card they sit on. */
-  .notes-playground .note-paper::before,
+  /* The small marks inside follow the card they sit on. The pin does not:
+     it is an object resting on the card, not ink printed on it. */
   .notes-playground .note-paper span,
   .notes-playground .note-paper p{
     animation:inherit;animation-name:note-turn-ink;
@@ -592,7 +637,9 @@ summary.post-head:focus-visible{
 }
 @media (max-width:640px){
   .notes-playground{min-height:470px;}
-  .note-paper{width:168px;padding:16px;}
+  /* Narrower card, but the pin is the same size, so the needle still
+     lands in the same place and the top padding still has to clear it. */
+  .note-paper{width:168px;padding:25px 16px 16px;}
   .note-paper-one{left:14px;top:68px;}
   .note-paper-two{right:13px;top:176px;}
   .note-paper-three{left:26px;bottom:62px;}
