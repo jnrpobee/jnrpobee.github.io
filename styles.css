@@ -514,28 +514,56 @@ a.status-dot:focus-visible{
 .note-paper-one{left:28px;top:78px;transform:rotate(-5deg);}
 .note-paper-two{right:26px;top:142px;transform:rotate(4deg);}
 
-/* ─── the papers take turns ────────────────────────────────────────────
+/* ─── the papers take turns ──────────────────────────────────────
    Each card carries the title of one of the newest notes, and the accent
    fill moves from one to the next. It is a CSS animation rather than a
-   script because the block is decorative — aria-hidden, with the real
-   list below — so there is nothing here worth loading JavaScript for.
+   script because the block is a decoration over content that is all
+   present below, so there is nothing here worth loading JavaScript for.
 
    --i is the card's position, set in the markup, and data-cards says how
    many there are; between them each card knows when its turn is. The
    keyframes are written per count because a keyframe percentage cannot
-   be worked out from a custom property. */
+   be worked out from a custom property.
+
+   Every card fades in AND out. The first version only faded out: a card
+   went dark over half a second and then snapped back to lit at the loop
+   boundary, because 100% and 0% held different colours. Now both ends of
+   the cycle are unlit, so the wrap is invisible, and one card finishes
+   dimming just as the next begins to light - the hand-off reads as a
+   fade rather than a switch. The percentages below are one card's slot:
+   fade up, hold, fade down, then wait its turn again. */
 .note-paper{
   --turn:3.6s;
   transition:background 420ms ease,color 420ms ease,border-color 420ms ease;
 }
+/* Unlit means this card's own paper, not one shared colour - otherwise
+   the animation would paint over the three different scraps. */
+.note-paper-one{--paper:var(--paper-1);}
+.note-paper-two{--paper:var(--paper-2);}
+.note-paper-three{--paper:var(--paper-3);}
 
 @keyframes note-turn-2{
-  0%,42%   {background:var(--accent);color:var(--accent-ink);border-color:transparent;}
-  50%,100% {background:var(--bg-soft);color:var(--text);border-color:var(--border);}
+  0%       {background:var(--paper);color:var(--text);border-color:var(--border);}
+  12%,38%  {background:var(--accent);color:var(--accent-ink);border-color:transparent;}
+  50%,100% {background:var(--paper);color:var(--text);border-color:var(--border);}
 }
 @keyframes note-turn-3{
-  0%,28%   {background:var(--accent);color:var(--accent-ink);border-color:transparent;}
-  34%,100% {background:var(--bg-soft);color:var(--text);border-color:var(--border);}
+  0%       {background:var(--paper);color:var(--text);border-color:var(--border);}
+  8%,26%   {background:var(--accent);color:var(--accent-ink);border-color:transparent;}
+  34%,100% {background:var(--paper);color:var(--text);border-color:var(--border);}
+}
+/* The small marks inside follow the card they sit on, on the same timing.
+   The fastener does not: it is an object resting on the card, not ink
+   printed on it. */
+@keyframes note-ink-2{
+  0%       {color:var(--muted);}
+  12%,38%  {color:var(--accent-ink);}
+  50%,100% {color:var(--muted);}
+}
+@keyframes note-ink-3{
+  0%       {color:var(--muted);}
+  8%,26%   {color:var(--accent-ink);}
+  34%,100% {color:var(--muted);}
 }
 @media (prefers-reduced-motion:no-preference){
   .notes-playground[data-cards="2"] .note-paper{
@@ -546,15 +574,13 @@ a.status-dot:focus-visible{
     animation:note-turn-3 calc(var(--turn) * 3) infinite;
     animation-delay:calc(var(--i) * var(--turn));
   }
-  /* The small marks inside follow the card they sit on. The pin does not:
-     it is an object resting on the card, not ink printed on it. */
-  .notes-playground .note-paper span,
-  .notes-playground .note-paper p{
-    animation:inherit;animation-name:note-turn-ink;
+  .notes-playground[data-cards="2"] .note-paper span,
+  .notes-playground[data-cards="2"] .note-paper p{
+    animation:inherit;animation-name:note-ink-2;
   }
-  @keyframes note-turn-ink{
-    0%,28%   {color:var(--accent-ink);}
-    34%,100% {color:var(--muted);}
+  .notes-playground[data-cards="3"] .note-paper span,
+  .notes-playground[data-cards="3"] .note-paper p{
+    animation:inherit;animation-name:note-ink-3;
   }
 }
 /* Asked for less motion: the first card simply stays lit. */
@@ -602,9 +628,7 @@ a.status-dot:focus-visible{
   :root:not([data-theme="light"]) .note-paper::after{mix-blend-mode:screen;opacity:.28;}
 }
 :root[data-theme="dark"] .note-paper::after{mix-blend-mode:screen;opacity:.28;}
-.note-paper-one{background:var(--paper-1);}
-.note-paper-two{background:var(--paper-2);}
-.note-paper-three{background:var(--paper-3);}
+.note-paper{background:var(--paper);}
 
 /* A linen weave under the grid: two crossed hatchings, barely there, so
    the board has a surface rather than only a colour. */
