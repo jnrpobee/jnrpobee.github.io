@@ -753,7 +753,7 @@ def blog_posts():
 # lengths the picker offers. The controls only appear once there is enough
 # written to need them - see notes_tally() - so an early page stays quiet.
 PAGE_STEP = 5
-PAGE_STEPS = (5, 10, 25)
+PAGE_STEPS = (5, 10, 15)
 
 
 def _category_counts():
