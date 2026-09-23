@@ -693,10 +693,13 @@
         if (n) n.textContent = live + (live === 1 ? ' note' : ' notes');
       });
 
+      /* The count at the right edge is only worth reading when the page
+         is holding notes back. "5 of 18" says something; "3 notes" beside
+         a chip that already reads 3 is the same number twice. */
       if (countOut) {
-        countOut.textContent = limit === hits.length
-          ? hits.length + (hits.length === 1 ? ' note' : ' notes')
-          : limit + ' of ' + hits.length;
+        var trimmed = limit < hits.length;
+        countOut.hidden = !trimmed;
+        countOut.textContent = trimmed ? limit + ' of ' + hits.length : '';
       }
       if (moreWrap) {
         var left = hits.length - limit;

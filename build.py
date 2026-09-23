@@ -792,10 +792,13 @@ def _months_in_use():
 
 
 def _month_select():
-    """The month picker. One month is no choice at all, so it only appears
-    once there are two."""
+    """The month picker: every month that has a note in it, newest first.
+
+    It renders even when there is only one, so the row is the same row on
+    a young page as on an old one. With one month it is a menu with one
+    thing in it, which is honest about how much has been written."""
     months = _months_in_use()
-    if len(months) < 2:
+    if not months:
         return ""
     out = ['          <label class="month-pick" data-month-pick hidden>']
     out.append('            <span class="sr-only">Month</span>')
@@ -846,17 +849,21 @@ def notes_tally():
     out.append('        <div class="notes-toolbar">')
     out.append('          <p class="notes-count">%s note%s so far</p>'
                % (_spelled(n).capitalize(), "" if n == 1 else "s"))
-    if n > PAGE_STEP:
-        out.append('          <span class="count-picker" data-counts hidden>')
-        out.append('            <span class="count-label">Per page</span>')
-        for step in PAGE_STEPS:
-            if step < n:
-                out.append('            <button type="button" class="chip" data-count="%d" '
-                           'aria-pressed="%s">%d</button>'
-                           % (step, "true" if step == PAGE_STEP else "false", step))
-        out.append('            <button type="button" class="chip" data-count="0" '
-                   'aria-pressed="false">All</button>')
-        out.append('          </span>')
+    # Every length, always. An earlier version hid a step that was larger
+    # than the list, and hid the whole row below six notes, on the grounds
+    # that a page with three notes has no use for paging. True, but it
+    # also meant the controls only appeared once there was enough written
+    # to need them, which made the page look like it had lost them. They
+    # stay put now; with a short list they simply have nothing to do.
+    out.append('          <span class="count-picker" data-counts hidden>')
+    out.append('            <span class="count-label">Per page</span>')
+    for step in PAGE_STEPS:
+        out.append('            <button type="button" class="chip" data-count="%d" '
+                   'aria-pressed="%s">%d</button>'
+                   % (step, "true" if step == PAGE_STEP else "false", step))
+    out.append('            <button type="button" class="chip" data-count="0" '
+               'aria-pressed="false">All</button>')
+    out.append('          </span>')
     out.append('          <button class="surprise" type="button" data-surprise hidden>'
                'Surprise me</button>')
     out.append('        </div>')
@@ -869,10 +876,11 @@ def notes_end():
     if not POSTS:
         return ""
     out = []
-    if len(POSTS) > PAGE_STEP:
-        out.append('        <div class="notes-more" data-more-wrap hidden>')
-        out.append('          <button class="surprise" type="button" data-more></button>')
-        out.append('        </div>')
+    # Rendered whichever way; script.js hides it the moment there is
+    # nothing further to show, which on a short list is immediately.
+    out.append('        <div class="notes-more" data-more-wrap hidden>')
+    out.append('          <button class="surprise" type="button" data-more></button>')
+    out.append('        </div>')
     out.append('        <div class="notes-end">')
     out.append('          <p>That is everything pinned so far</p>')
     out.append('          <span class="again">More when there is more.</span>')

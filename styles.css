@@ -911,11 +911,32 @@ summary.post-head:focus-visible{
 .notes-more{width:min(100%,92ch);margin:30px auto 0;display:flex;justify-content:center;}
 .notes-more .surprise{margin-left:0;padding:12px 26px;}
 
+/* Below this the row cannot hold four things side by side, and letting
+   them wrap on their own leaves the month picker and the count stranded
+   on separate lines at the left, which reads as a broken row rather than
+   a stacked one. Two tidy rows instead: the chips, then the picker with
+   the count squared off against it. */
+@media (max-width:820px){
+  .notes-filters{
+    display:grid;grid-template-columns:auto 1fr;gap:12px 14px;align-items:center;
+  }
+  .filter-label{grid-area:1/1;}
+  .filter-chips{grid-area:1/2;}
+  .month-pick{grid-area:2/1;justify-self:start;}
+  .filter-count{grid-area:2/2;justify-self:end;margin:0;}
+}
 @media (max-width:640px){
-  .notes-filters{gap:8px 10px;}
-  .filter-count{margin-left:0;width:100%;}
+  .notes-filters{gap:10px 10px;}
   .notes-toolbar .surprise{margin-left:0;}
   .month h3{font-size:1.3rem;}
+}
+@media (max-width:460px){
+  /* No room for a label column; the chips take the full width. */
+  .notes-filters{grid-template-columns:1fr;}
+  .filter-label{grid-area:1/1;}
+  .filter-chips{grid-area:2/1;}
+  .month-pick{grid-area:3/1;}
+  .filter-count{grid-area:4/1;justify-self:start;}
 }
 
 /* ─── the shelf above the notes ────────────────────────────────────────

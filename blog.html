@@ -170,11 +170,24 @@
             <button type="button" class="chip" data-cat="lifestyle" aria-pressed="false">Lifestyle <span>2</span></button>
             <button type="button" class="chip" data-cat="campus" aria-pressed="false">Campus Life <span>1</span></button>
           </div>
-
+          <label class="month-pick" data-month-pick hidden>
+            <span class="sr-only">Month</span>
+            <select>
+              <option value="">Every month</option>
+              <option value="September 2026">September 2026 &middot; 3</option>
+            </select>
+          </label>
           <p class="filter-count" data-filter-count></p>
         </div>
         <div class="notes-toolbar">
           <p class="notes-count">Three notes so far</p>
+          <span class="count-picker" data-counts hidden>
+            <span class="count-label">Per page</span>
+            <button type="button" class="chip" data-count="5" aria-pressed="true">5</button>
+            <button type="button" class="chip" data-count="10" aria-pressed="false">10</button>
+            <button type="button" class="chip" data-count="15" aria-pressed="false">15</button>
+            <button type="button" class="chip" data-count="0" aria-pressed="false">All</button>
+          </span>
           <button class="surprise" type="button" data-surprise hidden>Surprise me</button>
         </div>
         <div class="posts" id="blog-posts">
@@ -246,6 +259,9 @@
           <p>The most useful system may not be the one that collects the most data. It may be the one that asks for the minimum useful input, communicates uncertainty clearly, and fits into a routine that is already under pressure. Usability is not only whether someone can operate a tool; it is also whether using it remains worthwhile.</p>
           </div>
         </details>
+        </div>
+        <div class="notes-more" data-more-wrap hidden>
+          <button class="surprise" type="button" data-more></button>
         </div>
         <div class="notes-end">
           <p>That is everything pinned so far</p>
