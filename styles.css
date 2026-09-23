@@ -419,33 +419,92 @@ a.status-dot:focus-visible{
   border:1px solid var(--border);border-radius:8px;background:var(--bg-soft);
   box-shadow:0 18px 46px rgba(0,0,0,.15);
 }
-/* ─── the pin ──────────────────────────────────────────────────────────
-   A real pushpin: dome, neck, and the short length of needle that shows
-   before it enters the paper. It is an SVG file rather than a stack of
-   gradients because the silhouette is the thing that reads, and a file
-   can be cached and checked by check.py like any other asset.
+/* ─── fasteners ────────────────────────────────────────────────────────
+   Every note is held to the page by something: a pushpin, two strips of
+   tape, a paperclip, a bulldog clip, or a sticker. Which one a note gets
+   is decided in build.py - see FASTENERS there - and arrives as
+   data-fasten, so the art lives here and the choice lives with the
+   writing.
 
-   The head sits above the card's top edge, the way a pin stands proud of
-   the paper it holds. The colours are fixed rather than themed - a pin is
-   hardware, the same red in either theme, and staying off the accent
-   keeps it visible when the card behind it lights up. */
-.note-paper::before{
-  content:"";position:absolute;width:28px;height:32px;left:50%;top:-13px;
-  margin-left:-14px;
+   One span carries four <i> pieces, because tape needs two and a later
+   fastener might want four. The pieces a fastener does not use stay
+   empty and invisible.
+
+   The art is written once and placed twice, by two properties each
+   context sets for itself:
+
+     --fy  where the card's top edge is, measured from the fastener's own
+           positioning parent. On a board card that parent is the card;
+           on a note it is the <summary>, which starts one padding in, so
+           --fy takes it back out.
+     --fw  how wide a strip of tape is. A board card is 190px and a note
+           is most of the page; one width cannot serve both.
+
+   The colours are fixed rather than themed. These are objects, not ink:
+   a red pin is red in either theme, and staying off the accent keeps a
+   fastener visible when the card behind it lights up. */
+.fasten{--ftilt:-12deg;}
+.fasten i{position:absolute;display:block;}
+
+/* A pushpin: dome, neck, and the short length of needle that shows before
+   it enters the paper. It pivots on the needle's tip, the one point that
+   does not move when you tilt a pin; turning it about its centre would
+   slide the needle out of the paper and leave it hanging in the air. */
+[data-fasten="pin"] .fasten i:nth-child(1){
+  left:50%;top:calc(var(--fy) + 9px);width:28px;height:32px;margin-left:-14px;
   background:url(assets/pin.svg) center top/contain no-repeat;
   filter:drop-shadow(0 3px 3px rgba(0,0,0,.34));
+  transform-origin:14px 24px;transform:rotate(var(--ftilt));
 }
-/* Nobody pushes a pin in straight. Each one leans, and by a different
-   amount, so the board looks pinned by hand rather than laid out.
 
-   The pivot is the needle's tip - about 24px down the 32px box - because
-   that is the one point of the pin that does not move when you tilt it.
-   Turning it about its centre instead would slide the needle out of the
-   paper and leave it hanging in the air. */
-.note-paper::before{transform-origin:14px 24px;}
-.note-paper-one::before{transform:rotate(24deg);}
-.note-paper-two::before{transform:rotate(-27deg);}
-.note-paper-three::before{transform:rotate(19deg);}
+/* Tape: the two top corners only. Taped at the bottom as well a note
+   reads as mounted, like something framed; taped at the top it reads as
+   put up in a hurry, which is what this page is for. Each strip is
+   clipped by the card's own overflow, so it stops at the rounded corner
+   the way a real strip would be trimmed flush, and the ends are torn
+   rather than scissored. */
+[data-fasten="tape"] .fasten i:nth-child(1),
+[data-fasten="tape"] .fasten i:nth-child(2){
+  width:var(--fw);height:calc(var(--fw) * .26);top:var(--fty);opacity:.8;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.22) 0 3px,transparent 3px 7px),
+    linear-gradient(100deg,#e8c9a0,#dcb98d 60%,#d9b98c);
+  background-color:#e2c096;
+  clip-path:polygon(0 8%,4% 0,100% 3%,97% 96%,3% 100%);
+}
+[data-fasten="tape"] .fasten i:nth-child(1){left:calc(var(--fw) * -.33);transform:rotate(-40deg);}
+[data-fasten="tape"] .fasten i:nth-child(2){right:calc(var(--fw) * -.33);transform:rotate(40deg);}
+
+[data-fasten="clip"] .fasten i:nth-child(1){
+  left:50%;top:calc(var(--fy) - 2px);width:20px;height:36px;margin-left:-10px;
+  background:url(assets/clip.svg) center top/contain no-repeat;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.3));transform:rotate(6deg);
+}
+[data-fasten="bulldog"] .fasten i:nth-child(1){
+  left:50%;top:calc(var(--fy) - 1px);width:42px;height:32px;margin-left:-21px;
+  background:url(assets/bulldog.svg) center top/contain no-repeat;
+  filter:drop-shadow(0 3px 3px rgba(0,0,0,.32));
+}
+/* The sticker is drawn rather than drawn from a file: it is two gradients
+   and a white rim, and a file would cost a request to say less. */
+[data-fasten="dot"] .fasten i:nth-child(1){
+  left:50%;top:calc(var(--fy) + 12px);width:18px;height:18px;margin-left:-9px;
+  border-radius:50%;
+  background:radial-gradient(circle at 36% 30%,#f2685c,#c9372b 70%);
+  box-shadow:0 0 0 2px rgba(255,255,255,.55),0 2px 3px rgba(0,0,0,.25);
+}
+
+/* Where the board's cards put their fastener, and how wide their tape is.
+   The cards hang at an angle; a pin does not, so each one leans by its own
+   amount and the board looks pinned by hand rather than laid out. */
+.note-paper{--fy:-22px;--fty:2px;--fw:58px;}
+/* Hardware stands proud of the card, so a pinned card must not clip; tape
+   lies flat on it, so a taped card must, or the strips hang off the paper
+   into mid-air. Only the taped ones clip. */
+.note-paper[data-fasten="tape"]{overflow:hidden;}
+.note-paper-one{--ftilt:24deg;}
+.note-paper-two{--ftilt:-27deg;}
+.note-paper-three{--ftilt:19deg;}
 .note-paper span{
   display:block;margin-bottom:9px;color:var(--faint-2);font-family:var(--mono);
   font-size:.66rem;letter-spacing:.1em;
@@ -510,6 +569,96 @@ a.status-dot:focus-visible{
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
 }
 .note-paper-three{left:82px;bottom:56px;transform:rotate(2deg);}
+/* ─── paper ────────────────────────────────────────────────────────────
+   A flat fill reads as a rectangle. A faint grain reads as a scrap, which
+   is what a note on a board is. The noise is one small SVG turbulence,
+   laid over the card by ::after at low opacity so it never touches the
+   contrast of the text underneath, and it multiplies on light paper and
+   screens on dark so it darkens or lightens the surface rather than
+   greying it.
+
+   Three papers rather than one, so the board looks collected rather than
+   generated. The turn-taking animation reads --paper too, which is why a
+   card returns to its own colour and not to everyone's. */
+:root{
+  --paper-1:#f4f2ea; --paper-2:#eeece3; --paper-3:#f6f3e8;
+  --board-weave:rgba(120,110,88,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper-1:#15181a; --paper-2:#191c1d; --paper-3:#121617;
+    --board-weave:rgba(160,200,170,.04);
+  }
+}
+:root[data-theme="dark"]{
+  --paper-1:#15181a; --paper-2:#191c1d; --paper-3:#121617;
+  --board-weave:rgba(160,200,170,.04);
+}
+.note-paper::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  opacity:.5;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .note-paper::after{mix-blend-mode:screen;opacity:.28;}
+}
+:root[data-theme="dark"] .note-paper::after{mix-blend-mode:screen;opacity:.28;}
+.note-paper-one{background:var(--paper-1);}
+.note-paper-two{background:var(--paper-2);}
+.note-paper-three{background:var(--paper-3);}
+
+/* A linen weave under the grid: two crossed hatchings, barely there, so
+   the board has a surface rather than only a colour. */
+.notes-playground{
+  background-image:
+    repeating-linear-gradient(45deg,var(--board-weave) 0 1px,transparent 1px 9px),
+    repeating-linear-gradient(-45deg,var(--board-weave) 0 1px,transparent 1px 9px);
+}
+
+/* ─── the board answers ────────────────────────────────────────────────
+   The cards are links to their own note, so the block is no longer
+   decoration and is no longer hidden from screen readers; only the thread,
+   the sparks and the ring still are.
+
+   Hover or focus lifts a card and straightens it. The fastener stays
+   exactly where it was, because a pin does not move when you nudge the
+   paper hanging from it - which is what the counter-rotations below are
+   for. The turn-taking animation pauses while the pointer is on the board,
+   so the card you are reaching for holds still. */
+.note-paper{
+  display:block;text-decoration:none;color:inherit;
+  transition:transform 260ms cubic-bezier(.2,.7,.3,1),box-shadow 260ms ease,
+             background 420ms ease,color 420ms ease,border-color 420ms ease;
+}
+.notes-playground:hover .note-paper,
+.notes-playground:focus-within .note-paper{animation-play-state:paused;}
+.note-paper:hover,.note-paper:focus-visible{z-index:6;box-shadow:0 30px 60px rgba(0,0,0,.24);}
+.note-paper-one:hover,.note-paper-one:focus-visible{transform:rotate(-1deg) translateY(-8px) scale(1.035);}
+.note-paper-two:hover,.note-paper-two:focus-visible{transform:rotate(1deg) translateY(-8px) scale(1.035);}
+.note-paper-three:hover,.note-paper-three:focus-visible{transform:rotate(0deg) translateY(-8px) scale(1.035);}
+.note-paper-one:hover .fasten i,.note-paper-one:focus-visible .fasten i{transform:rotate(20deg) translateY(4px);}
+.note-paper-two:hover .fasten i,.note-paper-two:focus-visible .fasten i{transform:rotate(-31deg) translateY(4px);}
+.note-paper-three:hover .fasten i,.note-paper-three:focus-visible .fasten i{transform:rotate(15deg) translateY(4px);}
+.note-paper:focus-visible{outline:2px solid var(--accent);outline-offset:4px;}
+.note-open{
+  display:block;margin-top:10px;font-family:var(--mono);font-size:.6rem;
+  letter-spacing:.14em;text-transform:uppercase;opacity:0;transition:opacity 220ms ease;
+}
+.note-paper:hover .note-open,.note-paper:focus-visible .note-open{opacity:.62;}
+@media (prefers-reduced-motion:reduce){
+  .note-paper{transition:none;}
+  .note-paper:hover,.note-paper:focus-visible{transform:none;}
+}
+
+/* ─── three on the board ───────────────────────────────────────────────
+   Two cards can sit where they like; three in 541x470 cannot, and the
+   two-card positions put the third over the first one's date. These are
+   the three-card positions: staggered down a taller board, each clear of
+   the others, so nothing is hidden behind anything. */
+.notes-playground[data-cards="3"]{min-height:540px;}
+.notes-playground[data-cards="3"] .note-paper-one{left:18px;top:54px;}
+.notes-playground[data-cards="3"] .note-paper-two{right:12px;top:132px;}
+.notes-playground[data-cards="3"] .note-paper-three{left:120px;top:300px;bottom:auto;}
+
 .notes-spark{position:absolute;z-index:2;color:var(--accent);font-size:1.5rem;line-height:1;}
 .notes-spark-one{right:52px;top:74px;}
 .notes-spark-two{right:48px;bottom:78px;font-size:1rem;}
@@ -523,10 +672,31 @@ a.status-dot:focus-visible{
 .notes-order{margin:0;color:var(--faint-2);font-family:var(--mono);font-size:.72rem;letter-spacing:.15em;}
 .posts{display:flex;flex-direction:column;align-items:center;gap:34px;margin-top:30px;counter-reset:note;}
 .post{
-  position:relative;width:min(100%,92ch);padding:clamp(28px,5vw,50px);
+  /* The padding is a property rather than a literal because the fastener
+     sits inside the <summary> - anything else inside a closed <details>
+     is hidden - and has to measure its way back out to the card's edge. */
+  --post-pad:clamp(28px,5vw,50px);
+  position:relative;width:min(100%,92ch);padding:var(--post-pad);
   overflow:hidden;border:1px solid var(--border);border-radius:16px;
-  background:linear-gradient(150deg,var(--surface-2),var(--surface-0));
-  counter-increment:note;transition:transform 220ms ease,border-color 220ms ease;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E"),
+                   linear-gradient(150deg,var(--surface-2),var(--surface-0));
+  counter-increment:note;
+  transition:transform 220ms ease,border-color 220ms ease,box-shadow 220ms ease;
+}
+/* Each note its own scrap of paper, the same three the board uses. */
+.post:nth-child(3n+1){background-color:var(--paper-1);}
+.post:nth-child(3n+2){background-color:var(--paper-2);}
+.post:nth-child(3n)  {background-color:var(--paper-3);}
+/* The note lifts under the cursor, the same gesture the board cards make,
+   so both halves of the page behave alike. An open note stays put: it is
+   being read, not chosen. */
+.post:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(0,0,0,.10);}
+.post[open]:hover{transform:none;box-shadow:none;}
+@media (prefers-reduced-motion:reduce){.post:hover{transform:none;}}
+.post > summary.post-head{
+  --fy:calc(-1 * var(--post-pad));
+  --fty:calc(2px - var(--post-pad));
+  --fw:92px;
 }
 .post::before{
   content:counter(note,decimal-leading-zero);position:absolute;right:22px;top:13px;
@@ -542,10 +712,14 @@ a.status-dot:focus-visible{
   margin:0;font-family:var(--mono);font-size:.8438rem;
   letter-spacing:.14em;text-align:left;text-transform:uppercase;color:var(--faint);
 }
+/* The category used to be a bordered capsule - the same shape the
+   publications filters use, and so the same promise of a click that never
+   comes. The row around it does respond, but the capsule made it look as
+   though the word itself were its own control. Flat tracked type instead:
+   same colour, same weight, nothing to press. */
 .post-category{
-  margin:0;padding:5px 9px;border:1px solid var(--border);border-radius:999px;
-  color:var(--accent);font-family:var(--mono);font-size:.67rem;
-  letter-spacing:.08em;text-transform:uppercase;
+  margin:0;color:var(--accent);font-family:var(--mono);font-size:.67rem;
+  letter-spacing:.16em;text-transform:uppercase;
 }
 .post-title{
   margin:0 0 10px;font-family:var(--serif);font-size:1.9rem;
@@ -630,6 +804,55 @@ summary.post-head:focus-visible{
   .notes-spark-two{animation:notes-twinkle 2.8s 1.1s ease-in-out infinite;}
   @keyframes notes-twinkle{0%,100%{transform:scale(1) rotate(0);opacity:1;}50%{transform:scale(.65) rotate(18deg);opacity:.45;}}
 }
+/* ─── the shelf above the notes ────────────────────────────────────────
+   How many notes there are, and one button that opens one at random. The
+   button carries `hidden` in the markup and script.js takes it off, so a
+   reader without JavaScript never sees a control that would do nothing -
+   the same reason the topic words lost their pill. */
+.notes-toolbar{
+  display:flex;align-items:baseline;justify-content:space-between;gap:20px;
+  flex-wrap:wrap;width:min(100%,92ch);margin:26px auto 0;
+}
+.notes-count{
+  margin:0;color:var(--faint);font-family:var(--mono);font-size:.72rem;
+  letter-spacing:.14em;text-transform:uppercase;
+}
+.surprise{
+  border:1px solid var(--border);border-radius:999px;background:var(--surface);
+  color:var(--muted-2);font-family:var(--mono);font-size:.72rem;
+  letter-spacing:.12em;text-transform:uppercase;padding:9px 16px;cursor:pointer;
+  transition:border-color 200ms ease,color 200ms ease,transform 200ms ease;
+}
+.surprise:hover{border-color:var(--accent-50);color:var(--text);transform:translateY(-1px);}
+.surprise:active{transform:translateY(0);}
+.surprise:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+.post-read{
+  margin:0;color:var(--faint-2);font-family:var(--mono);font-size:.68rem;
+  letter-spacing:.1em;
+}
+/* The note the shuffle landed on gets a moment of the accent, so the eye
+   can find where it was just sent. */
+.post-lit{animation:post-lit 1.4s ease;}
+@keyframes post-lit{
+  0%,60%{box-shadow:0 0 0 2px var(--accent);}
+  100%  {box-shadow:0 0 0 2px transparent;}
+}
+@media (prefers-reduced-motion:reduce){.post-lit{animation:none;}}
+
+/* The list ends with a line rather than running out of page. */
+.notes-end{
+  width:min(100%,92ch);margin:34px auto 0;padding-top:28px;
+  border-top:1px solid var(--border-soft);text-align:center;
+}
+.notes-end p{
+  margin:0;color:var(--faint);font-family:var(--mono);font-size:.72rem;
+  letter-spacing:.14em;text-transform:uppercase;
+}
+.notes-end .again{
+  display:inline-block;margin-top:14px;font-family:var(--serif);font-style:italic;
+  font-size:1.25rem;letter-spacing:0;text-transform:none;color:var(--muted-2);
+}
+
 @media (max-width:980px){
   .notes-hero{grid-template-columns:1fr;padding-top:52px;gap:40px;}
   .notes-hero::after{width:430px;height:430px;right:-90px;top:260px;}
@@ -639,14 +862,31 @@ summary.post-head:focus-visible{
   .notes-playground{min-height:470px;}
   /* Narrower card, but the pin is the same size, so the needle still
      lands in the same place and the top padding still has to clear it. */
-  .note-paper{width:168px;padding:25px 16px 16px;}
+  .note-paper{width:168px;padding:25px 16px 16px;--fw:52px;}
   .note-paper-one{left:14px;top:68px;}
   .note-paper-two{right:13px;top:176px;}
   .note-paper-three{left:26px;bottom:62px;}
+  /* Three cards will not sit where two did: the board has to grow and the
+     stack has to lean down the page rather than across it. */
+  .notes-playground[data-cards="3"]{min-height:640px;}
+  .notes-playground[data-cards="3"] .note-paper-one{left:8px;top:50px;}
+  .notes-playground[data-cards="3"] .note-paper-two{right:8px;top:198px;}
+  .notes-playground[data-cards="3"] .note-paper-three{left:46px;top:372px;bottom:auto;}
   .notes-mantra{right:12px;font-size:.58rem;}
   .notes-focus .focus-list{gap:20px;}
   .notes-focus .focus-list p{font-size:1.25rem;}
-  .post{padding:28px 22px;}
+  /* The meta row wraps to two lines at this width, which would put the
+     fastener on top of the words; the note gets a little more headroom
+     instead. The tape runs diagonally, so it needs lifting further than
+     the rest to clear the date. */
+  .post{--post-pad:22px;padding:calc(var(--post-pad) + 18px) var(--post-pad) var(--post-pad);}
+  /* The extra headroom is above the summary, so the fastener has to be
+     lifted by the same amount again to sit in it rather than on the date. */
+  .post > summary.post-head{
+    --fy:calc(-22px - var(--post-pad));
+    --fty:calc(-16px - var(--post-pad));
+    --fw:70px;
+  }
   .post::before{right:13px;font-size:2rem;}
 }
 @media (prefers-reduced-motion:no-preference){

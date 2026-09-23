@@ -117,15 +117,25 @@ def check_reproducible():
     if moved:
         return say(False, "building twice gives the same bytes", ", ".join(moved))
 
+    # Today's date in a generated page is what a build-time stamp looks
+    # like, and two builds a second apart will never catch one. But a post
+    # written today legitimately carries today's date, so the date only
+    # counts as a stamp when it appears nowhere in the sources - if it is
+    # in build.py or a data file, somebody typed it rather than the clock.
     today = datetime.date.today().isoformat()
-    stamped = sorted(f.name for f in HERE.glob("*.html")
-                     if today in f.read_text(encoding="utf-8"))
-    sm = HERE / "sitemap.xml"
-    if sm.exists() and today in sm.read_text(encoding="utf-8"):
-        stamped.append("sitemap.xml")
-    if stamped:
-        return say(False, "no generated file stamps the build date",
-                   ", ".join(stamped))
+    sources = ""
+    for src in (HERE / "build.py", HERE / "leetcode.json"):
+        if src.exists():
+            sources += src.read_text(encoding="utf-8")
+    if today not in sources:
+        stamped = sorted(f.name for f in HERE.glob("*.html")
+                         if today in f.read_text(encoding="utf-8"))
+        sm = HERE / "sitemap.xml"
+        if sm.exists() and today in sm.read_text(encoding="utf-8"):
+            stamped.append("sitemap.xml")
+        if stamped:
+            return say(False, "no generated file stamps the build date",
+                       ", ".join(stamped))
     return say(True, "building twice gives the same bytes")
 
 
@@ -144,7 +154,8 @@ def check_placeholders(site):
     field = re.compile(r"\{[a-z_][a-z0-9_]*\}")
     marker = re.compile(
         r"<!--\s*(CITE:[^>]*|LEETCODE|CVACTIONS|PUBGROUPS|"
-        r"BLOGPOSTS|LIFESTYLEPOSTS|CAMPUSPOSTS)\s*-->"
+        r"BLOGPOSTS|NOTECARDS|NOTECOUNT|NOTESTALLY|NOTESEND|"
+        r"LIFESTYLEPOSTS|CAMPUSPOSTS)\s*-->"
     )
     found = []
     for page in sorted(site.glob("*.html")):

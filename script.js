@@ -617,4 +617,45 @@
       })
       .catch(function () { /* keep the values written into the page */ });
   })();
+  /* ── the notes page ───────────────────────────────────────────────────
+     Two things the markup cannot do on its own. Both are additions: with
+     this file missing, the board's cards are still links that jump to
+     their note, and the shuffle button is never shown at all rather than
+     sitting there doing nothing. */
+  (function () {
+    var posts = [].slice.call(document.querySelectorAll('details.post'));
+    if (!posts.length) return;
+
+    /* A link to #post-3 lands on a note that is closed. Open it, so
+       arriving from the board - or from a link someone shared - shows the
+       writing rather than a heading to click a second time. */
+    function openTarget(hash, flash) {
+      if (!hash || hash.charAt(0) !== '#') return;
+      var el = document.getElementById(hash.slice(1));
+      if (!el || el.tagName.toLowerCase() !== 'details') return;
+      el.open = true;
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (flash) {
+        el.classList.remove('post-lit');
+        void el.offsetWidth;                 // restart the animation
+        el.classList.add('post-lit');
+      }
+    }
+
+    window.addEventListener('hashchange', function () { openTarget(location.hash, false); });
+    openTarget(location.hash, false);
+
+    var btn = document.querySelector('[data-surprise]');
+    if (btn && posts.length > 1) {
+      btn.hidden = false;
+      var last = -1;
+      btn.addEventListener('click', function () {
+        var i;
+        do { i = Math.floor(Math.random() * posts.length); } while (i === last);
+        last = i;
+        posts.forEach(function (p, n) { if (n !== i) p.open = false; });
+        openTarget('#' + posts[i].id, true);
+      });
+    }
+  })();
 })();

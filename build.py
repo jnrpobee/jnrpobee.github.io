@@ -53,7 +53,7 @@ UNLISTED = ["blog.html"]
 # (the status dot in the header, the copyright line in the footer). The
 # masthead in BODY["blog"] carries it too and is written out in full there,
 # since it is set as display type rather than a label.
-BLOG_NAME = "Marginalia"
+BLOG_NAME = "The Margin"
 
 _LINK = re.compile(r'(href|action)="(' + "|".join([f for f, _ in NAV] + UNLISTED) + r')((?:#|\?)[^"]*)?"')
 
@@ -408,8 +408,38 @@ POSTS = [
           <p>The most useful system may not be the one that collects the most data. It may be the one that asks for the minimum useful input, communicates uncertainty clearly, and fits into a routine that is already under pressure. Usability is not only whether someone can operate a tool; it is also whether using it remains worthwhile.</p>
 """,
     },
+    {
+        "date": "2026-09-23",
+        "category": "lifestyle",
+        "fasten": "tape",
+        "title": "A poem I keep coming back to",
+        "summary": "Norma Cornett Marek\u2019s \u201cTomorrow Never Comes,\u201d and the habit it left me with.",
+        "body": """
+          <p>I read this years ago and it has not left me since. It is called <em>Tomorrow Never Comes</em>, by Norma Cornett Marek, and the whole of it turns on one repeated phrase:</p>
+          <blockquote>If I knew this would be the last time&hellip;</blockquote>
+          <p>The poem runs that sentence through ordinary things. Watching someone sleep. Hearing their voice in prayer. A door closing behind them on an unremarkable morning. Each time it asks what you would have done differently had you known, and each time the answer is almost nothing: a minute longer, one more word, the thing said out loud instead of assumed to be understood.</p>
+          <p>That is what makes it land. It does not ask for grand gestures, and it does not really warn you about death. It warns you about deferral &mdash; about the quiet confidence that there will be another chance to say it.</p>
+          <p>It closes on the line I think about most:</p>
+          <blockquote>The past doesn&rsquo;t come back, and the future might not come.</blockquote>
+          <p>What it changed in me is unremarkable from the outside. I call home more than I used to. I have mostly stopped saving things to say. <a class="text-link" href="http://www.heartwhispers.net/poetry/00040.html" target="_blank" rel="noopener">The full poem is at Heart Whispers</a>, where it is published with the author&rsquo;s name on it &mdash; worth reading whole, and worth reading there rather than here.</p>
+""",
+    },
 ]
 BLOG_POSTS_MARK = "<!--BLOGPOSTS-->"
+NOTES_TALLY_MARK = "<!--NOTESTALLY-->"
+NOTES_END_MARK = "<!--NOTESEND-->"
+
+# What holds each note to the page. A post may name its own with
+# "fasten": "tape"; anything that does not gets the next one in this
+# order, so a board of notes never wears the same fastener twice running.
+# The art for each lives in styles.css, keyed on data-fasten.
+FASTENERS = ("pin", "tape", "clip", "bulldog", "dot")
+
+# Roughly what an adult reads in a minute of prose. The figure only has to
+# be honest enough to set an expectation, so it is rounded up to a whole
+# minute and never shown as zero.
+WORDS_PER_MINUTE = 220
+
 
 _MONTHS = ("January", "February", "March", "April", "May", "June", "July",
            "August", "September", "October", "November", "December")
@@ -437,6 +467,59 @@ def _one_line(post):
     if len(line) > 150:
         line = line[:149].rsplit(" ", 1)[0] + "\u2026"
     return line
+
+
+def _ordered_posts():
+    """Newest first. Everything that numbers or links a post counts from
+    this order, so the board, the list and the anchors agree."""
+    return sorted(POSTS, key=lambda x: x.get("date", ""), reverse=True)
+
+
+def _fasteners():
+    """What each note wears, newest first.
+
+    A post names its own with "fasten"; everything else takes its turn
+    through FASTENERS. The rotation steps past anything worn by the two
+    notes above, so a reader scrolling never sees the same fastener twice
+    close together - including when a named choice lands on the turn the
+    rotation was about to take. With five fasteners and a memory of two
+    there is always one free, so the search always ends.
+    """
+    out, turn = [], 0
+    for post in _ordered_posts():
+        named = (post.get("fasten") or "").strip().lower()
+        if named:
+            if named not in FASTENERS:
+                raise ValueError(
+                    "Unknown fastener %r. Use one of: %s"
+                    % (named, ", ".join(FASTENERS))
+                )
+            chosen = named
+        else:
+            recent = out[-2:]
+            for _ in range(len(FASTENERS)):
+                chosen = FASTENERS[turn % len(FASTENERS)]
+                turn += 1
+                if chosen not in recent:
+                    break
+        out.append(chosen)
+    return out
+
+
+def _reading_time(post):
+    """Whole minutes, never zero."""
+    text = re.sub(r"<[^>]+>", " ", post.get("body", ""))
+    words = len(_html.unescape(text).split())
+    return max(1, int(round(words / float(WORDS_PER_MINUTE))))
+
+
+_TALLY = ("no", "one", "two", "three", "four", "five", "six", "seven",
+          "eight", "nine", "ten")
+
+
+def _spelled(n):
+    """Small numbers read better as words in a line of running text."""
+    return _TALLY[n] if n < len(_TALLY) else str(n)
 
 
 def _post_figure(post):
@@ -502,7 +585,8 @@ def note_cards():
     """
     import datetime as _dt
     rows = []
-    for post in sorted(POSTS, key=lambda x: x.get("date", ""), reverse=True)[:3]:
+    worn = _fasteners()
+    for i, post in enumerate(_ordered_posts()[:3]):
         label = BLOG_CATEGORIES.get(post.get("category", "lifestyle"), "Notes")
         when = post.get("date", "")
         try:
@@ -510,25 +594,47 @@ def note_cards():
             sub = "%d %s %d" % (d.day, _MONTHS[d.month - 1], d.year)
         except Exception:
             sub = ""
-        rows.append((label.upper(), post.get("title", "Untitled"), sub))
+        rows.append((label.upper(), post.get("title", "Untitled"), sub,
+                     worn[i], "#post-%d" % (i + 1)))
     if not rows:
-        rows = list(NOTE_CARDS_FALLBACK)
+        # Nothing written yet, so the cards are placeholders. They lead
+        # nowhere, so they stay plain <div>s and the board stays hidden
+        # from screen readers - see playground_attrs().
+        rows = [(a, b, c, FASTENERS[i % len(FASTENERS)], "")
+                for i, (a, b, c) in enumerate(NOTE_CARDS_FALLBACK)]
 
     out = []
-    for i, (label, title, sub) in enumerate(rows):
-        out.append('          <div class="note-paper note-paper-%s" style="--i:%d">'
-                   % (_NOTE_SLOTS[i], i))
+    for i, (label, title, sub, fasten, href) in enumerate(rows):
+        tag = "a" if href else "div"
+        out.append('          <%s class="note-paper note-paper-%s" style="--i:%d"'
+                   ' data-fasten="%s"%s>'
+                   % (tag, _NOTE_SLOTS[i], i, fasten,
+                      (' href="%s"' % href) if href else ""))
+        # Four pieces, because tape uses two and a later fastener might
+        # want four. The ones this fastener does not use stay invisible.
+        out.append('            <span class="fasten" aria-hidden="true">'
+                   '<i></i><i></i><i></i><i></i></span>')
         out.append('            <span>%02d / %s</span>' % (i + 1, _html.escape(label)))
         out.append('            <strong>%s</strong>' % _html.escape(title))
+        if href:
+            out.append('            <span class="note-open">Read &rarr;</span>')
         if sub:
             out.append('            <p>%s</p>' % _html.escape(sub))
-        out.append('          </div>')
+        out.append('          </%s>' % tag)
     return "\n".join(out)
 
 
-def note_count():
+def playground_attrs():
+    """How many cards the board is holding, and - when there is nothing
+    written yet - that it is decoration.
+
+    With posts, the cards are links to them, so the board is real content
+    and hiding it would take those links away from a screen reader. The
+    placeholder cards lead nowhere, so that board stays hidden and the
+    empty-state line below speaks for it."""
     n = min(len(POSTS), 3) or len(NOTE_CARDS_FALLBACK)
-    return ' data-cards="%d"' % n
+    hidden = "" if POSTS else ' aria-hidden="true"'
+    return ' data-cards="%d"%s' % (n, hidden)
 
 
 def blog_posts():
@@ -544,7 +650,8 @@ def blog_posts():
                 'the writing will go.</div>')
     import datetime as _dt
     out = []
-    for post in sorted(POSTS, key=lambda x: x.get("date", ""), reverse=True):
+    worn = _fasteners()
+    for i, post in enumerate(_ordered_posts()):
         when, shown = post.get("date", ""), ""
         category = post.get("category", "lifestyle")
         if category not in BLOG_CATEGORIES:
@@ -561,12 +668,21 @@ def blog_posts():
         except Exception:
             when = ""
         line = _one_line(post)
-        out.append('        <details class="post" data-blog-topic="%s">'
-                   % _html.escape(category))
+        # The id is what the board card links to, and what the shuffle
+        # sends the reader to.
+        out.append('        <details class="post" id="post-%d" data-blog-topic="%s"'
+                   ' data-fasten="%s">'
+                   % (i + 1, _html.escape(category), worn[i]))
         out.append('          <summary class="post-head">')
+        # The fastener lives inside the summary because anything else
+        # inside a closed <details> is hidden.
+        out.append('            <span class="fasten" aria-hidden="true">'
+                   '<i></i><i></i><i></i><i></i></span>')
         out.append('            <div class="post-meta">')
         if shown:
             out.append('              <p class="post-date">%s</p>' % shown)
+        out.append('              <p class="post-read">%d min read</p>'
+                   % _reading_time(post))
         out.append('              <p class="post-category">%s</p>'
                    % _html.escape(BLOG_CATEGORIES[category]))
         out.append('            </div>')
@@ -585,6 +701,37 @@ def blog_posts():
         out.append('        </details>')
     return "\n".join(out)
 
+
+
+def notes_tally():
+    """The line above the list, and the button beside it.
+
+    The button ships with `hidden` and script.js removes it, so a reader
+    without JavaScript is never shown a control that cannot work."""
+    n = len(POSTS)
+    if not n:
+        return ""
+    word = _spelled(n).capitalize()
+    return (
+        '        <div class="notes-toolbar">\n'
+        '          <p class="notes-count">%s note%s so far</p>\n'
+        '          <button class="surprise" type="button" data-surprise hidden>'
+        'Surprise me</button>\n'
+        '        </div>'
+    ) % (word, "" if n == 1 else "s")
+
+
+def notes_end():
+    """A line at the foot of the list, so the page finishes rather than
+    running out."""
+    if not POSTS:
+        return ""
+    return (
+        '        <div class="notes-end">\n'
+        '          <p>That is everything pinned so far</p>\n'
+        '          <span class="again">More when there is more.</span>\n'
+        '        </div>'
+    )
 
 # ── the CV download ──────────────────────────────────────────────────────
 # Drop a PDF into assets/cv/ and both buttons on the CV page point at it:
@@ -771,7 +918,7 @@ PAGES = [
     # Unlisted — see UNLISTED above. Generated like any other page, but
     # absent from the nav, the pager and sitemap.xml, and marked noindex.
     ("blog.html", "blog", BLOG_NAME + " — Solomon B. Pobee",
-     "Marginalia: notes on lifestyle, campus and the PhD, kept by Solomon B. Pobee."),
+     "The Margin: notes on lifestyle, campus and the PhD, kept by Solomon B. Pobee."),
 ]
 
 SCHOLAR_LD = """<script type="application/ld+json">
@@ -1414,8 +1561,8 @@ BODY["blog"] = """      <section class="notes-hero pad" aria-labelledby="notes-t
                below, the way a magazine opens a section. Change the name in
                one place and the nav label, the <title> and the two secret
                doors follow — see BLOG_NAME near the top of this file. -->
-          <p class="eyebrow">KEPT SINCE 2026 <span>&times;</span> PROVO, UTAH</p>
-          <h1 id="notes-title" class="masthead-name">Marginalia</h1>
+          <p class="eyebrow">OFF THE CLOCK</p>
+          <h1 id="notes-title" class="masthead-name">The Margin</h1>
           <p class="masthead-standfirst">Small reflections on work, routines, curiosity, and the parts of life that shape how I think.</p>
           <div class="notes-topics" aria-label="Topics covered">
             <span>Lifestyle</span>
@@ -1426,14 +1573,14 @@ BODY["blog"] = """      <section class="notes-hero pad" aria-labelledby="notes-t
           </div>
         </div>
 
-        <div class="notes-playground enter-2" aria-hidden="true"<!--NOTECOUNT-->>
+        <div class="notes-playground enter-2"<!--NOTECOUNT-->>
           <p class="notes-board-label">FIELD NOTES / LIFE IN MOTION</p>
           <svg class="notes-thread" viewBox="0 0 440 390" role="presentation">
             <path d="M72 104 C162 26 224 178 352 92 S384 262 248 286 S106 246 76 326"/>
           </svg>
 <!--NOTECARDS-->
-          <span class="notes-spark notes-spark-one">&#10022;</span>
-          <span class="notes-spark notes-spark-two">&#10022;</span>
+          <span class="notes-spark notes-spark-one" aria-hidden="true">&#10022;</span>
+          <span class="notes-spark notes-spark-two" aria-hidden="true">&#10022;</span>
           <p class="notes-mantra">notice <i>&rarr;</i> pause <i>&rarr;</i> learn <i>&rarr;</i> repeat</p>
         </div>
       </section>
@@ -1452,9 +1599,11 @@ BODY["blog"] = """      <section class="notes-hero pad" aria-labelledby="notes-t
           <p class="kicker" id="recent-notes-title">ALL NOTES</p>
           <p class="notes-order">NEWEST FIRST &middot; TAP TO READ</p>
         </div>
+<!--NOTESTALLY-->
         <div class="posts" id="blog-posts">
 <!--BLOGPOSTS-->
         </div>
+<!--NOTESEND-->
       </section>
 
       <section class="notes-return pad">
@@ -1657,8 +1806,10 @@ for filename, key, title, desc in PAGES:
     page = html.replace(LC_MARK, _LC).replace(CV_MARK, cv_actions())
     page = page.replace(PUB_MARK, pub_groups())
     page = page.replace(BLOG_POSTS_MARK, blog_posts())
+    page = page.replace(NOTES_TALLY_MARK, notes_tally())
+    page = page.replace(NOTES_END_MARK, notes_end())
     page = page.replace(NOTE_CARDS_MARK, note_cards())
-    page = page.replace(NOTE_COUNT_MARK, note_count())
+    page = page.replace(NOTE_COUNT_MARK, playground_attrs())
     for _pid in CITATIONS:
         page = page.replace("<!--CITE:%s-->" % _pid, cite_panel(_pid))
     page = clean_links(page)
