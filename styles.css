@@ -583,6 +583,17 @@ a.status-dot:focus-visible{
     animation:inherit;animation-name:note-ink-3;
   }
 }
+/* One note means one card, and there is nothing for it to take turns
+   with. It simply stays lit: a lone card fading in and out on its own
+   reads as a blink rather than a hand-off. (Without this it stayed dark
+   forever, because the keyframes are written per card count and there
+   was no set for one.) */
+.notes-playground[data-cards="1"] .note-paper{
+  background:var(--accent);color:var(--accent-ink);border-color:transparent;
+}
+.notes-playground[data-cards="1"] .note-paper span,
+.notes-playground[data-cards="1"] .note-paper p{color:var(--accent-ink);opacity:.78;}
+
 /* Asked for less motion: the first card simply stays lit. */
 @media (prefers-reduced-motion:reduce){
   .note-paper[style*="--i:0"]{
@@ -828,6 +839,85 @@ summary.post-head:focus-visible{
   .notes-spark-two{animation:notes-twinkle 2.8s 1.1s ease-in-out infinite;}
   @keyframes notes-twinkle{0%,100%{transform:scale(1) rotate(0);opacity:1;}50%{transform:scale(.65) rotate(18deg);opacity:.45;}}
 }
+/* ─── choosing what to read ────────────────────────────────────────────
+   These chips are real buttons that really filter, so the capsule shape
+   is honest here in a way it was not on the topic words in the hero. It
+   is the same .chip the publications page uses, so the site's two filters
+   look and behave alike.
+
+   One at a time: a reader picks a kind of note, or All. Pressing the
+   chip that is already lit turns it off again and lands back on All, so
+   there are two ways out of a filter and no way to get stuck in one. */
+.notes-filters{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;
+  width:min(100%,92ch);margin:26px auto 0;
+}
+.filter-label,.count-label{
+  margin:0;color:var(--faint);font-family:var(--mono);font-size:.7rem;
+  letter-spacing:.14em;text-transform:uppercase;
+}
+.filter-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.notes-filters .chip,.count-picker .chip{font-size:.78rem;font-weight:500;padding:7px 14px;}
+.notes-filters .chip span,.count-picker .chip span{opacity:.55;}
+.notes-filters .chip[aria-pressed="true"],
+.count-picker .chip[aria-pressed="true"]{
+  background:var(--accent);color:var(--accent-ink);border-color:var(--accent);
+}
+.notes-filters .chip:focus-visible,.count-picker .chip:focus-visible,
+.surprise:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+.filter-count{
+  margin:0 0 0 auto;color:var(--faint);font-family:var(--mono);font-size:.7rem;
+  letter-spacing:.14em;text-transform:uppercase;
+}
+.count-picker{display:flex;align-items:center;gap:8px;}
+
+/* The month picker. A select rather than more chips: a row of chips is
+   fine for a year of notes and unreadable after three, and a select is
+   the one control that scrolls instead of wrapping. It is drawn to match
+   the chips beside it so the filter row reads as one thing. */
+.month-pick select{
+  appearance:none;-webkit-appearance:none;
+  border:1px solid var(--border);border-radius:999px;background:var(--surface);
+  color:var(--muted);font:inherit;font-size:.78rem;font-weight:500;
+  padding:7px 30px 7px 14px;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--faint) 50%),
+                   linear-gradient(135deg,var(--faint) 50%,transparent 50%);
+  background-position:calc(100% - 16px) 52%,calc(100% - 11px) 52%;
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+  transition:border-color 180ms ease,color 180ms ease;
+}
+.month-pick select:hover{border-color:var(--accent-50);color:var(--text);}
+.month-pick select:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+.notes-toolbar .surprise{margin-left:auto;}
+
+/* ─── months ───────────────────────────────────────────────────────────
+   A heading wherever the month changes. It is a sibling of the notes
+   rather than a wrapper around them, which is what lets one number run
+   down the whole page while a filter hides individual notes. */
+.month{
+  display:flex;align-items:baseline;gap:16px;
+  width:min(100%,92ch);margin:22px auto 0;
+}
+.month:first-child{margin-top:4px;}
+.month h3{
+  margin:0;font-family:var(--serif);font-weight:400;font-size:1.55rem;
+  letter-spacing:-.01em;white-space:nowrap;
+}
+.month .rule{flex:1;height:1px;background:var(--border-soft);}
+.month .n{
+  color:var(--faint);font-family:var(--mono);font-size:.68rem;
+  letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;
+}
+.notes-more{width:min(100%,92ch);margin:30px auto 0;display:flex;justify-content:center;}
+.notes-more .surprise{margin-left:0;padding:12px 26px;}
+
+@media (max-width:640px){
+  .notes-filters{gap:8px 10px;}
+  .filter-count{margin-left:0;width:100%;}
+  .notes-toolbar .surprise{margin-left:0;}
+  .month h3{font-size:1.3rem;}
+}
+
 /* ─── the shelf above the notes ────────────────────────────────────────
    How many notes there are, and one button that opens one at random. The
    button carries `hidden` in the markup and script.js takes it off, so a

@@ -477,6 +477,28 @@ def _ordered_posts():
     return sorted(POSTS, key=lambda x: x.get("date", ""), reverse=True)
 
 
+# How many notes the board holds. Two and three have their own keyframes
+# and their own card positions, so this is not a free dial - see
+# "the papers take turns" in styles.css before changing it.
+BOARD_SLOTS = 3
+
+
+def _board_posts():
+    """Which notes are pinned to the board, in the order they hang there.
+
+    By default the newest fill it. A post with "pin": True keeps its place
+    whatever its date, so something worth keeping up there - a piece you
+    are proud of, a poem - does not slide off the board the week you write
+    two other things. Pinned notes come first, oldest pin first so the
+    board does not reshuffle every time you add one, and the newest posts
+    fill whatever is left.
+    """
+    order = _ordered_posts()
+    pinned = [p for p in order if p.get("pin")][::-1]
+    rest = [p for p in order if not p.get("pin")]
+    return (pinned + rest)[:BOARD_SLOTS]
+
+
 def _fasteners():
     """What each note wears, newest first.
 
@@ -579,16 +601,20 @@ _NOTE_SLOTS = ("one", "two", "three")
 def note_cards():
     """The three papers pinned in the hero, carrying the newest posts.
 
-    The highlight moves from one to the next on a timer, which is done in
-    CSS rather than script: the cards are decorative (the block is
-    aria-hidden and the real list sits below), so there is nothing here
-    worth loading JavaScript for, and it stops for anyone who has asked
-    for reduced motion.
+    Which notes hang here is _board_posts()'s decision; each card wears
+    the same fastener as its own note below, so a reader following a card
+    down the page lands on something that looks like what they clicked.
+
+    The highlight moves from one card to the next on a timer, done in CSS
+    rather than script because the notes themselves are all present in the
+    list below, and it stops for anyone who has asked for reduced motion.
     """
     import datetime as _dt
     rows = []
     worn = _fasteners()
-    for i, post in enumerate(_ordered_posts()[:3]):
+    on_board = _board_posts()
+    where = dict((id(q), n + 1) for n, q in enumerate(_ordered_posts()))
+    for i, post in enumerate(on_board):
         label = BLOG_CATEGORIES.get(post.get("category", "lifestyle"), "Notes")
         when = post.get("date", "")
         try:
@@ -597,7 +623,8 @@ def note_cards():
         except Exception:
             sub = ""
         rows.append((label.upper(), post.get("title", "Untitled"), sub,
-                     worn[i], "#post-%d" % (i + 1)))
+                     worn[where[id(post)] - 1],
+                     "#post-%d" % where[id(post)]))
     if not rows:
         # Nothing written yet, so the cards are placeholders. They lead
         # nowhere, so they stay plain <div>s and the board stays hidden
@@ -653,6 +680,7 @@ def blog_posts():
     import datetime as _dt
     out = []
     worn = _fasteners()
+    seen_month = None
     for i, post in enumerate(_ordered_posts()):
         when, shown = post.get("date", ""), ""
         category = post.get("category", "lifestyle")
@@ -670,11 +698,27 @@ def blog_posts():
         except Exception:
             when = ""
         line = _one_line(post)
+        # A heading at each new month, so the list reads as an archive
+        # rather than one long column. They sit inside .posts with the
+        # notes rather than wrapping them, which keeps one counter running
+        # down the whole page and lets the filter hide a month by hiding
+        # its heading, without either having to know about the other.
+        month = ""
+        if when:
+            month = "%s %d" % (_MONTHS[d.month - 1], d.year)
+            if month != seen_month:
+                out.append('        <div class="month" data-month-head="%s">'
+                           % _html.escape(month))
+                out.append('          <h3>%s</h3>' % _html.escape(month))
+                out.append('          <span class="rule" aria-hidden="true"></span>')
+                out.append('          <span class="n" data-month-count></span>')
+                out.append('        </div>')
+                seen_month = month
         # The id is what the board card links to, and what the shuffle
         # sends the reader to.
         out.append('        <details class="post" id="post-%d" data-blog-topic="%s"'
-                   ' data-fasten="%s">'
-                   % (i + 1, _html.escape(category), worn[i]))
+                   ' data-fasten="%s" data-month="%s">'
+                   % (i + 1, _html.escape(category), worn[i], _html.escape(month)))
         out.append('          <summary class="post-head">')
         # The fastener lives inside the summary because anything else
         # inside a closed <details> is hidden.
@@ -705,35 +749,135 @@ def blog_posts():
 
 
 
-def notes_tally():
-    """The line above the list, and the button beside it.
+# How many notes the list shows before a reader asks for more, and the
+# lengths the picker offers. The controls only appear once there is enough
+# written to need them - see notes_tally() - so an early page stays quiet.
+PAGE_STEP = 5
+PAGE_STEPS = (5, 10, 25)
 
-    The button ships with `hidden` and script.js removes it, so a reader
-    without JavaScript is never shown a control that cannot work."""
+
+def _category_counts():
+    """Every category in use, in the order BLOG_CATEGORIES declares them,
+    with how many notes each holds. A category nobody has written in yet
+    gets no chip."""
+    out = []
+    for key, label in BLOG_CATEGORIES.items():
+        n = len([p for p in POSTS if p.get("category", "lifestyle") == key])
+        if n:
+            out.append((key, label, n))
+    return out
+
+
+def _months_in_use():
+    """Every month that has a note in it, newest first, with its count.
+
+    A chip each would be fine for a year and unreadable after three, so
+    the months go in a select rather than the chip row. It is also the
+    honest control for a list that only grows: a select scrolls, a row of
+    chips wraps until it owns half the page.
+    """
+    import datetime as _dt
+    out, seen = [], {}
+    for post in _ordered_posts():
+        try:
+            d = _dt.date.fromisoformat(post.get("date", ""))
+        except Exception:
+            continue
+        key = "%s %d" % (_MONTHS[d.month - 1], d.year)
+        if key not in seen:
+            seen[key] = len(out)
+            out.append([key, 0])
+        out[seen[key]][1] += 1
+    return out
+
+
+def _month_select():
+    """The month picker. One month is no choice at all, so it only appears
+    once there are two."""
+    months = _months_in_use()
+    if len(months) < 2:
+        return ""
+    out = ['          <label class="month-pick" data-month-pick hidden>']
+    out.append('            <span class="sr-only">Month</span>')
+    out.append('            <select>')
+    out.append('              <option value="">Every month</option>')
+    for key, count in months:
+        out.append('              <option value="%s">%s &middot; %d</option>'
+                   % (_html.escape(key), _html.escape(key), count))
+    out.append('            </select>')
+    out.append('          </label>')
+    return "\n".join(out)
+
+
+def notes_tally():
+    """Everything above the list: the filters, the count, the length
+    picker and the shuffle.
+
+    Each control ships with `hidden` and script.js removes it, so a reader
+    without JavaScript is never shown a control that cannot work - the
+    same reason the topic words lost their pill.
+
+    They also only exist when they are worth having. One category means no
+    filter to speak of, and five notes need no paging, so a page early in
+    its life shows a count and nothing else and grows its controls as the
+    writing arrives.
+    """
     n = len(POSTS)
     if not n:
         return ""
-    word = _spelled(n).capitalize()
-    return (
-        '        <div class="notes-toolbar">\n'
-        '          <p class="notes-count">%s note%s so far</p>\n'
-        '          <button class="surprise" type="button" data-surprise hidden>'
-        'Surprise me</button>\n'
-        '        </div>'
-    ) % (word, "" if n == 1 else "s")
+    out = []
+
+    cats = _category_counts()
+    if len(cats) > 1:
+        out.append('        <div class="notes-filters" data-filters hidden>')
+        out.append('          <p class="filter-label" id="filter-label">Show</p>')
+        out.append('          <div class="filter-chips" role="group" aria-labelledby="filter-label">')
+        out.append('            <button type="button" class="chip" data-cat="all" '
+                   'aria-pressed="true">All notes <span>%d</span></button>' % n)
+        for key, label, count in cats:
+            out.append('            <button type="button" class="chip" data-cat="%s" '
+                       'aria-pressed="false">%s <span>%d</span></button>'
+                       % (_html.escape(key), _html.escape(label), count))
+        out.append('          </div>')
+        out.append(_month_select())
+        out.append('          <p class="filter-count" data-filter-count></p>')
+        out.append('        </div>')
+
+    out.append('        <div class="notes-toolbar">')
+    out.append('          <p class="notes-count">%s note%s so far</p>'
+               % (_spelled(n).capitalize(), "" if n == 1 else "s"))
+    if n > PAGE_STEP:
+        out.append('          <span class="count-picker" data-counts hidden>')
+        out.append('            <span class="count-label">Per page</span>')
+        for step in PAGE_STEPS:
+            if step < n:
+                out.append('            <button type="button" class="chip" data-count="%d" '
+                           'aria-pressed="%s">%d</button>'
+                           % (step, "true" if step == PAGE_STEP else "false", step))
+        out.append('            <button type="button" class="chip" data-count="0" '
+                   'aria-pressed="false">All</button>')
+        out.append('          </span>')
+    out.append('          <button class="surprise" type="button" data-surprise hidden>'
+               'Surprise me</button>')
+    out.append('        </div>')
+    return "\n".join(out)
 
 
 def notes_end():
-    """A line at the foot of the list, so the page finishes rather than
-    running out."""
+    """The foot of the list: the button that reveals the next few notes,
+    and a line so the page finishes rather than running out."""
     if not POSTS:
         return ""
-    return (
-        '        <div class="notes-end">\n'
-        '          <p>That is everything pinned so far</p>\n'
-        '          <span class="again">More when there is more.</span>\n'
-        '        </div>'
-    )
+    out = []
+    if len(POSTS) > PAGE_STEP:
+        out.append('        <div class="notes-more" data-more-wrap hidden>')
+        out.append('          <button class="surprise" type="button" data-more></button>')
+        out.append('        </div>')
+    out.append('        <div class="notes-end">')
+    out.append('          <p>That is everything pinned so far</p>')
+    out.append('          <span class="again">More when there is more.</span>')
+    out.append('        </div>')
+    return "\n".join(out)
 
 # ── the CV download ──────────────────────────────────────────────────────
 # Drop a PDF into assets/cv/ and both buttons on the CV page point at it:

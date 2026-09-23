@@ -633,6 +633,10 @@
       if (!hash || hash.charAt(0) !== '#') return;
       var el = document.getElementById(hash.slice(1));
       if (!el || el.tagName.toLowerCase() !== 'details') return;
+      /* A link from the board, or a link someone shared, can point at a
+         note the current filter or page length is hiding. Reveal it
+         rather than scrolling to nothing. */
+      if (el.hidden) { el.hidden = false; }
       el.open = true;
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (flash) {
@@ -645,16 +649,140 @@
     window.addEventListener('hashchange', function () { openTarget(location.hash, false); });
     openTarget(location.hash, false);
 
+    /* ── filtering and paging ───────────────────────────────────────
+       Everything here is an addition. Without it the page is the whole
+       list, newest first, with its month headings - which is a perfectly
+       good page, and the reason the controls carry `hidden` in the markup
+       and are revealed from here rather than the other way round. */
+    var STEP = 5;
+    var filters = document.querySelector('[data-filters]');
+    var counts = document.querySelector('[data-counts]');
+    var moreWrap = document.querySelector('[data-more-wrap]');
+    var moreBtn = moreWrap && moreWrap.querySelector('[data-more]');
+    var countOut = filters && filters.querySelector('[data-filter-count]');
+    var heads = [].slice.call(document.querySelectorAll('[data-month-head]'));
+    var picked = '';          /* '' means every category */
+    var month = '';           /* '' means every month */
+    var perPage = STEP;       /* 0 means everything */
+    var shown = perPage;
+
+    function matching() {
+      return posts.filter(function (p) {
+        if (picked && p.getAttribute('data-blog-topic') !== picked) return false;
+        if (month && p.getAttribute('data-month') !== month) return false;
+        return true;
+      });
+    }
+
+    function draw() {
+      var hits = matching();
+      var limit = perPage ? Math.min(shown, hits.length) : hits.length;
+
+      posts.forEach(function (p) { p.hidden = true; });
+      hits.slice(0, limit).forEach(function (p) { p.hidden = false; });
+
+      /* A month heading belongs on the page only while one of its notes
+         is still on it, and its own count has to follow the filter. */
+      heads.forEach(function (h) {
+        var month = h.getAttribute('data-month-head');
+        var live = hits.slice(0, limit).filter(function (p) {
+          return p.getAttribute('data-month') === month;
+        }).length;
+        h.hidden = live === 0;
+        var n = h.querySelector('[data-month-count]');
+        if (n) n.textContent = live + (live === 1 ? ' note' : ' notes');
+      });
+
+      if (countOut) {
+        countOut.textContent = limit === hits.length
+          ? hits.length + (hits.length === 1 ? ' note' : ' notes')
+          : limit + ' of ' + hits.length;
+      }
+      if (moreWrap) {
+        var left = hits.length - limit;
+        moreWrap.hidden = left <= 0;
+        if (moreBtn) {
+          moreBtn.textContent = 'Show ' + Math.min(perPage || left, left) +
+                                ' more \u2193';
+        }
+      }
+    }
+
+    function press(group, on) {
+      [].forEach.call(group.querySelectorAll('.chip'), function (c) {
+        c.setAttribute('aria-pressed', String(on(c)));
+      });
+    }
+
+    if (filters) {
+      filters.hidden = false;
+      filters.addEventListener('click', function (e) {
+        var chip = e.target.closest('.chip');
+        if (!chip) return;
+        /* One at a time. Pressing the chip that is already on turns it
+           off again, which lands back on all notes - so "All" is a
+           shortcut rather than the only way out of a filter. */
+        var cat = chip.getAttribute('data-cat');
+        picked = (cat === 'all' || cat === picked) ? '' : cat;
+        press(filters, function (c) {
+          var k = c.getAttribute('data-cat');
+          return k === 'all' ? picked === '' : k === picked;
+        });
+        shown = perPage;      /* a new filter starts the count again */
+        draw();
+      });
+    }
+
+    /* The month picker narrows the list to one edition. It stacks with
+       the category chips rather than replacing them, so "campus notes
+       from August" is a thing a reader can ask for. */
+    var monthPick = document.querySelector('[data-month-pick]');
+    if (monthPick) {
+      monthPick.hidden = false;
+      monthPick.querySelector('select').addEventListener('change', function (e) {
+        month = e.target.value;
+        shown = perPage;
+        draw();
+      });
+    }
+
+    if (counts) {
+      counts.hidden = false;
+      counts.addEventListener('click', function (e) {
+        var chip = e.target.closest('.chip');
+        if (!chip) return;
+        perPage = parseInt(chip.getAttribute('data-count'), 10) || 0;
+        shown = perPage;
+        press(counts, function (c) { return c === chip; });
+        draw();
+      });
+    }
+
+    if (moreBtn) {
+      moreBtn.addEventListener('click', function () {
+        shown += perPage || matching().length;
+        draw();
+      });
+    }
+
+    if (filters || counts || moreWrap || monthPick) draw();
+
     var btn = document.querySelector('[data-surprise]');
     if (btn && posts.length > 1) {
       btn.hidden = false;
-      var last = -1;
+      var last = null;
       btn.addEventListener('click', function () {
-        var i;
-        do { i = Math.floor(Math.random() * posts.length); } while (i === last);
-        last = i;
-        posts.forEach(function (p, n) { if (n !== i) p.open = false; });
-        openTarget('#' + posts[i].id, true);
+        /* Shuffle within what the reader has chosen to look at. Sending
+           them to a note their own filter excludes would be a strange
+           answer to pressing this. */
+        var pool = matching();
+        if (pool.length < 2) pool = posts;
+        var pick;
+        do { pick = pool[Math.floor(Math.random() * pool.length)]; }
+        while (pick === last && pool.length > 1);
+        last = pick;
+        posts.forEach(function (p) { if (p !== pick) p.open = false; });
+        openTarget('#' + pick.id, true);
       });
     }
   })();
