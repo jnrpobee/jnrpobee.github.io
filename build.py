@@ -46,7 +46,7 @@ def public_path(filename):
 
 # Unlisted pages: generated and linked with clean URLs like everything
 # else, but kept out of the nav, the pager and sitemap.xml.
-UNLISTED = ["blog.html", "campus.html"]
+UNLISTED = ["blog.html"]
 
 _LINK = re.compile(r'(href|action)="(' + "|".join([f for f, _ in NAV] + UNLISTED) + r')((?:#|\?)[^"]*)?"')
 
@@ -402,24 +402,142 @@ POSTS = [
 """,
     },
 ]
-LIFESTYLE_POSTS_MARK = "<!--LIFESTYLEPOSTS-->"
-CAMPUS_POSTS_MARK = "<!--CAMPUSPOSTS-->"
+BLOG_POSTS_MARK = "<!--BLOGPOSTS-->"
 
 _MONTHS = ("January", "February", "March", "April", "May", "June", "July",
            "August", "September", "October", "November", "December")
 
 
-def blog_posts(category):
-    """One blog category's posts, newest first, or a quiet empty state."""
-    if category not in BLOG_CATEGORIES:
-        raise ValueError("Unknown blog category %r" % category)
-    posts = [post for post in POSTS if post.get("category", "lifestyle") == category]
-    if not posts:
+def _one_line(post):
+    """The line under the title.
+
+    Prefer an explicit "summary" on the post. Failing that, take the first
+    sentence of the body, so an entry written before this existed still
+    reads properly instead of showing nothing.
+    """
+    given = (post.get("summary") or "").strip()
+    if given:
+        return given
+    text = re.sub(r"<[^>]+>", " ", post.get("body", ""))
+    text = _html.unescape(text)
+    text = " ".join(text.split())
+    if not text:
+        return ""
+    m = re.search(r"^(.+?[.!?])(\s|$)", text)
+    line = m.group(1) if m else text
+    # Roughly two lines at the card's width. The CSS clamps to two lines
+    # as well, so this only decides where the ellipsis falls.
+    if len(line) > 150:
+        line = line[:149].rsplit(" ", 1)[0] + "\u2026"
+    return line
+
+
+def _post_figure(post):
+    """An optional image on a post.
+
+    Written as:
+
+        "image": {
+            "src": "assets/blog/lab-whiteboard.jpg",
+            "alt": "A whiteboard covered in a session plan",
+            "caption": "Optional line under the picture.",
+        },
+
+    alt is required and must describe the picture, because a reader using
+    a screen reader gets nothing else. Pass "alt": "" deliberately if the
+    image is purely decorative. The deploy's asset check will catch a src
+    that does not exist, so a typo stops the build rather than shipping a
+    broken image.
+    """
+    img = post.get("image")
+    if not img:
+        return ""
+    if isinstance(img, str):                      # "image": "assets/blog/x.jpg"
+        img = {"src": img, "alt": ""}
+    src = (img.get("src") or "").strip()
+    if not src:
+        return ""
+    if "alt" not in img:
+        raise ValueError(
+            "The image on %r has no alt text. Describe it, or set "
+            '"alt": "" if it is decorative.' % post.get("title", "a post"))
+    cap = (img.get("caption") or "").strip()
+    out = ['          <figure class="post-figure">']
+    out.append('            <img src="%s" alt="%s" loading="lazy" decoding="async">'
+               % (_html.escape(src), _html.escape(img["alt"])))
+    if cap:
+        out.append('            <figcaption>%s</figcaption>' % _html.escape(cap))
+    out.append('          </figure>')
+    return "\n".join(out)
+
+
+NOTE_CARDS_MARK = "<!--NOTECARDS-->"
+NOTE_COUNT_MARK = "<!--NOTECOUNT-->"
+
+# Shown when there are no posts yet, so the hero still looks designed
+# rather than empty.
+NOTE_CARDS_FALLBACK = [
+    ("NOTICE", "Look closer.", "Start with the ordinary details."),
+    ("RESET", "Make room.", "Rest belongs in the process."),
+    ("CARRY", "Keep what matters.", "Less noise. More intention."),
+]
+_NOTE_SLOTS = ("one", "two", "three")
+
+
+def note_cards():
+    """The three papers pinned in the hero, carrying the newest posts.
+
+    The highlight moves from one to the next on a timer, which is done in
+    CSS rather than script: the cards are decorative (the block is
+    aria-hidden and the real list sits below), so there is nothing here
+    worth loading JavaScript for, and it stops for anyone who has asked
+    for reduced motion.
+    """
+    import datetime as _dt
+    rows = []
+    for post in sorted(POSTS, key=lambda x: x.get("date", ""), reverse=True)[:3]:
+        label = BLOG_CATEGORIES.get(post.get("category", "lifestyle"), "Notes")
+        when = post.get("date", "")
+        try:
+            d = _dt.date.fromisoformat(when)
+            sub = "%d %s %d" % (d.day, _MONTHS[d.month - 1], d.year)
+        except Exception:
+            sub = ""
+        rows.append((label.upper(), post.get("title", "Untitled"), sub))
+    if not rows:
+        rows = list(NOTE_CARDS_FALLBACK)
+
+    out = []
+    for i, (label, title, sub) in enumerate(rows):
+        out.append('          <div class="note-paper note-paper-%s" style="--i:%d">'
+                   % (_NOTE_SLOTS[i], i))
+        out.append('            <span>%02d / %s</span>' % (i + 1, _html.escape(label)))
+        out.append('            <strong>%s</strong>' % _html.escape(title))
+        if sub:
+            out.append('            <p>%s</p>' % _html.escape(sub))
+        out.append('          </div>')
+    return "\n".join(out)
+
+
+def note_count():
+    n = min(len(POSTS), 3) or len(NOTE_CARDS_FALLBACK)
+    return ' data-cards="%d"' % n
+
+
+def blog_posts():
+    """Every post, newest first, each one collapsed to its title and a
+    single line until the reader opens it.
+
+    <details> rather than a script: it opens on click and on Enter or
+    Space, it is announced as expandable, the browser's find-in-page can
+    open it to reveal a match, and it still works if the JavaScript fails.
+    """
+    if not POSTS:
         return ('        <div class="empty">Nothing here yet. This is where '
                 'the writing will go.</div>')
     import datetime as _dt
     out = []
-    for post in sorted(posts, key=lambda x: x.get("date", ""), reverse=True):
+    for post in sorted(POSTS, key=lambda x: x.get("date", ""), reverse=True):
         when, shown = post.get("date", ""), ""
         category = post.get("category", "lifestyle")
         if category not in BLOG_CATEGORIES:
@@ -435,19 +553,29 @@ def blog_posts(category):
                      % (_html.escape(when), d.day, _MONTHS[d.month - 1], d.year))
         except Exception:
             when = ""
-        out.append('        <article class="post" data-blog-topic="%s">'
+        line = _one_line(post)
+        out.append('        <details class="post" data-blog-topic="%s">'
                    % _html.escape(category))
-        out.append('          <div class="post-meta">')
+        out.append('          <summary class="post-head">')
+        out.append('            <div class="post-meta">')
         if shown:
-            out.append('            <p class="post-date">%s</p>' % shown)
-        out.append('            <p class="post-category">%s</p>'
+            out.append('              <p class="post-date">%s</p>' % shown)
+        out.append('              <p class="post-category">%s</p>'
                    % _html.escape(BLOG_CATEGORIES[category]))
-        out.append('          </div>')
-        out.append('          <h2 class="post-title">%s</h2>'
+        out.append('            </div>')
+        out.append('            <h2 class="post-title">%s</h2>'
                    % _html.escape(post.get("title", "Untitled")))
-        out.append('          <div class="post-body">%s</div>'
-                   % post.get("body", "").rstrip("\n"))
-        out.append('        </article>')
+        if line:
+            out.append('            <p class="post-summary">%s</p>' % _html.escape(line))
+        out.append('            <span class="post-chevron" aria-hidden="true"></span>')
+        out.append('          </summary>')
+        out.append('          <div class="post-body">')
+        fig = _post_figure(post)
+        if fig:
+            out.append(fig)
+        out.append(post.get("body", "").rstrip("\n"))
+        out.append('          </div>')
+        out.append('        </details>')
     return "\n".join(out)
 
 
@@ -637,8 +765,6 @@ PAGES = [
     # absent from the nav, the pager and sitemap.xml, and marked noindex.
     ("blog.html", "blog", "Lifestyle — Solomon B. Pobee",
      "Lifestyle notes and personal reflections by Solomon B. Pobee."),
-    ("campus.html", "campus", "Campus — Solomon B. Pobee",
-     "Notes from campus and PhD life by Solomon B. Pobee."),
 ]
 
 SCHOLAR_LD = """<script type="application/ld+json">
@@ -737,9 +863,10 @@ ART_COACH = """<svg viewBox="0 0 400 150" role="presentation">
             </svg>"""
 
 
+# One page now, so there is nothing to navigate between. The header
+# still shows the "Exit the blog" brand, which is the only way out.
 BLOG_NAV = [
-    ("blog.html", "Lifestyle"),
-    ("campus.html", "Campus"),
+    ("blog.html", "Notes"),
 ]
 
 
@@ -889,7 +1016,7 @@ SHELL = """<!DOCTYPE html>
       <div class="footer-brand">
         <img class="logo-mark logo-mark-sm" src="assets/logo-mark.svg" alt="" width="34" height="34" loading="lazy">
         <span class="footer-divider"></span>
-        <span>Solomon B. Pobee &middot; &copy; <span data-year>2026</span></span>
+        <a class="footer-copy" href="blog.html" aria-label="Lifestyle blog">Solomon B. Pobee &middot; &copy; <span data-year>2026</span></a>
       </div>
       <div class="footer-links">
         <a href="mailto:jnrpobee@byu.edu">jnrpobee@byu.edu</a>
@@ -1275,36 +1402,24 @@ BODY["about"] = """      <section class="pad">
 
 BODY["blog"] = """      <section class="notes-hero pad" aria-labelledby="notes-title">
         <div class="notes-hero-copy enter-1">
-          <p class="eyebrow">LIFESTYLE <span>&times;</span> IN PROGRESS</p>
+          <p class="eyebrow">NOTES <span>&times;</span> IN PROGRESS</p>
           <h1 id="notes-title">Lifestyle, lately.</h1>
           <p class="lead">Small reflections on work, routines, curiosity, and the parts of life that shape how I think.</p>
           <div class="notes-topics" aria-label="Topics covered">
             <span>Lifestyle</span>
             <span>Campus life</span>
+            <span>PhD life</span>
+            <span>BYU</span>
             <span>Field notes</span>
           </div>
         </div>
 
-        <div class="notes-playground enter-2" aria-hidden="true">
+        <div class="notes-playground enter-2" aria-hidden="true"<!--NOTECOUNT-->>
           <p class="notes-board-label">FIELD NOTES / LIFE IN MOTION</p>
           <svg class="notes-thread" viewBox="0 0 440 390" role="presentation">
             <path d="M72 104 C162 26 224 178 352 92 S384 262 248 286 S106 246 76 326"/>
           </svg>
-          <div class="note-paper note-paper-one">
-            <span>01 / NOTICE</span>
-            <strong>Look closer.</strong>
-            <p>Start with the ordinary details.</p>
-          </div>
-          <div class="note-paper note-paper-two">
-            <span>02 / RESET</span>
-            <strong>Make room.</strong>
-            <p>Rest belongs in the process.</p>
-          </div>
-          <div class="note-paper note-paper-three">
-            <span>03 / CARRY</span>
-            <strong>Keep what matters.</strong>
-            <p>Less noise. More intention.</p>
-          </div>
+<!--NOTECARDS-->
           <span class="notes-spark notes-spark-one">&#10022;</span>
           <span class="notes-spark notes-spark-two">&#10022;</span>
           <p class="notes-mantra">notice <i>&rarr;</i> pause <i>&rarr;</i> learn <i>&rarr;</i> repeat</p>
@@ -1322,77 +1437,16 @@ BODY["blog"] = """      <section class="notes-hero pad" aria-labelledby="notes-t
 
       <section class="notes-feed pad" aria-labelledby="recent-notes-title">
         <div class="section-heading">
-          <p class="kicker" id="recent-notes-title">LIFESTYLE NOTES</p>
-          <p class="notes-order">NEWEST FIRST</p>
+          <p class="kicker" id="recent-notes-title">ALL NOTES</p>
+          <p class="notes-order">NEWEST FIRST &middot; TAP TO READ</p>
         </div>
         <div class="posts" id="blog-posts">
-<!--LIFESTYLEPOSTS-->
+<!--BLOGPOSTS-->
         </div>
       </section>
 
       <section class="notes-return pad">
         <p class="note">You found this by clicking the dot. <a class="text-link" href="index.html">Back to the front</a>.</p>
-      </section>"""
-
-BODY["campus"] = """      <section class="notes-hero pad" aria-labelledby="campus-title">
-        <div class="notes-hero-copy enter-1">
-          <p class="eyebrow">CAMPUS <span>&times;</span> IN PROGRESS</p>
-          <h1 id="campus-title">Campus, between classes.</h1>
-          <p class="lead">Notes from PhD life at BYU &mdash; research questions, lessons in progress, and the people and places around the work.</p>
-          <div class="notes-topics" aria-label="Topics covered">
-            <span>PhD life</span>
-            <span>BYU</span>
-            <span>Research</span>
-          </div>
-        </div>
-
-        <div class="notes-playground enter-2" aria-hidden="true">
-          <p class="notes-board-label">FIELD NOTES / CAMPUS EDITION</p>
-          <svg class="notes-thread" viewBox="0 0 440 390" role="presentation">
-            <path d="M72 104 C162 26 224 178 352 92 S384 262 248 286 S106 246 76 326"/>
-          </svg>
-          <div class="note-paper note-paper-one">
-            <span>01 / ARRIVE</span>
-            <strong>Show up curious.</strong>
-            <p>Good questions can start anywhere.</p>
-          </div>
-          <div class="note-paper note-paper-two">
-            <span>02 / LEARN</span>
-            <strong>Ask again.</strong>
-            <p>The first answer is rarely the whole one.</p>
-          </div>
-          <div class="note-paper note-paper-three">
-            <span>03 / CONNECT</span>
-            <strong>Share the work.</strong>
-            <p>Ideas get better around people.</p>
-          </div>
-          <span class="notes-spark notes-spark-one">&#10022;</span>
-          <span class="notes-spark notes-spark-two">&#10022;</span>
-          <p class="notes-mantra">learn <i>&rarr;</i> question <i>&rarr;</i> share <i>&rarr;</i> repeat</p>
-        </div>
-      </section>
-
-      <section class="focus-strip notes-focus pad" aria-labelledby="campus-focus-title">
-        <p class="kicker" id="campus-focus-title">CAMPUS RHYTHMS</p>
-        <div class="focus-list">
-          <p>Learn in public.</p>
-          <p>Questions everywhere.</p>
-          <p>Ideas need people.</p>
-        </div>
-      </section>
-
-      <section class="notes-feed pad" aria-labelledby="campus-notes-title">
-        <div class="section-heading">
-          <p class="kicker" id="campus-notes-title">CAMPUS NOTES</p>
-          <p class="notes-order">NEWEST FIRST</p>
-        </div>
-        <div class="posts">
-<!--CAMPUSPOSTS-->
-        </div>
-      </section>
-
-      <section class="notes-return pad">
-        <p class="note">A quieter corner of the site. <a class="text-link" href="index.html">Back to the front</a>.</p>
       </section>"""
 
 BODY["cv"] = """      <section class="pad">
@@ -1589,8 +1643,9 @@ for filename, key, title, desc in PAGES:
     )
     page = html.replace(LC_MARK, _LC).replace(CV_MARK, cv_actions())
     page = page.replace(PUB_MARK, pub_groups())
-    page = page.replace(LIFESTYLE_POSTS_MARK, blog_posts("lifestyle"))
-    page = page.replace(CAMPUS_POSTS_MARK, blog_posts("campus"))
+    page = page.replace(BLOG_POSTS_MARK, blog_posts())
+    page = page.replace(NOTE_CARDS_MARK, note_cards())
+    page = page.replace(NOTE_COUNT_MARK, note_count())
     for _pid in CITATIONS:
         page = page.replace("<!--CITE:%s-->" % _pid, cite_panel(_pid))
     page = clean_links(page)

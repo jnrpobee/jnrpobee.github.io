@@ -353,11 +353,22 @@ a.status-dot:focus-visible{
 .notes-hero-copy{position:relative;z-index:2;}
 .notes-hero h1{font-size:clamp(3.2rem,6vw,5.8rem);}
 .notes-hero .lead{max-width:680px;font-size:clamp(1.45rem,2.6vw,2.25rem);}
-.notes-topics{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px;}
+/* These are labels, not filters — nothing happens if you press one. A pill
+   with a border and a filled background is the shape the rest of the site
+   uses for buttons (.chip), so wearing it here promises a click that never
+   comes. They read instead as one quiet line of set type, separated by a
+   middot the way a masthead lists its sections: still small, mono and
+   tracked out so they keep their character, but with no edge to press. */
+.notes-topics{margin-top:30px;max-width:54ch;line-height:2.1;}
 .notes-topics span{
-  padding:8px 12px;border:1px solid var(--border);border-radius:999px;
-  background:var(--surface);color:var(--dim);font-family:var(--mono);
-  font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted-4);font-family:var(--mono);
+  font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;
+}
+/* The separator trails its own label rather than leading the next one, so a
+   line that wraps can never begin with a stranded dot. The row is laid out
+   as ordinary inline text for the same reason: it wraps like a sentence. */
+.notes-topics span:not(:last-child)::after{
+  content:"\00b7";margin:0 .6em;color:var(--faint);letter-spacing:0;
 }
 .notes-playground{
   position:relative;z-index:1;min-height:470px;overflow:hidden;
@@ -396,12 +407,63 @@ a.status-dot:focus-visible{
 .note-paper strong{display:block;font-family:var(--serif);font-size:1.45rem;font-weight:400;line-height:1.05;}
 .note-paper p{margin:9px 0 0;color:var(--muted);font-size:.82rem;line-height:1.45;}
 .note-paper-one{left:28px;top:78px;transform:rotate(-5deg);}
-.note-paper-two{
-  right:26px;top:142px;transform:rotate(4deg);background:var(--accent);
-  color:var(--accent-ink);border-color:transparent;
+.note-paper-two{right:26px;top:142px;transform:rotate(4deg);}
+
+/* ─── the papers take turns ────────────────────────────────────────────
+   Each card carries the title of one of the newest notes, and the accent
+   fill moves from one to the next. It is a CSS animation rather than a
+   script because the block is decorative — aria-hidden, with the real
+   list below — so there is nothing here worth loading JavaScript for.
+
+   --i is the card's position, set in the markup, and data-cards says how
+   many there are; between them each card knows when its turn is. The
+   keyframes are written per count because a keyframe percentage cannot
+   be worked out from a custom property. */
+.note-paper{
+  --turn:3.6s;
+  transition:background 420ms ease,color 420ms ease,border-color 420ms ease;
 }
-.note-paper-two::before{background:var(--accent-ink);}
-.note-paper-two span,.note-paper-two p{color:var(--accent-ink);opacity:.78;}
+.note-paper .note-dot{background:var(--accent);}
+
+@keyframes note-turn-2{
+  0%,42%   {background:var(--accent);color:var(--accent-ink);border-color:transparent;}
+  50%,100% {background:var(--bg-soft);color:var(--text);border-color:var(--border);}
+}
+@keyframes note-turn-3{
+  0%,28%   {background:var(--accent);color:var(--accent-ink);border-color:transparent;}
+  34%,100% {background:var(--bg-soft);color:var(--text);border-color:var(--border);}
+}
+@media (prefers-reduced-motion:no-preference){
+  .notes-playground[data-cards="2"] .note-paper{
+    animation:note-turn-2 calc(var(--turn) * 2) infinite;
+    animation-delay:calc(var(--i) * var(--turn));
+  }
+  .notes-playground[data-cards="3"] .note-paper{
+    animation:note-turn-3 calc(var(--turn) * 3) infinite;
+    animation-delay:calc(var(--i) * var(--turn));
+  }
+  /* The small marks inside follow the card they sit on. */
+  .notes-playground .note-paper::before,
+  .notes-playground .note-paper span,
+  .notes-playground .note-paper p{
+    animation:inherit;animation-name:note-turn-ink;
+  }
+  @keyframes note-turn-ink{
+    0%,28%   {color:var(--accent-ink);}
+    34%,100% {color:var(--muted);}
+  }
+}
+/* Asked for less motion: the first card simply stays lit. */
+@media (prefers-reduced-motion:reduce){
+  .note-paper[style*="--i:0"]{
+    background:var(--accent);color:var(--accent-ink);border-color:transparent;
+  }
+  .note-paper[style*="--i:0"] span,.note-paper[style*="--i:0"] p{color:var(--accent-ink);opacity:.78;}
+}
+/* The title can be long; keep it from spilling out of a 190px card. */
+.note-paper strong{
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
 .note-paper-three{left:82px;bottom:56px;transform:rotate(2deg);}
 .notes-spark{position:absolute;z-index:2;color:var(--accent);font-size:1.5rem;line-height:1;}
 .notes-spark-one{right:52px;top:74px;}
@@ -416,7 +478,7 @@ a.status-dot:focus-visible{
 .notes-order{margin:0;color:var(--faint-2);font-family:var(--mono);font-size:.72rem;letter-spacing:.15em;}
 .posts{display:flex;flex-direction:column;align-items:center;gap:34px;margin-top:30px;counter-reset:note;}
 .post{
-  position:relative;width:min(100%,72ch);padding:clamp(28px,5vw,50px);
+  position:relative;width:min(100%,92ch);padding:clamp(28px,5vw,50px);
   overflow:hidden;border:1px solid var(--border);border-radius:16px;
   background:linear-gradient(150deg,var(--surface-2),var(--surface-0));
   counter-increment:note;transition:transform 220ms ease,border-color 220ms ease;
@@ -441,8 +503,69 @@ a.status-dot:focus-visible{
   letter-spacing:.08em;text-transform:uppercase;
 }
 .post-title{
-  margin:0 0 16px;font-family:var(--serif);font-size:1.9rem;
+  margin:0 0 10px;font-family:var(--serif);font-size:1.9rem;
   font-weight:400;letter-spacing:0;line-height:1.15;text-align:center;
+}
+
+/* ─── each note opens on its own ───────────────────────────────────────
+   <details>/<summary>, not a script: it opens on click and on Enter or
+   Space, a screen reader announces it as expandable, find-in-page can
+   open it to reveal a match, and it still works if the JS fails. */
+.post > summary.post-head{
+  /* position:relative so the chevron is placed against the summary, not
+     the whole card — otherwise it drifts to the middle of an open note. */
+  position:relative;display:block;cursor:pointer;list-style:none;
+  padding-right:34px;   /* room for the chevron */
+}
+/* Both spellings are needed: WebKit uses its own pseudo-element for the
+   triangle and ignores list-style. */
+.post > summary::-webkit-details-marker{display:none;}
+.post > summary::marker{content:"";}
+summary.post-head:focus-visible{
+  outline:2px solid var(--accent);outline-offset:6px;border-radius:8px;
+}
+.post-summary{
+  margin:0;color:var(--muted);font-size:1.0156rem;line-height:1.6;
+  text-align:center;max-width:74ch;margin-inline:auto;
+  /* One line, or two — never a third. A collapsed note is a scannable
+     row, and a summary that runs on defeats the point of collapsing it.
+     _one_line() in build.py trims the text to roughly this length; the
+     clamp is the guarantee for anything that still runs long. */
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.post-chevron{
+  position:absolute;right:0;top:50%;
+  width:10px;height:10px;margin-top:-9px;
+  border-right:1.5px solid var(--faint);border-bottom:1.5px solid var(--faint);
+  transform:rotate(45deg);
+  transition:transform 200ms ease,border-color 200ms ease;
+}
+.post[open] > summary .post-chevron{transform:rotate(-135deg);margin-top:-3px;}
+.post:hover .post-chevron,.post[open] > summary .post-chevron{border-color:var(--accent);}
+/* The one-line summary has done its job once the note is open. */
+.post[open] > summary .post-summary{display:none;}
+.post[open] > summary.post-head{
+  padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--border-soft);
+}
+.post[open]{border-color:var(--accent-35);}
+@media (prefers-reduced-motion:reduce){
+  .post-chevron{transition:none;}
+}
+/* The card got wider; the reading measure did not. Long lines are
+   harder to track back from, so the prose stays capped and centred
+   while the title and the one-line summary use the full width. */
+.post-body{max-width:68ch;margin-inline:auto;}
+/* An optional picture on a note. It sits at the top of the body, so it
+   appears when the note is opened rather than crowding the collapsed
+   list. height:auto with the intrinsic ratio keeps it from stretching. */
+.post-figure{margin:0 0 20px;}
+.post-figure img{
+  display:block;width:100%;height:auto;border-radius:10px;
+  border:1px solid var(--border-soft);background:var(--surface-2);
+}
+.post-figure figcaption{
+  margin-top:9px;font-family:var(--mono);font-size:.8125rem;
+  line-height:1.5;color:var(--faint);text-align:center;
 }
 .post-body p{margin:0 0 16px;color:var(--dim);font-size:1.03rem;line-height:1.75;}
 .post-body p:last-child{margin-bottom:0;}
@@ -452,7 +575,7 @@ a.status-dot:focus-visible{
   color:var(--muted);font-family:var(--serif);font-size:1.15rem;
 }
 .blog-empty{
-  width:min(100%,72ch);padding:46px 24px;border:1px dashed var(--border);
+  width:min(100%,92ch);padding:46px 24px;border:1px dashed var(--border);
   border-radius:16px;color:var(--muted);text-align:center;
 }
 .notes-return{padding-top:0;text-align:center;}
@@ -932,6 +1055,11 @@ p:last-child{margin-bottom:0;}
 }
 .footer-brand{display:flex;align-items:center;gap:18px;}
 .footer-divider{width:1px;height:22px;background:var(--border);}
+/* The copyright line is the way into the blog on a phone, where the
+   header note and its dot are hidden. No underline, no colour change
+   and no pointer, so it gives nothing away. */
+.footer-copy{color:inherit;text-decoration:none;cursor:default;}
+.footer-copy:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
 .footer-links{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
 .footer-links a{color:var(--dim-3);transition:color 180ms ease;}
 .footer-links a:hover{color:var(--accent);}
@@ -998,11 +1126,9 @@ p:last-child{margin-bottom:0;}
      no way to find a setting. */
   .site-header{grid-template-columns:1fr auto auto;}
   .header-end{display:flex;gap:10px;}
-  /* The sentence does not fit beside the menu button on a phone, but
-     the dot does — and it is the only way to the notes page, so it
-     stays. The text goes, not the link. */
-  .header-note{display:flex;}
-  .header-note-text{display:none;}
+  /* The note and its dot do not fit beside the menu button on a phone.
+     The way in there is the copyright line in the footer instead. */
+  .header-note{display:none;}
   .theme-toggle{width:44px;height:44px;}
   .site-nav{display:none;}
   .menu-toggle{
