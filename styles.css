@@ -871,24 +871,91 @@ summary.post-head:focus-visible{
 }
 .count-picker{display:flex;align-items:center;gap:8px;}
 
-/* The month picker. A select rather than more chips: a row of chips is
-   fine for a year of notes and unreadable after three, and a select is
-   the one control that scrolls instead of wrapping. It is drawn to match
-   the chips beside it so the filter row reads as one thing. */
-.month-pick select{
-  appearance:none;-webkit-appearance:none;
-  border:1px solid var(--border);border-radius:999px;background:var(--surface);
-  color:var(--muted);font:inherit;font-size:.78rem;font-weight:500;
-  padding:7px 30px 7px 14px;cursor:pointer;
-  background-image:linear-gradient(45deg,transparent 50%,var(--faint) 50%),
-                   linear-gradient(135deg,var(--faint) 50%,transparent 50%);
-  background-position:calc(100% - 16px) 52%,calc(100% - 11px) 52%;
-  background-size:5px 5px,5px 5px;background-repeat:no-repeat;
-  transition:border-color 180ms ease,color 180ms ease;
+/* ─── the month calendar ───────────────────────────────────────────────
+   A year of months rather than a list of them. It says the thing a menu
+   cannot: which months have writing in them. Empty months are drawn but
+   not pressable, so a quiet stretch is visible instead of simply absent.
+
+   It is a plain popover rather than a native control, which is what lets
+   it be a grid at all - and means it has to do its own keyboard and
+   dismiss handling, which script.js provides. */
+.month-pick{position:relative;}
+.cal-toggle{font-size:.78rem;font-weight:500;padding:7px 14px;}
+.cal-toggle::after{
+  content:"";display:inline-block;width:0;height:0;margin-left:9px;
+  vertical-align:middle;border:4px solid transparent;border-top-color:currentColor;
+  transform:translateY(2px);
 }
-.month-pick select:hover{border-color:var(--accent-50);color:var(--text);}
-.month-pick select:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+.cal-toggle[aria-expanded="true"]{
+  background:var(--accent);color:var(--accent-ink);border-color:var(--accent);
+}
+.cal{
+  position:absolute;z-index:40;top:calc(100% + 10px);left:0;width:268px;
+  padding:12px;border:1px solid var(--border);border-radius:16px;
+  /* --surface is a wash, not a colour: it is a few per cent of white over
+     whatever is behind it. Fine on the page, useless for a panel that has
+     to sit over a note and hide it, so this takes the solid one. */
+  background:var(--panel);box-shadow:0 26px 60px rgba(0,0,0,.28);
+}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-year{font-family:var(--serif);font-size:1.5rem;line-height:1;}
+.cal-step{
+  width:30px;height:30px;border:1px solid var(--border);border-radius:50%;
+  background:none;color:var(--muted);font-size:1rem;line-height:1;cursor:pointer;
+  transition:border-color 160ms ease,color 160ms ease;
+}
+.cal-step:hover:not(:disabled){border-color:var(--accent-50);color:var(--text);}
+.cal-step:disabled{opacity:.3;cursor:default;}
+.cal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.cal-m{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:9px 0 7px;border:1px solid transparent;border-radius:10px;
+  background:none;color:var(--faint-2);cursor:pointer;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;
+  transition:background 160ms ease,color 160ms ease,border-color 160ms ease;
+}
+.cal-m i{font-style:normal;font-size:.62rem;opacity:.65;min-height:.8em;}
+.cal-m:disabled{opacity:.28;cursor:default;}
+.cal-m.has{color:var(--muted-2);border-color:var(--border-soft);}
+.cal-m.has:hover{border-color:var(--accent-50);color:var(--text);}
+.cal-m[aria-current="true"]{
+  background:var(--accent);color:var(--accent-ink);border-color:var(--accent);
+}
+.cal-m[aria-current="true"] i{opacity:.8;}
+.cal-all{
+  display:flex;justify-content:space-between;width:100%;margin-top:10px;
+  padding:9px 12px;border:1px solid var(--border);border-radius:10px;
+  background:none;color:var(--muted);cursor:pointer;
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  transition:border-color 160ms ease,color 160ms ease;
+}
+.cal-all:hover{border-color:var(--accent-50);color:var(--text);}
+.cal-all span{opacity:.55;}
+.cal-toggle:focus-visible,.cal-m:focus-visible,.cal-step:focus-visible,
+.cal-all:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+@media (max-width:460px){ .cal{width:min(88vw,300px);} }
 .notes-toolbar .surprise{margin-left:auto;}
+
+/* ─── years ────────────────────────────────────────────────────────────
+   A band above the months. It only earns its place once there is more
+   than one year on the page; until then the months carry the page on
+   their own and script.js leaves this hidden. */
+.year{
+  display:flex;align-items:baseline;gap:18px;
+  width:min(100%,92ch);margin:46px auto 0;
+}
+.year:first-child{margin-top:6px;}
+.year h3{
+  margin:0;font-family:var(--serif);font-weight:400;font-size:2.6rem;
+  line-height:1;letter-spacing:-.02em;
+}
+.year .rule{flex:1;height:1px;background:var(--border);}
+.year .n{
+  color:var(--faint);font-family:var(--mono);font-size:.68rem;
+  letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;
+}
+.year + .month{margin-top:14px;}
+@media (max-width:640px){ .year h3{font-size:2rem;} .year{margin-top:34px;} }
 
 /* ─── months ───────────────────────────────────────────────────────────
    A heading wherever the month changes. It is a sibling of the notes

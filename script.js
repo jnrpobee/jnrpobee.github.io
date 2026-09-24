@@ -45,7 +45,11 @@
   });
 
   /* ── current year ────────────────────────────────────────── */
-  $$('[data-year]').forEach(function (el) {
+  /* Deliberately narrow. This used to match any [data-year], which meant
+     the day a note carried a data-year of its own, every note on the blog
+     had its contents replaced by the number 2026. The hook now names the
+     one element it is for. */
+  $$('[data-copyright-year]').forEach(function (el) {
     el.textContent = new Date().getFullYear();
   });
 
@@ -240,7 +244,13 @@
   })();
 
   /* ── publication filters (publications page) ─────────────── */
-  var chips = $$('.chip');
+  /* The publications filters, and only those. This used to be every
+     .chip on whatever page had loaded, which was harmless while the
+     publications page was the only one with chips - and stopped being
+     harmless the moment the blog grew its own. Both sets write
+     aria-pressed, so on the blog the two handlers fought: pressing the
+     calendar button cleared whichever category was lit. */
+  var chips = $$('.chip[data-filter]');
   var pubs = $$('.pub');
   var countEl = $('#pub-count');
   var emptyEl = $('#pub-empty');
@@ -629,10 +639,31 @@
     /* A link to #post-3 lands on a note that is closed. Open it, so
        arriving from the board - or from a link someone shared - shows the
        writing rather than a heading to click a second time. */
+    /* Find the note a link is asking for, forgiving two kinds of old link.
+       Addresses used to be positions - #post-3 - so anything saved before
+       they became permanent still has to land somewhere sensible; and an
+       address built from a title stops matching if the title is ever
+       edited, so the date at the front of it is accepted on its own. */
+    function findNote(id) {
+      var el = document.getElementById(id);
+      if (el && el.tagName.toLowerCase() === 'details') return el;
+
+      var old = /^post-(\d+)$/.exec(id);
+      if (old) return posts[parseInt(old[1], 10) - 1] || null;
+
+      var date = /^(\d{4}-\d{2}-\d{2})/.exec(id);
+      if (date) {
+        for (var i = 0; i < posts.length; i++) {
+          if (posts[i].id.indexOf(date[1]) === 0) return posts[i];
+        }
+      }
+      return null;
+    }
+
     function openTarget(hash, flash) {
       if (!hash || hash.charAt(0) !== '#') return;
-      var el = document.getElementById(hash.slice(1));
-      if (!el || el.tagName.toLowerCase() !== 'details') return;
+      var el = findNote(hash.slice(1));
+      if (!el) return;
       /* A link from the board, or a link someone shared, can point at a
          note the current filter or page length is hiding. Reveal it
          rather than scrolling to nothing. */
@@ -661,6 +692,7 @@
     var moreBtn = moreWrap && moreWrap.querySelector('[data-more]');
     var countOut = filters && filters.querySelector('[data-filter-count]');
     var heads = [].slice.call(document.querySelectorAll('[data-month-head]'));
+    var years = [].slice.call(document.querySelectorAll('[data-year-head]'));
     var picked = '';          /* '' means every category */
     var month = '';           /* '' means every month; set below */
     var perPage = STEP;       /* 0 means everything */
@@ -696,6 +728,21 @@
       /* The count at the right edge is only worth reading when the page
          is holding notes back. "5 of 18" says something; "3 notes" beside
          a chip that already reads 3 is the same number twice. */
+      /* A year band goes when its last month goes, and it stays away
+         entirely while there is only one year on the page - one band
+         saying 2026 over everything says nothing. */
+      var liveYears = 0;
+      years.forEach(function (y) {
+        var on = hits.slice(0, limit).filter(function (p) {
+          return p.getAttribute('data-in-year') === y.getAttribute('data-year-head');
+        }).length;
+        if (on) liveYears++;
+        y.hidden = on === 0;
+        var n = y.querySelector('[data-year-count]');
+        if (n) n.textContent = on + (on === 1 ? ' note' : ' notes');
+      });
+      if (liveYears < 2) years.forEach(function (y) { y.hidden = true; });
+
       if (countOut) {
         var trimmed = limit < hits.length;
         countOut.hidden = !trimmed;
@@ -711,8 +758,13 @@
       }
     }
 
-    function press(group, on) {
-      [].forEach.call(group.querySelectorAll('.chip'), function (c) {
+    /* Which chips a group owns has to be said explicitly. The calendar's
+       own button is a .chip sitting inside the filter row, so a handler
+       that reached for every .chip in there treated it as a category:
+       picking a month quietly cleared the category filter and lit the
+       calendar button as though it were one. */
+    function press(group, sel, on) {
+      [].forEach.call(group.querySelectorAll(sel), function (c) {
         c.setAttribute('aria-pressed', String(on(c)));
       });
     }
@@ -720,14 +772,14 @@
     if (filters) {
       filters.hidden = false;
       filters.addEventListener('click', function (e) {
-        var chip = e.target.closest('.chip');
+        var chip = e.target.closest('.chip[data-cat]');
         if (!chip) return;
         /* One at a time. Pressing the chip that is already on turns it
            off again, which lands back on all notes - so "All" is a
            shortcut rather than the only way out of a filter. */
         var cat = chip.getAttribute('data-cat');
         picked = (cat === 'all' || cat === picked) ? '' : cat;
-        press(filters, function (c) {
+        press(filters, '.chip[data-cat]', function (c) {
           var k = c.getAttribute('data-cat');
           return k === 'all' ? picked === '' : k === picked;
         });
@@ -736,32 +788,90 @@
       });
     }
 
-    /* The month picker narrows the list to one edition. It stacks with
-       the category chips rather than replacing them, so "campus notes
-       from August" is a thing a reader can ask for. */
+    /* ── the month calendar ─────────────────────────────────────────
+       A year of months, one year on screen at a time, with the months
+       that have writing in them pressable and the rest shown but dead.
+       It narrows the list the same way the chips do and stacks with them,
+       so "campus notes from August" is a thing a reader can ask for.
+
+       Being a popover rather than a native menu, it has to close itself:
+       on Escape, on a click elsewhere, and after a choice. */
     var monthPick = document.querySelector('[data-month-pick]');
     if (monthPick) {
       monthPick.hidden = false;
-      /* The markup marks the newest month selected, so the page opens on
-         the current edition. Reading it back from the select rather than
-         assuming keeps one source of truth: change the default in
-         build.py and this follows without being told. */
-      month = monthPick.querySelector('select').value;
-      monthPick.querySelector('select').addEventListener('change', function (e) {
-        month = e.target.value;
+      var toggle = monthPick.querySelector('[data-cal-toggle]');
+      var panel = monthPick.querySelector('[data-cal]');
+      var yearOut = monthPick.querySelector('[data-cal-year]');
+      var grids = [].slice.call(monthPick.querySelectorAll('[data-cal-grid]'));
+      var steps = [].slice.call(monthPick.querySelectorAll('[data-cal-step]'));
+      var current = monthPick.querySelector('[aria-current="true"]');
+
+      /* The page opens on the newest month that has writing in it - the
+         current edition - which the markup has already marked. */
+      month = current ? current.getAttribute('data-month') : '';
+      var atYear = grids.length ? grids.length - 1 : 0;   /* grids run newest first */
+      atYear = 0;
+
+      function showYear() {
+        grids.forEach(function (g, i) { g.hidden = i !== atYear; });
+        if (yearOut) yearOut.textContent = grids[atYear].getAttribute('data-cal-grid');
+        steps.forEach(function (b) {
+          var dir = parseInt(b.getAttribute('data-cal-step'), 10);
+          b.disabled = atYear + dir < 0 || atYear + dir >= grids.length;
+        });
+      }
+
+      function open(on) {
+        panel.hidden = !on;
+        toggle.setAttribute('aria-expanded', String(on));
+        if (on) showYear();
+      }
+
+      toggle.addEventListener('click', function () {
+        open(panel.hidden);
+      });
+      steps.forEach(function (b) {
+        b.addEventListener('click', function () {
+          atYear += parseInt(b.getAttribute('data-cal-step'), 10);
+          atYear = Math.max(0, Math.min(grids.length - 1, atYear));
+          showYear();
+        });
+      });
+      monthPick.addEventListener('click', function (e) {
+        var cell = e.target.closest('[data-month]');
+        if (!cell) return;
+        month = cell.getAttribute('data-month');
+        monthPick.querySelectorAll('[aria-current]').forEach(function (el) {
+          el.removeAttribute('aria-current');
+        });
+        if (month) cell.setAttribute('aria-current', 'true');
+        toggle.textContent = month || 'Every month';
+        /* Whichever year the chosen month lives in becomes the one the
+           panel opens on next time. */
+        grids.forEach(function (g, i) {
+          if (g.contains(cell)) atYear = i;
+        });
         shown = perPage;
+        open(false);
         draw();
       });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !panel.hidden) { open(false); toggle.focus(); }
+      });
+      document.addEventListener('click', function (e) {
+        if (!panel.hidden && !monthPick.contains(e.target)) open(false);
+      });
+      showYear();
     }
 
     if (counts) {
       counts.hidden = false;
       counts.addEventListener('click', function (e) {
-        var chip = e.target.closest('.chip');
+        var chip = e.target.closest('.chip[data-count]');
         if (!chip) return;
         perPage = parseInt(chip.getAttribute('data-count'), 10) || 0;
         shown = perPage;
-        press(counts, function (c) { return c === chip; });
+        press(counts, '.chip[data-count]', function (c) { return c === chip; });
         draw();
       });
     }

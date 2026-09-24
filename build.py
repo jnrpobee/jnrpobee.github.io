@@ -499,6 +499,38 @@ def _board_posts():
     return (pinned + rest)[:BOARD_SLOTS]
 
 
+def _slug(text):
+    """A title reduced to something that can live in a URL."""
+    import unicodedata
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(c for c in text if not unicodedata.combining(c))
+    text = re.sub(r"[^a-zA-Z0-9]+", "-", text).strip("-").lower()
+    return re.sub(r"-{2,}", "-", text)
+
+
+def _anchors():
+    """A permanent address for every note, in _ordered_posts() order.
+
+    The old ids were positions - the newest note was post-1 - so writing
+    anything renumbered every note below it and quietly repointed every
+    link anyone had saved. An address has to be a property of the note,
+    not of where it currently sits, so it is built from the date and the
+    title: 2026-09-21-why-i-am-keeping-these-notes.
+
+    The date comes first because it is the part that never changes. Retitle
+    a note and the old link still carries the right date, which script.js
+    uses to find it again.
+    """
+    seen, out = {}, []
+    for post in _ordered_posts():
+        stem = post.get("date", "") or "undated"
+        tail = _slug(post.get("title", ""))
+        base = ("%s-%s" % (stem, tail)).strip("-")
+        seen[base] = seen.get(base, 0) + 1
+        out.append(base if seen[base] == 1 else "%s-%d" % (base, seen[base]))
+    return out
+
+
 def _fasteners():
     """What each note wears, newest first.
 
@@ -613,7 +645,8 @@ def note_cards():
     rows = []
     worn = _fasteners()
     on_board = _board_posts()
-    where = dict((id(q), n + 1) for n, q in enumerate(_ordered_posts()))
+    slugs = _anchors()
+    where = dict((id(q), n) for n, q in enumerate(_ordered_posts()))
     for i, post in enumerate(on_board):
         label = BLOG_CATEGORIES.get(post.get("category", "lifestyle"), "Notes")
         when = post.get("date", "")
@@ -623,8 +656,8 @@ def note_cards():
         except Exception:
             sub = ""
         rows.append((label.upper(), post.get("title", "Untitled"), sub,
-                     worn[where[id(post)] - 1],
-                     "#post-%d" % where[id(post)]))
+                     worn[where[id(post)]],
+                     "#" + slugs[where[id(post)]]))
     if not rows:
         # Nothing written yet, so the cards are placeholders. They lead
         # nowhere, so they stay plain <div>s and the board stays hidden
@@ -680,7 +713,8 @@ def blog_posts():
     import datetime as _dt
     out = []
     worn = _fasteners()
-    seen_month = None
+    slugs = _anchors()
+    seen_month = seen_year = None
     for i, post in enumerate(_ordered_posts()):
         when, shown = post.get("date", ""), ""
         category = post.get("category", "lifestyle")
@@ -703,8 +737,21 @@ def blog_posts():
         # notes rather than wrapping them, which keeps one counter running
         # down the whole page and lets the filter hide a month by hiding
         # its heading, without either having to know about the other.
-        month = ""
+        month = year = ""
         if when:
+            year = "%d" % d.year
+            # A year band above the months, so two years of writing reads
+            # as two years rather than one long run of month headings.
+            # Like the month heading it is a sibling of the notes, not a
+            # wrapper, which keeps one number running down the page and
+            # lets the filter hide a whole year by hiding its band.
+            if year != seen_year:
+                out.append('        <div class="year" data-year-head="%s">' % year)
+                out.append('          <h3>%s</h3>' % year)
+                out.append('          <span class="rule" aria-hidden="true"></span>')
+                out.append('          <span class="n" data-year-count></span>')
+                out.append('        </div>')
+                seen_year = year
             month = "%s %d" % (_MONTHS[d.month - 1], d.year)
             if month != seen_month:
                 out.append('        <div class="month" data-month-head="%s">'
@@ -716,9 +763,10 @@ def blog_posts():
                 seen_month = month
         # The id is what the board card links to, and what the shuffle
         # sends the reader to.
-        out.append('        <details class="post" id="post-%d" data-blog-topic="%s"'
-                   ' data-fasten="%s" data-month="%s">'
-                   % (i + 1, _html.escape(category), worn[i], _html.escape(month)))
+        out.append('        <details class="post" id="%s" data-blog-topic="%s"'
+                   ' data-fasten="%s" data-month="%s" data-in-year="%s" data-n="%d">'
+                   % (slugs[i], _html.escape(category), worn[i],
+                      _html.escape(month), _html.escape(year), i + 1))
         out.append('          <summary class="post-head">')
         # The fastener lives inside the summary because anything else
         # inside a closed <details> is hidden.
@@ -791,33 +839,61 @@ def _months_in_use():
     return out
 
 
+_MONTH_SHORT = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+
 def _month_select():
-    """The month picker: every month that has a note in it, newest first.
+    """The month picker, drawn as a calendar rather than a menu.
 
-    It renders even when there is only one, so the row is the same row on
-    a young page as on an old one. With one month it is a menu with one
-    thing in it, which is honest about how much has been written.
+    A year of months is a shape people already know, and it says something
+    a list cannot: which months have writing in them and which are empty.
+    Every month of every year appears; the ones with nothing in them are
+    there but unpressable, so the gaps in a year are visible rather than
+    silently absent.
 
-    The newest month is selected, so the page opens on the current
-    edition; "Every month" is always there to see the whole archive."""
+    The whole grid is built here rather than in script.js, so the counts
+    come from the same place as everything else and the markup can be read
+    in the page source. script.js only shows one year at a time.
+    """
     months = _months_in_use()
     if not months:
         return ""
-    out = ['          <label class="month-pick" data-month-pick hidden>']
-    out.append('            <span class="sr-only">Month</span>')
-    out.append('            <select>')
-    out.append('              <option value="">Every month</option>')
-    for i, (key, count) in enumerate(months):
-        # The page opens on the newest month that has writing in it, which
-        # is the current month whenever there is anything from this month.
-        # Deliberately not today's actual month: post nothing in October
-        # and a page defaulting to October would open empty and look
-        # broken. The newest month with notes always has notes.
-        out.append('              <option value="%s"%s>%s &middot; %d</option>'
-                   % (_html.escape(key), ' selected' if i == 0 else "",
-                      _html.escape(key), count))
-    out.append('            </select>')
-    out.append('          </label>')
+    have = dict(months)                       # "September 2026" -> count
+    years = sorted({k.rsplit(" ", 1)[-1] for k, _ in months}, reverse=True)
+    opening = months[0][0]                    # newest month with writing
+
+    out = ['          <div class="month-pick" data-month-pick hidden>']
+    out.append('            <button type="button" class="chip cal-toggle" '
+               'data-cal-toggle aria-expanded="false">%s</button>'
+               % _html.escape(opening))
+    out.append('            <div class="cal" data-cal hidden>')
+    out.append('              <div class="cal-head">')
+    out.append('                <button type="button" class="cal-step" data-cal-step="-1" '
+               'aria-label="Later year">&lsaquo;</button>')
+    out.append('                <span class="cal-year" data-cal-year></span>')
+    out.append('                <button type="button" class="cal-step" data-cal-step="1" '
+               'aria-label="Earlier year">&rsaquo;</button>')
+    out.append('              </div>')
+    for year in years:
+        out.append('              <div class="cal-grid" data-cal-grid="%s" hidden>' % year)
+        for n, short in enumerate(_MONTH_SHORT, start=1):
+            key = "%s %s" % (_MONTHS[n - 1], year)
+            count = have.get(key)
+            if count:
+                out.append('                <button type="button" class="cal-m has" '
+                           'data-month="%s"%s><em>%s</em><i>%d</i></button>'
+                           % (_html.escape(key),
+                              ' aria-current="true"' if key == opening else "",
+                              short, count))
+            else:
+                out.append('                <button type="button" class="cal-m" '
+                           'disabled><em>%s</em><i></i></button>' % short)
+        out.append('              </div>')
+    out.append('              <button type="button" class="cal-all" data-month="">'
+               'Every month <span>%d</span></button>' % len(POSTS))
+    out.append('            </div>')
+    out.append('          </div>')
     return "\n".join(out)
 
 
@@ -1333,7 +1409,7 @@ SHELL = """<!DOCTYPE html>
       <div class="footer-brand">
         <img class="logo-mark logo-mark-sm" src="assets/logo-mark.svg" alt="" width="34" height="34" loading="lazy">
         <span class="footer-divider"></span>
-        <a class="footer-copy" href="blog.html" aria-label="{blogname}">Solomon B. Pobee &middot; &copy; <span data-year>2026</span></a>
+        <a class="footer-copy" href="blog.html" aria-label="{blogname}">Solomon B. Pobee &middot; &copy; <span data-copyright-year>2026</span></a>
       </div>
       <div class="footer-links">
         <a href="mailto:jnrpobee@byu.edu">jnrpobee@byu.edu</a>
