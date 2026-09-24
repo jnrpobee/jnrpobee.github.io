@@ -393,6 +393,7 @@ POSTS = [
         "date": "2026-09-24",
         "category": "Pod",
         "title": "The Smart Intruder: Invasion of the Open Territory",
+        "summary": "Smart intruders has moved into the open territory. What happens next?",
         "body": """
           <p>In the wilderness are different pods belonging to different groups who have established their own territories.</p>
           <p>Second paragraph, with a
