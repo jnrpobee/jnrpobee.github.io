@@ -901,27 +901,37 @@ summary.post-head:focus-visible{
 .cal-year{font-family:var(--serif);font-size:1.5rem;line-height:1;}
 .cal-step{
   width:30px;height:30px;border:1px solid var(--border);border-radius:50%;
-  background:none;color:var(--muted);font-size:1rem;line-height:1;cursor:pointer;
+  background:none;color:var(--muted-2);font-size:1.1rem;line-height:1;cursor:pointer;
   transition:border-color 160ms ease,color 160ms ease;
 }
 .cal-step:hover:not(:disabled){border-color:var(--accent-50);color:var(--text);}
-.cal-step:disabled{opacity:.3;cursor:default;}
+/* At the end of the archive one arrow has nowhere to go. It has to read as
+   unavailable without disappearing - at .3 it was invisible rather than
+   disabled, about 1.6:1 against the panel. */
+.cal-step:disabled{opacity:.68;cursor:default;}
 .cal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+/* The type in here is small, so it cannot also be faint. An earlier
+   version leaned on opacity for every state at once and the grid came out
+   barely readable: a month with no writing in it measured 1.4:1 against
+   the panel, and the count under each month 1.3:1. Everything below is
+   set against measured contrast rather than by eye - a month you can
+   press clears 4.5:1, and one you cannot still clears 3:1, because
+   "nothing here" is information too. */
 .cal-m{
-  display:flex;flex-direction:column;align-items:center;gap:2px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
   padding:9px 0 7px;border:1px solid transparent;border-radius:10px;
-  background:none;color:var(--faint-2);cursor:pointer;
-  font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;
+  background:none;color:var(--muted-2);cursor:pointer;
+  font-family:var(--mono);font-size:.76rem;letter-spacing:.06em;
   transition:background 160ms ease,color 160ms ease,border-color 160ms ease;
 }
-.cal-m i{font-style:normal;font-size:.62rem;opacity:.65;min-height:.8em;}
-.cal-m:disabled{opacity:.28;cursor:default;}
-.cal-m.has{color:var(--muted-2);border-color:var(--border-soft);}
+.cal-m i{font-style:normal;font-size:.7rem;opacity:.85;min-height:.9em;}
+.cal-m:disabled{color:var(--faint);opacity:.82;cursor:default;}
+.cal-m.has{color:var(--text-2);border-color:var(--border);}
 .cal-m.has:hover{border-color:var(--accent-50);color:var(--text);}
 .cal-m[aria-current="true"]{
   background:var(--accent);color:var(--accent-ink);border-color:var(--accent);
 }
-.cal-m[aria-current="true"] i{opacity:.8;}
+.cal-m[aria-current="true"] i{opacity:.9;}
 .cal-all{
   display:flex;justify-content:space-between;width:100%;margin-top:10px;
   padding:9px 12px;border:1px solid var(--border);border-radius:10px;
@@ -930,7 +940,7 @@ summary.post-head:focus-visible{
   transition:border-color 160ms ease,color 160ms ease;
 }
 .cal-all:hover{border-color:var(--accent-50);color:var(--text);}
-.cal-all span{opacity:.55;}
+.cal-all span{opacity:.9;}
 .cal-toggle:focus-visible,.cal-m:focus-visible,.cal-step:focus-visible,
 .cal-all:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 @media (max-width:460px){ .cal{width:min(88vw,300px);} }
