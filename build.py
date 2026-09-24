@@ -1388,10 +1388,10 @@ SHELL = """<!DOCTYPE html>
 {nav}
         </nav>
         <p class="drawer-note"><span class="status-dot"></span>Building technology for more human potential.</p>
-        <a class="drawer-mail" href="mailto:jnrpobee@byu.edu">jnrpobee@byu.edu</a>
-        <div class="footer-links">
-{socials}
-        </div>
+        <!-- The address and the profile links used to sit here as well.
+             They are in the footer of every page, two taps away, and in a
+             drawer that only has to get somebody to a page they were
+             clutter between the navigation and the search. -->
         <button type="button" class="btn-s cmd-btn">Search this site <span aria-hidden="true">&#8984;K</span></button>
       </div>
     </header>

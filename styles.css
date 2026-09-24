@@ -886,7 +886,8 @@ summary.post-head:focus-visible{
   vertical-align:middle;border:4px solid transparent;border-top-color:currentColor;
   transform:translateY(2px);
 }
-.cal-toggle[aria-expanded="true"]{
+.cal-toggle[aria-expanded="true"],
+.cal-toggle[aria-expanded="true"]:hover{
   background:var(--accent);color:var(--accent-ink);border-color:var(--accent);
 }
 .cal{
@@ -928,6 +929,11 @@ summary.post-head:focus-visible{
 .cal-m:disabled{color:var(--faint);opacity:.82;cursor:default;}
 .cal-m.has{color:var(--text-2);border-color:var(--border);}
 .cal-m.has:hover{border-color:var(--accent-50);color:var(--text);}
+/* Written to out-rank .cal-m.has:hover, which would otherwise put
+   --text on the accent fill the moment the cursor crossed the chosen
+   month - the same 1.15:1 as the button above. */
+.cal-m.has[aria-current="true"],
+.cal-m.has[aria-current="true"]:hover,
 .cal-m[aria-current="true"]{
   background:var(--accent);color:var(--accent-ink);border-color:var(--accent);
 }
@@ -1085,8 +1091,19 @@ summary.post-head:focus-visible{
   .notes-playground[data-cards="3"] .note-paper-two{right:8px;top:198px;}
   .notes-playground[data-cards="3"] .note-paper-three{left:46px;top:372px;bottom:auto;}
   .notes-mantra{right:12px;font-size:.58rem;}
-  .notes-focus .focus-list{gap:20px;}
-  .notes-focus .focus-list p{font-size:1.25rem;}
+  /* Three short phrases, and they belong on one line: stacked they read
+     as a list of instructions rather than one thought. The general
+     .focus-list rule below drops to a single column on a phone, which is
+     right for the longer ones on the front page and wrong for these. */
+  .notes-focus .focus-list{grid-template-columns:repeat(3,1fr);gap:0;}
+  .notes-focus .focus-list p{
+    font-size:clamp(.72rem,3.1vw,1.1rem);padding:0 8px;text-align:center;
+  }
+  .notes-focus .focus-list p:first-child{padding-left:0;}
+  .notes-focus .focus-list p:last-child{padding-right:0;}
+  .notes-focus .focus-list p + p{
+    border-left:1px solid var(--border);border-top:0;padding-top:0;
+  }
   /* The meta row wraps to two lines at this width, which would put the
      fastener on top of the words; the note gets a little more headroom
      instead. The tape runs diagonally, so it needs lifting further than
@@ -1349,6 +1366,11 @@ p:last-child{margin-bottom:0;}
   transition:background 180ms ease,color 180ms ease,border-color 180ms ease;
 }
 .chip:hover{border-color:var(--accent-50);color:var(--text);}
+/* A chip that is lit is filled with the accent, and --text on the accent
+   is unreadable - white on lime measured 1.15:1. The hover colour has to
+   step aside for any chip that is currently carrying a fill. */
+.chip[aria-pressed="true"]:hover,
+.chip[aria-expanded="true"]:hover{color:var(--accent-ink);}
 .chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
 .count{font-family:var(--mono);font-size:.875rem;color:var(--faint);margin-left:auto;}
 
