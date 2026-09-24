@@ -904,4 +904,128 @@
       });
     }
   })();
+
+  /* ── the board turns over ────────────────────────────────── */
+  (function () {
+    /* The hero board holds three cards and the site can hold any number
+       of notes. Left alone, the fourth note and everything after it
+       never reach the board at all: the three newest sit up there until
+       something displaces them, and the rest live only in the list.
+
+       So the cards themselves turn over. Each one changes at the moment
+       the lime leaves it, to a note that was waiting off the board, and
+       the note it was showing goes to the back of the queue. Given long
+       enough, everything written gets its turn up there.
+
+       build.py writes the notes into the page as JSON - see note_data()
+       - and only when there are more of them than the board can hold.
+       So the absence of that element is the signal that there is
+       nothing to do here, and the page that ships without it keeps the
+       CSS animation and the three cards it was built with. */
+    var board = $('.notes-playground');
+    if (!board || reduce()) return;
+
+    var tag = $('[data-board-notes]', board);
+    if (!tag) return;
+
+    var all;
+    try { all = JSON.parse(tag.textContent); } catch (e) { return; }
+    if (!all || !all.length) return;
+
+    var cards = $$('.note-paper', board);
+    if (cards.length < 2 || all.length <= cards.length) return;
+
+    var TURN = 5200;   /* how long a card holds the lime */
+    var FADE = 1400;   /* how long the colour takes to travel - --fade in styles.css */
+
+    /* Slot one holds. It carries the pinned note, or failing that the
+       newest, and that is the one thing a visitor arriving should be
+       able to count on finding. The other slots do the travelling. */
+    var HELD = 0;
+
+    var showing = all.slice(0, cards.length);
+    var queue = all.slice(cards.length);
+
+    /* Shuffled once, then taken in turn. Drawing at random each time
+       would show the same note twice running and leave others never
+       shown; a shuffled queue reads as unordered and still gives every
+       note its turn. */
+    for (var i = queue.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var swap = queue[i]; queue[i] = queue[j]; queue[j] = swap;
+    }
+
+    function paint(card, note, slot) {
+      card.setAttribute('data-fasten', note.fasten);
+      card.setAttribute('href', note.href);
+      /* The card's own children, not a descendant search: the fastener
+         is a span too, and so is the "Read" line, and neither of them
+         carries writing that changes. */
+      var label = null;
+      [].forEach.call(card.children, function (el) {
+        if (label || el.tagName !== 'SPAN') return;
+        if (el.className.indexOf('fasten') !== -1) return;
+        if (el.className.indexOf('note-open') !== -1) return;
+        label = el;
+      });
+      if (label) {
+        label.textContent = ('0' + (slot + 1)).slice(-2) + ' / ' + note.cat;
+      }
+      var title = $('strong', card);
+      if (title) title.textContent = note.title;
+      var when = $('p', card);
+      if (when) when.textContent = note.date;
+    }
+
+    function turn(slot) {
+      if (slot === HELD || !queue.length) return;
+      var card = cards[slot];
+      card.classList.add('turning');
+      window.setTimeout(function () {
+        /* Take the first note in the queue wearing a fastener that is
+           not already on the board. build.py's no-repeats rule holds
+           for the order it wrote; rotation breaks that order, and two
+           red pins side by side is what it looks like when it does. */
+        var worn = showing.map(function (n, k) {
+          return k === slot ? null : n.fasten;
+        });
+        var pick = 0;
+        while (pick < queue.length && worn.indexOf(queue[pick].fasten) !== -1) {
+          pick++;
+        }
+        if (pick === queue.length) pick = 0;
+        var arriving = queue.splice(pick, 1)[0];
+        queue.push(showing[slot]);
+        showing[slot] = arriving;
+        paint(card, arriving, slot);
+        card.classList.remove('turning');
+      }, FADE * 0.45);
+    }
+
+    var at = 0, started = false;
+    function step() {
+      var leaving = (at - 1 + cards.length) % cards.length;
+      cards.forEach(function (c, n) { c.classList.toggle('lit', n === at); });
+      /* Not on the first pass: nothing has been lit yet, so nothing has
+         earned the right to change. */
+      if (started) turn(leaving);
+      started = true;
+      at = (at + 1) % cards.length;
+    }
+
+    /* Someone reading a card is not someone who wants it to change.
+       mouseenter and mouseleave rather than mouseover and mouseout:
+       these fire for the board alone and ignore the crossings between
+       its own children, which would otherwise start it again the
+       moment the cursor moved from one card to the next. */
+    var paused = false;
+    board.addEventListener('mouseenter', function () { paused = true; });
+    board.addEventListener('mouseleave', function () { paused = false; });
+    board.addEventListener('focusin', function () { paused = true; });
+    board.addEventListener('focusout', function () { paused = false; });
+
+    board.classList.add('is-turning');
+    step();
+    window.setInterval(function () { if (!paused) step(); }, TURN);
+  })();
 })();

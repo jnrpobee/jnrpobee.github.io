@@ -386,10 +386,33 @@ BLOG_CATEGORIES = {
     "lifestyle": "Lifestyle",
     "campus": "Campus Life",
     "Pod": "Inside The Pod",
+    "The Movies": "The Movies",
 }
 
 POSTS = [
         {
+        "date": "2026-09-24",
+        "category": "The Movies",
+        "title": "Going back in time to the movies",
+        "summary": "I could sit back and watch the movies I loved as a young man, but I wanted to see them in the way they were meant to be seen.",
+        "body": """
+          <p> Homeland, the 100, breaking bad, and a few other shows that defined my youth. these are the shows that shaped my perspective on life and the world around me. </p>
+          <p>Second paragraph, with a
+             <a class="text-link" href="https://example.org/">link</a>.</p>
+""",
+    },
+        {
+        "date": "2026-09-24",
+        "category": "lifestyle",
+        "title": "The unexpected long trip home",
+        "summary": "A long trip home, and the multiple stops along the way.",
+        "body": """
+          <p>First paragraph.</p>
+          <p>Second paragraph, with a
+             <a class="text-link" href="https://example.org/">link</a>.</p>
+""",
+    },
+    {
         "date": "2026-09-24",
         "category": "Pod",
         "title": "The Smart Intruder: Invasion of the Open Territory",
@@ -495,20 +518,28 @@ def _ordered_posts():
 BOARD_SLOTS = 3
 
 
-def _board_posts():
-    """Which notes are pinned to the board, in the order they hang there.
+def _board_order():
+    """Every note, in the order the board would hang them.
 
-    By default the newest fill it. A post with "pin": True keeps its place
-    whatever its date, so something worth keeping up there - a piece you
-    are proud of, a poem - does not slide off the board the week you write
-    two other things. Pinned notes come first, oldest pin first so the
-    board does not reshuffle every time you add one, and the newest posts
-    fill whatever is left.
+    Pinned notes come first, oldest pin first so adding one does not
+    reshuffle the board, and the rest follow newest first. A post with
+    "pin": True keeps its place whatever its date, so something worth
+    keeping up there - a piece you are proud of, a poem - does not slide
+    off the board the week you write two other things.
+
+    The first BOARD_SLOTS of this are what the page ships with. The
+    remainder is the queue the cards turn over through once script is
+    running - see the board rotation in script.js.
     """
     order = _ordered_posts()
     pinned = [p for p in order if p.get("pin")][::-1]
     rest = [p for p in order if not p.get("pin")]
-    return (pinned + rest)[:BOARD_SLOTS]
+    return pinned + rest
+
+
+def _board_posts():
+    """The notes the page ships with on the board."""
+    return _board_order()[:BOARD_SLOTS]
 
 
 def _slug(text):
@@ -631,6 +662,7 @@ def _post_figure(post):
 
 NOTE_CARDS_MARK = "<!--NOTECARDS-->"
 NOTE_COUNT_MARK = "<!--NOTECOUNT-->"
+NOTE_DATA_MARK = "<!--NOTEDATA-->"
 
 # Shown when there are no posts yet, so the hero still looks designed
 # rather than empty.
@@ -642,24 +674,20 @@ NOTE_CARDS_FALLBACK = [
 _NOTE_SLOTS = ("one", "two", "three")
 
 
-def note_cards():
-    """The three papers pinned in the hero, carrying the newest posts.
+def _card_rows(posts):
+    """What a board card says about each of these notes.
 
-    Which notes hang here is _board_posts()'s decision; each card wears
-    the same fastener as its own note below, so a reader following a card
-    down the page lands on something that looks like what they clicked.
-
-    The highlight moves from one card to the next on a timer, done in CSS
-    rather than script because the notes themselves are all present in the
-    list below, and it stops for anyone who has asked for reduced motion.
+    One place, because the cards the page ships with and the list script
+    rotates through have to agree about every note down to the fastener -
+    a card that changed its writing but kept the last note's pin would be
+    wearing someone else's.
     """
     import datetime as _dt
-    rows = []
     worn = _fasteners()
-    on_board = _board_posts()
     slugs = _anchors()
     where = dict((id(q), n) for n, q in enumerate(_ordered_posts()))
-    for i, post in enumerate(on_board):
+    out = []
+    for post in posts:
         label = BLOG_CATEGORIES.get(post.get("category", "lifestyle"), "Notes")
         when = post.get("date", "")
         try:
@@ -667,9 +695,54 @@ def note_cards():
             sub = "%d %s %d" % (d.day, _MONTHS[d.month - 1], d.year)
         except Exception:
             sub = ""
-        rows.append((label.upper(), post.get("title", "Untitled"), sub,
-                     worn[where[id(post)]],
-                     "#" + slugs[where[id(post)]]))
+        n = where[id(post)]
+        out.append((label.upper(), post.get("title", "Untitled"), sub,
+                    worn[n], "#" + slugs[n]))
+    return out
+
+
+def note_data():
+    """Every note the board can show, for the rotation in script.js.
+
+    Only written when there is something to rotate in: with three notes
+    or fewer the board already holds all of them and the cards have
+    nowhere to turn to.
+
+    JSON in a script tag the browser will not execute, rather than an
+    attribute format invented for the occasion. The order is
+    _board_order()'s, so script can take the first three as the ones
+    already on the board and the rest as the queue without working
+    anything out for itself.
+    """
+    if len(POSTS) <= BOARD_SLOTS:
+        return ""
+    import json
+    rows = [{"cat": a, "title": b, "date": c, "fasten": d, "href": e}
+            for (a, b, c, d, e) in _card_rows(_board_order())]
+    blob = json.dumps(rows, ensure_ascii=False, separators=(",", ":"))
+    # The one sequence that cannot appear inside a script element, whatever
+    # the type says: it would end the element early.
+    blob = blob.replace("</", "<\\/")
+    return ('          <script type="application/json" data-board-notes>'
+            '%s</script>' % blob)
+
+
+def note_cards():
+    """The three papers pinned in the hero, carrying the newest posts.
+
+    Which notes hang here is _board_posts()'s decision; each card wears
+    the same fastener as its own note below, so a reader following a card
+    down the page lands on something that looks like what they clicked.
+
+    The highlight moves from one card to the next on a timer. Without
+    script that is the CSS animation below the papers in styles.css, so
+    the board still works with nothing loaded; with script it becomes a
+    class, which is what lets a card change what it says at the moment
+    the colour leaves it - see note_data() and the board rotation in
+    script.js. Either way it stops for anyone who has asked for reduced
+    motion.
+    """
+    rows = _card_rows(_board_posts())
     if not rows:
         # Nothing written yet, so the cards are placeholders. They lead
         # nowhere, so they stay plain <div>s and the board stays hidden
@@ -1833,6 +1906,7 @@ BODY["blog"] = """      <section class="notes-hero pad" aria-labelledby="notes-t
           <span class="notes-spark notes-spark-one" aria-hidden="true">&#10022;</span>
           <span class="notes-spark notes-spark-two" aria-hidden="true">&#10022;</span>
           <p class="notes-mantra">notice <i>&rarr;</i> pause <i>&rarr;</i> learn <i>&rarr;</i> repeat</p>
+<!--NOTEDATA-->
         </div>
       </section>
 
@@ -2061,6 +2135,7 @@ for filename, key, title, desc in PAGES:
     page = page.replace(NOTES_END_MARK, notes_end())
     page = page.replace(NOTE_CARDS_MARK, note_cards())
     page = page.replace(NOTE_COUNT_MARK, playground_attrs())
+    page = page.replace(NOTE_DATA_MARK, note_data())
     for _pid in CITATIONS:
         page = page.replace("<!--CITE:%s-->" % _pid, cite_panel(_pid))
     page = clean_links(page)

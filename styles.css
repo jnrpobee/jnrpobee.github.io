@@ -533,7 +533,7 @@ a.status-dot:focus-visible{
    fade rather than a switch. The percentages below are one card's slot:
    fade up, hold, fade down, then wait its turn again. */
 .note-paper{
-  --turn:3.6s;
+  --turn:5.2s;
   transition:background 420ms ease,color 420ms ease,border-color 420ms ease;
 }
 /* Unlit means this card's own paper, not one shared colour - otherwise
@@ -593,6 +593,41 @@ a.status-dot:focus-visible{
 }
 .notes-playground[data-cards="1"] .note-paper span,
 .notes-playground[data-cards="1"] .note-paper p{color:var(--accent-ink);opacity:.78;}
+
+/* ─── the board turns over ─────────────────────────────────────────────
+   Everything above lights the same three cards forever. Once there are
+   more notes than slots that is a waste of the board: the fourth note
+   and everything after it never appear up there at all. So with script
+   running the cards themselves change - see the board rotation in
+   script.js, which adds .is-turning and takes over the highlight.
+
+   The highlight has to become a class for that to work. A keyframe
+   animation gives no usable moment to change a card's writing; a class
+   does, and the only safe moment is the one where the colour starts to
+   leave. The writing fades down as the lime drains, changes while the
+   card is midway between the two, and comes back up as it settles - one
+   movement, so the card reads as turning over rather than dimming and
+   then thinking better of it.
+
+   Written with [data-cards] so it outranks the keyframe rules above,
+   which are the same three-class weight and would otherwise win on
+   order alone. Only the pace is here; which note arrives is decided in
+   script.js. */
+.notes-playground.is-turning{--fade:1400ms;}
+.notes-playground.is-turning[data-cards] .note-paper{
+  animation:none;
+  transition:background var(--fade) ease,color var(--fade) ease,
+             border-color var(--fade) ease;
+}
+.notes-playground.is-turning[data-cards] .note-paper.lit{
+  background:var(--accent);color:var(--accent-ink);border-color:transparent;
+}
+.notes-playground.is-turning[data-cards] .note-paper.lit span,
+.notes-playground.is-turning[data-cards] .note-paper.lit p{color:var(--accent-ink);}
+.notes-playground.is-turning .note-paper > *{
+  transition:opacity calc(var(--fade) * .45) ease;
+}
+.notes-playground.is-turning .note-paper.turning > *{opacity:0;}
 
 /* Asked for less motion: the first card simply stays lit. */
 @media (prefers-reduced-motion:reduce){

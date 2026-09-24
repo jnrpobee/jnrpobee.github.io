@@ -154,7 +154,7 @@ def check_placeholders(site):
     field = re.compile(r"\{[a-z_][a-z0-9_]*\}")
     marker = re.compile(
         r"<!--\s*(CITE:[^>]*|LEETCODE|CVACTIONS|PUBGROUPS|"
-        r"BLOGPOSTS|NOTECARDS|NOTECOUNT|NOTESTALLY|NOTESEND|"
+        r"BLOGPOSTS|NOTECARDS|NOTECOUNT|NOTEDATA|NOTESTALLY|NOTESEND|"
         r"LIFESTYLEPOSTS|CAMPUSPOSTS)\s*-->"
     )
     found = []
