@@ -19,7 +19,7 @@ import sys
 import webbrowser
 
 ROOT = pathlib.Path(__file__).parent.resolve()
-PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
+PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8001
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
