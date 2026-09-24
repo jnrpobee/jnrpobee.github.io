@@ -385,12 +385,13 @@ def pub_groups():
 BLOG_CATEGORIES = {
     "lifestyle": "Lifestyle",
     "campus": "Campus Life",
+    "Pod": "Inside The Pod",
 }
 
 POSTS = [
         {
         "date": "2026-09-24",
-        "category": "Inside The Pod",
+        "category": "Pod",
         "title": "The Smart Intruder: Invasion of the Open Territory",
         "body": """
           <p>In the wilderness are different pods belonging to different groups who have established their own territories.</p>
