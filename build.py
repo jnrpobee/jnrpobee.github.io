@@ -388,6 +388,16 @@ BLOG_CATEGORIES = {
 }
 
 POSTS = [
+        {
+        "date": "2026-09-24",
+        "category": "Inside The Pod",
+        "title": "The Smart Intruder: Invasion of the Open Territory",
+        "body": """
+          <p>In the wilderness are different pods belonging to different groups who have established their own territories.</p>
+          <p>Second paragraph, with a
+             <a class="text-link" href="https://example.org/">link</a>.</p>
+""",
+    },
     {
         "date": "2026-09-21",
         "category": "lifestyle",
