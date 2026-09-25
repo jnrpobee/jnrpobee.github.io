@@ -606,10 +606,28 @@ def _fasteners():
 
 
 def _reading_time(post):
-    """Whole minutes, never zero."""
+    """How long this note takes to read, as the line the card carries.
+
+    Whole minutes alone said nothing here. Every note written so far came
+    out as "1 min read", so a two-sentence thought and a page of prose
+    wore the same label and the number stopped being information.
+
+    Under a minute this counts seconds instead, to the nearest ten, which
+    is a difference a reader can actually feel. At a minute and over it
+    goes back to whole minutes: reading speed varies by more than a
+    factor of two between people, so "3 min 40 sec" would be claiming an
+    accuracy that is not there. Ten seconds is the floor, because "4 sec
+    read" reads as a joke about the post.
+    """
     text = re.sub(r"<[^>]+>", " ", post.get("body", ""))
     words = len(_html.unescape(text).split())
-    return max(1, int(round(words / float(WORDS_PER_MINUTE))))
+    seconds = words * 60.0 / WORDS_PER_MINUTE
+    if seconds < 60:
+        ten = max(10, int(round(seconds / 10.0)) * 10)
+        # 55 seconds rounds to 60, and "60 sec read" is a minute said badly.
+        if ten < 60:
+            return "%d sec read" % ten
+    return "%d min read" % max(1, int(round(seconds / 60.0)))
 
 
 _TALLY = ("no", "one", "two", "three", "four", "five", "six", "seven",
@@ -860,7 +878,7 @@ def blog_posts():
         out.append('            <div class="post-meta">')
         if shown:
             out.append('              <p class="post-date">%s</p>' % shown)
-        out.append('              <p class="post-read">%d min read</p>'
+        out.append('              <p class="post-read">%s</p>'
                    % _reading_time(post))
         out.append('              <p class="post-category">%s</p>'
                    % _html.escape(BLOG_CATEGORIES[category]))
