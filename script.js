@@ -255,7 +255,17 @@
   var countEl = $('#pub-count');
   var emptyEl = $('#pub-empty');
   var searchEl = $('#pub-search');
-  var activeTopic = 'all';
+  var activeKind = 'all';
+
+  /* Which kind each entry is, read once from the group it sits in.
+     pub_groups() already wraps each kind in a section carrying
+     data-group, so the filter needs nothing stamped on the entries
+     themselves - the grouping and the filtering cannot disagree,
+     because they are the same fact read from the same place. */
+  var kinds = pubs.map(function (p) {
+    var g = p.closest ? p.closest('.pub-group') : null;
+    return g ? (g.getAttribute('data-group') || '') : '';
+  });
 
   /* The searchable text of each entry, gathered once. Title, authors and
      venue — not the description, so typing a common word like "design"
@@ -277,13 +287,13 @@
   }
 
   function applyFilter(f) {
-    if (f) activeTopic = f;
-    f = activeTopic;
+    if (f) activeKind = f;
+    f = activeKind;
     var q = searchEl ? searchEl.value.trim().toLowerCase() : '';
     var terms = q ? q.split(/\s+/) : [];
     var shown = 0;
     pubs.forEach(function (p, i) {
-      var match = ((f === 'all') || (p.getAttribute('data-topic') === f))
+      var match = ((f === 'all') || (kinds[i] === f))
                   && (!terms.length || matchesQuery(i, terms));
       p.hidden = !match;
       if (match) shown++;
@@ -291,7 +301,7 @@
     if (emptyEl) {
       emptyEl.textContent = q
         ? 'Nothing matches “' + q + '”.'
-        : 'No publications in this area yet.';
+        : 'Nothing of that kind yet.';
     }
     // a venue group with nothing left in it shouldn't sit there empty
     $$('.pub-group').forEach(function (g) {

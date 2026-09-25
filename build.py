@@ -19,7 +19,8 @@ from core import (BASE_URL, BLOG_NAME, NAV, OUT, UNLISTED, clean_links,
 from shell import (JSONLD, PAGES, SCHOLAR_LD, SHELL, SOCIALS, header_brand,
                    nav_links, pager)
 from pages import BODY, CV_MARK, cv_actions
-from pubs import CITATIONS, PUB_MARK, cite_panel, pub_groups
+from pubs import (CITATIONS, PUB_FILTERS_MARK, PUB_MARK, cite_panel,
+                  pub_filters, pub_groups)
 from leetcode import LC_MARK, lc_section
 from notes import (BLOG_POSTS_MARK, CAT_COLOURS_MARK, CAT_TILES_MARK,
                    NOTES_END_MARK, NOTES_TALLY_MARK, NOTE_CARDS_MARK,
@@ -82,6 +83,7 @@ for filename, key, title, desc in PAGES:
     # comment into a finished page.
     page = html.replace(LC_MARK, _LC).replace(CV_MARK, cv_actions())
     page = page.replace(PUB_MARK, pub_groups())
+    page = page.replace(PUB_FILTERS_MARK, pub_filters())
     page = page.replace(BLOG_POSTS_MARK, blog_posts())
     page = page.replace(NOTES_TALLY_MARK, notes_tally())
     page = page.replace(NOTES_END_MARK, notes_end())

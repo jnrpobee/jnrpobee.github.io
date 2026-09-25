@@ -175,7 +175,8 @@ def cite_panel(pid):
 # """,
 #
 #   KIND is the small label down the left: Journal, Conference, Chapter,
-#   Workshop, Poster. It is free text, so it can read "Late Breaking" or
+#   Workshop, Poster, Extended Abstract. It is free text, so it can read
+#   "Late Breaking" or
 #   anything else that fits.
 #
 #   TOPIC must match one of the filter chips on the page — "nature" or
@@ -191,7 +192,8 @@ PUB_GROUPS = [
     ("conference", "Conference Papers"),
     ("chapter", "Book Chapters"),
     ("workshop", "Workshop Papers"),
-    ("poster", "Posters &amp; Extended Abstracts"),
+    ("poster", "Posters"),
+    ("abstract", "Extended Abstracts"),
 ]
 PUB_MARK = "<!--PUBGROUPS-->"
 
@@ -252,11 +254,57 @@ PUBS = {
     # A paper at a workshop attached to a conference, usually shorter and
     # not in the main proceedings.
     "workshop": [],
-    # ── POSTERS AND EXTENDED ABSTRACTS ──────────────────────────────────
-    # Short-format contributions: posters, late-breaking work, extended
-    # abstracts, demos.
+    # ── POSTERS ─────────────────────────────────────────────────────────
+    # Work presented at a board rather than from a podium: posters, demos,
+    # late-breaking work shown in a session.
     "poster": [],
+    # ── EXTENDED ABSTRACTS ──────────────────────────────────────────────
+    # Short written contributions in the proceedings - a few pages rather
+    # than a full paper. They used to share a heading with posters, but a
+    # poster is how work was presented and an extended abstract is what
+    # was published, which are different claims to make about a piece of
+    # work.
+    "abstract": [],
 }
+
+
+PUB_FILTERS_MARK = "<!--PUBFILTERS-->"
+
+
+def _kinds_in_use():
+    """The kinds that actually hold a publication, in PUB_GROUPS order."""
+    return [(key, label) for key, label in PUB_GROUPS if PUBS.get(key)]
+
+
+def pub_filters():
+    """The chip row above the list, one chip per kind of publication.
+
+    Generated rather than written by hand, so a chip appears the first
+    time you add a workshop paper and never appears for a kind you do
+    not have.
+
+    Kind rather than topic. The page used to filter by subject area -
+    "Nature Recreation", "Learning Technology" - which with two papers
+    meant each chip narrowed the list to exactly one entry. A filter
+    that maps one to one onto the list is a table of contents wearing a
+    filter's clothes. Kind is a fact about the work rather than a
+    taxonomy invented to fill a row, and it stays useful at two papers
+    or forty.
+
+    With only one kind on the page there is nothing to choose between,
+    so no chips are written at all - the same restraint the blog's
+    controls use. The count beside them is not part of this; it lives
+    in the page and is always shown.
+    """
+    kinds = _kinds_in_use()
+    if len(kinds) < 2:
+        return ""
+    out = ['          <button type="button" class="chip" data-filter="all" '
+           'aria-pressed="true">All</button>']
+    for key, label in kinds:
+        out.append('          <button type="button" class="chip" data-filter="%s" '
+                   'aria-pressed="false">%s</button>' % (_html.escape(key, quote=True), label))
+    return "\n".join(out)
 
 
 def pub_groups():

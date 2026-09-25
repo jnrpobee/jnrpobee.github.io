@@ -223,13 +223,20 @@ immediately above `PUB_GROUPS`. The required steps are:
    BibTeX is enough to begin; the other supported formats can be added later,
    and the tabs are generated from whichever keys are present.
 2. Copy the publication template into the correct list in `PUBS`: `journal`,
-   `conference`, `chapter`, `workshop`, or `poster`.
+   `conference`, `chapter`, `workshop`, `poster`, or `abstract`.
 3. Use the same citation ID in all three places — `data-cite`,
    `aria-controls`, and `<!--CITE:...-->`. A mismatch is the usual cause of a
    Cite button that opens nothing.
-4. Set `data-topic` to an existing filter value such as `nature` or
-   `learning`. For a new topic, also add a matching filter button in
-   `pages/publications.py`, or the entry disappears whenever a visitor filters.
+4. The filter chips above the list are generated from the kinds in use, so
+   there is nothing to add for them: put the entry in the right list in `PUBS`
+   and its chip appears. A kind with no publications gets no chip, and with
+   only one kind on the page no chips are written at all — there would be
+   nothing to choose between.
+
+   The page used to filter by subject area instead, with hand-written chips
+   in `pages/publications.py`. With two papers each chip narrowed the list to
+   exactly one entry, which is a table of contents wearing a filter's clothes.
+   `data-topic` on a publication is now unused; leaving one in does no harm.
 5. Update the initial publication total in `pages/publications.py` — the
    `id="pub-count"` span. JavaScript updates it after a search or filter, but
    the HTML should start with the correct number.
