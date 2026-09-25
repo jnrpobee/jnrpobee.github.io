@@ -106,9 +106,20 @@ POSTS = [
         "title": "The Smart Intruder: Invasion of the Open Territory",
         "summary": "Smart intruders has moved into the open territory. What happens next?",
         "body": """
-          <p>In the wilderness are different pods belonging to different groups who have established their own territories.</p>
-          <p>Second paragraph, with a
-             <a class="text-link" href="https://example.org/">link</a>.</p>
+          <p>Just a Joke?
+
+What is the true definition of a "joke"? Is there a boundary that decides what kind of joke is acceptable between people? Maybe there is, and maybe that boundary says something about the relationship between them. So what do you call someone who is told to stop acting strangely "in the name of joking," and then goes ahead and does it anyway?
+
+..</p>
+<p>A new member recently joined our pod: a know-it-all, self-proclaimed nerd I'll call Snake. He assumes everyone thinks and acts the way he does. He's odd and nosy, and he keeps trying to force his way in. It isn't working.</p>
+
+<p> On a dry, sunny day with a deadline hanging over everyone, one of the pod members, Leo, stepped away from his desk. Snake quickly slipped into Leo's space, took his radio player, put in a cassette playing "The Witch Is Dead" as a joke, and then went back to his own desk to hide and wait for Leo to come back. </p>
+
+<p>When Leo returned, he could tell something was off. Snake was delighted to watch him look confused. He said nothing and waited. A few days later, Leo told the others what had happened. He knew Snake was listening, so he played it smart and said the incident had been reported to the authorities. When Snake heard that, he got scared, went pale, and started begging and confessing. It was just a "joke," he said.</p>
+
+<p>How is that a joke? How can someone who presents himself as so knowledgeable invade another person's privacy and then call it a joke? Could he ever be trusted? </p>
+
+<p>I made a few small choices you might want to change. I added a title, swapped "territory" for "desk" and "space" so it reads more naturally, and wrote "said the incident had been reported" because the original didn't make clear who "they" were. If you'd like it to sound more formal, more personal, or shorter, I can adjust it</p>
 """,
     },
     {
