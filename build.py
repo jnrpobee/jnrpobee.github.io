@@ -368,6 +368,11 @@ def pub_groups():
 #     {
 #         "date": "2026-10-04",          # ISO; shown in the reader's format
 #         "title": "What I learned watching coaches ignore dashboards",
+#         "image": {
+#             "src": "assets/blog/whiteboard.jpg",
+#             "alt": "A whiteboard covered in a session plan",
+#             "caption": "Optional line under the picture.",
+#         },
 #         "body": """
 #           <p>First paragraph.</p>
 #           <p>Second paragraph. Links look like
