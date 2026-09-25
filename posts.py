@@ -119,7 +119,7 @@ What is the true definition of a "joke"? Is there a boundary that decides what k
 
 <p>How is that a joke? How can someone who presents himself as so knowledgeable invade another person's privacy and then call it a joke? Could he ever be trusted? </p>
 
-<p>I made a few small choices you might want to change. I added a title, swapped "territory" for "desk" and "space" so it reads more naturally, and wrote "said the incident had been reported" because the original didn't make clear who "they" were. If you'd like it to sound more formal, more personal, or shorter, I can adjust it</p>
+
 """,
     },
     {
