@@ -29,6 +29,26 @@
   --ghost:#8a877f;
   --accent:#3457d5;
   --accent-ink:#ffffff;
+  /* ─── one hue per category ───────────────────────────────────────────
+     Six, handed out in the order build.py declares the categories, so a
+     category keeps its colour when another is added below it.
+
+     Not chosen by eye. They were searched for and then measured: every
+     one clears 3:1 against all nine surfaces the site puts them on, and
+     every PAIR of them stays apart under colour-blind vision with all
+     six on screen at once - which is what the tiles do, and which the
+     obvious six-well-spread-hues answer fails. The dark steps below are
+     the same six hues re-stepped for the dark surface, not flipped.
+
+     They never carry meaning alone: every note and every tile has its
+     category written beside the colour. That is what makes a 3:1 mark
+     legitimate here rather than a guess about who can see it. */
+  --cat-1:#d15838;
+  --cat-2:#2a8462;
+  --cat-3:#245899;
+  --cat-4:#8f71c0;
+  --cat-5:#805800;
+  --cat-6:#961770;
   --bg:#f1efe9;
   --bg-soft:#e7e4dc;
   --panel:#e7e4dc;
@@ -105,6 +125,12 @@
     --ghost:#676d67;
     --accent:#8bff43;
     --accent-ink:#081007;
+    --cat-1:#db6241;
+    --cat-2:#3f9673;
+    --cat-3:#3669ac;
+    --cat-4:#987aca;
+    --cat-5:#896100;
+    --cat-6:#b4398b;
     --bg:#07100e;
     --bg-soft:#0c1513;
     --panel:#0d1614;
@@ -169,6 +195,12 @@
   --ghost:#676d67;
   --accent:#8bff43;
   --accent-ink:#081007;
+  --cat-1:#db6241;
+  --cat-2:#3f9673;
+  --cat-3:#3669ac;
+  --cat-4:#987aca;
+  --cat-5:#896100;
+  --cat-6:#b4398b;
   --bg:#07100e;
   --bg-soft:#0c1513;
   --panel:#0d1614;
@@ -749,6 +781,13 @@ a.status-dot:focus-visible{
   position:relative;width:min(100%,92ch);padding:var(--post-pad);
   overflow:hidden;border:1px solid var(--border);border-radius:16px;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E"),
+                   /* The ring peeking in at the bottom corner. It used to be
+                      ::after; a card has only two pseudo-elements and the
+                      stripe below needs one, so it is drawn here instead.
+                      Same circle, same place, painted differently. */
+                   radial-gradient(circle at calc(100% + 2px) calc(100% + 2px),
+                     transparent 0 44.5px, var(--ring) 44.5px 45.5px,
+                     transparent 45.5px),
                    linear-gradient(150deg,var(--surface-2),var(--surface-0));
   counter-increment:note;
   transition:transform 220ms ease,border-color 220ms ease,box-shadow 220ms ease;
@@ -772,11 +811,59 @@ a.status-dot:focus-visible{
   content:counter(note,decimal-leading-zero);position:absolute;right:22px;top:13px;
   color:var(--accent);font-family:var(--mono);font-size:2.5rem;line-height:1;opacity:.18;
 }
-.post::after{
-  content:"";position:absolute;width:90px;height:90px;right:-47px;bottom:-47px;
-  border:1px solid var(--ring);border-radius:50%;
+/* ─── the category's own colour ────────────────────────────────────────
+   Each note's edge says which category it belongs to. --cat is handed to
+   it by the small stylesheet build.py writes above the list, which maps
+   a category to a hue token; the values are at the top of this file.
+
+   The first note used to be the only one with a coloured border, to mark
+   it as the newest. The category is a better thing for that line to say,
+   and it says it on every note. */
+.post[data-blog-topic]{border-color:var(--cat);}
+.post[data-blog-topic]:hover{border-color:var(--cat);}
+/* The number in the corner belongs to the note, so it follows. */
+.post[data-blog-topic]::before{color:var(--cat);}
+
+/* Past six categories there are no more hues worth having - a seventh
+   nobody can tell from the second is worse than none - so a seventh
+   category onward wears two of the six in a diagonal stripe. 6 hues make
+   15 pairs, which is 21 categories before anything repeats.
+
+   Drawn as a masked ring rather than a border-image: border-image is the
+   obvious way to stripe a border and it silently squares off the
+   corners, because CSS stops honouring border-radius once one is set.
+   This paints the stripe over the card's whole box and then cuts the
+   middle out of it, so the ring follows the 16px radius exactly. */
+.post[data-stripe]{border-color:transparent;}
+.post[data-stripe]::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+  background:repeating-linear-gradient(45deg,
+    var(--cat) 0 9px, var(--cat-b) 9px 18px);
+  /* Both shorthands first, then the composite. A mask shorthand resets
+     mask-composite to "add", so setting the composite above the
+     shorthand quietly undoes it - and "add" fills the whole card with
+     stripes instead of ringing it. */
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
 }
-.post:first-child{border-color:var(--accent-35);}
+/* The category label was lime, which was right when lime was the only
+   colour on the note. Beside six different edges it reads as a seventh.
+   The word takes ordinary ink and a dot of its own hue instead: at this
+   size the hue itself would need 4.5:1 to be set as type, and these are
+   3:1 colours, chosen for marks. */
+.post[data-blog-topic] .post-category{color:var(--text-2);}
+.post[data-blog-topic] .post-category::before{
+  content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--cat);margin-right:8px;vertical-align:middle;
+  position:relative;top:-1px;
+}
+.post[data-stripe] .post-category::before{
+  background:repeating-linear-gradient(45deg,
+    var(--cat) 0 3px, var(--cat-b) 3px 6px);
+}
 .post-meta{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:12px;}
 .post-date{
   margin:0;font-family:var(--mono);font-size:.8438rem;
@@ -866,6 +953,72 @@ summary.post-head:focus-visible{
 .blog-empty{
   width:min(100%,92ch);padding:46px 24px;border:1px dashed var(--border);
   border-radius:16px;color:var(--muted);text-align:center;
+}
+
+/* ─── what is in here ──────────────────────────────────────────────────
+   The blog used to stop at the last note, leaving a screen of empty
+   board above the footer. These fill it with the one thing a reader who
+   read that far might want - what else there is - and each tile is the
+   filter for its own category, so the section answers the question and
+   then acts on it.
+
+   The hue is a rule along the top rather than the whole edge: on a card
+   this small a full coloured border reads as a warning. The notes get
+   the edge, the tiles get the rule, and both come from the same --cat. */
+.cat-tiles{padding-top:0;}
+/* Full width of the section, not the 92ch the notes use. The heading
+   above already spans it, and four tiles penned into the note column
+   left the row half empty while "WHAT IS IN HERE" ran the whole way
+   across - the two read as belonging to different sections. auto-fit
+   drops the unused tracks, so however many categories there are they
+   share the row rather than leaving a gap. */
+.cat-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;
+  width:100%;margin:18px auto 0;
+}
+.cat-tile{
+  position:relative;display:block;width:100%;text-align:left;cursor:pointer;
+  padding:18px 18px 16px;border:1px solid var(--border);border-radius:14px;
+  background:var(--surface-0);overflow:hidden;
+  transition:background 200ms ease,border-color 200ms ease,transform 200ms ease;
+}
+.cat-tile::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--cat);
+}
+.cat-tile[data-stripe]::before{
+  background:repeating-linear-gradient(45deg,
+    var(--cat) 0 9px, var(--cat-b) 9px 18px);
+}
+.cat-tile:hover{background:var(--surface-2);border-color:var(--cat);}
+.cat-tile:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+/* A tile whose category the reader is currently looking at. The filter
+   chips say so too; this stops the two disagreeing. */
+.cat-tile[aria-pressed="true"]{border-color:var(--cat);background:var(--surface-3);}
+.cat-tile h3{
+  margin:0 0 7px;font-family:var(--serif);font-weight:400;font-size:1.32rem;
+  line-height:1.15;color:var(--text);
+}
+.cat-tile p{margin:0;color:var(--muted);font-size:.86rem;line-height:1.5;}
+.cat-tile .n{
+  display:block;margin-top:12px;font-family:var(--mono);font-size:.66rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--faint);
+}
+/* A dot, not a filled pill: the top rule already carries the hue and a
+   second block of colour would crowd the name. */
+.cat-tile .n::before{
+  content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--cat);margin-right:8px;vertical-align:baseline;
+}
+.cat-tile[data-stripe] .n::before{
+  background:repeating-linear-gradient(45deg,
+    var(--cat) 0 3px, var(--cat-b) 3px 6px);
+}
+@media (prefers-reduced-motion:no-preference){
+  .cat-tile:hover{transform:translateY(-3px);}
+}
+@media (max-width:640px){
+  .cat-grid{grid-template-columns:1fr;gap:10px;}
+  .cat-tile{padding:15px 15px 13px;}
 }
 .notes-return{padding-top:0;text-align:center;}
 @media (prefers-reduced-motion:no-preference){

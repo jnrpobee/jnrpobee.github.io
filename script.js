@@ -783,8 +783,50 @@
           var k = c.getAttribute('data-cat');
           return k === 'all' ? picked === '' : k === picked;
         });
+        /* The tiles at the foot of the page show the same choice. */
+        press(document, '[data-cat-tile]', function (t) {
+          return t.getAttribute('data-blog-topic') === picked;
+        });
         shown = perPage;      /* a new filter starts the count again */
         draw();
+      });
+    }
+
+    /* ── the tiles at the foot of the page ──────────────────────────
+       Each one is the filter for its own category. They do not have a
+       filter of their own: they press the chip, so the chip row, the
+       count and the tiles can never end up disagreeing about what the
+       reader is looking at.
+
+       Pressing the tile for the category already showing turns it off,
+       the same as pressing its chip - the tile is the chip in another
+       place, not a second control with its own rules. */
+    var tiles = $$('[data-cat-tile]');
+    if (tiles.length) {
+      tiles.forEach(function (tile) {
+        tile.addEventListener('click', function () {
+          var cat = tile.getAttribute('data-blog-topic');
+          picked = (cat === picked) ? '' : cat;
+          if (filters) {
+            press(filters, '.chip[data-cat]', function (c) {
+              var k = c.getAttribute('data-cat');
+              return k === 'all' ? picked === '' : k === picked;
+            });
+          }
+          press(document, '[data-cat-tile]', function (t) {
+            return t.getAttribute('data-blog-topic') === picked;
+          });
+          shown = perPage;
+          draw();
+          /* The list is above the tiles, so filtering from down here
+             would otherwise change something the reader cannot see. */
+          var top = document.querySelector('#blog-posts');
+          if (top) {
+            top.scrollIntoView({
+              behavior: reduce() ? 'auto' : 'smooth', block: 'start'
+            });
+          }
+        });
       });
     }
 

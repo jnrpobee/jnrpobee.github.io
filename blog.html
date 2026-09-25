@@ -160,6 +160,12 @@
           <p class="kicker" id="recent-notes-title">ALL NOTES</p>
           <p class="notes-order">NEWEST FIRST &middot; TAP TO READ</p>
         </div>
+        <style>
+          [data-blog-topic="lifestyle"]{--cat:var(--cat-1);}
+          [data-blog-topic="campus"]{--cat:var(--cat-2);}
+          [data-blog-topic="Pod"]{--cat:var(--cat-3);}
+          [data-blog-topic="The Movies"]{--cat:var(--cat-4);}
+        </style>
         <div class="notes-filters" data-filters hidden>
           <p class="filter-label" id="filter-label">Show</p>
           <div class="filter-chips" role="group" aria-labelledby="filter-label">
@@ -348,12 +354,39 @@
         </div>
       </section>
 
+      <section class="cat-tiles pad" aria-labelledby="cat-tiles-title">
+        <div class="section-heading">
+          <p class="kicker" id="cat-tiles-title">WHAT IS IN HERE</p>
+          <p class="notes-order">FOUR CORNERS OF THE BOARD &middot; TAP TO FILTER</p>
+        </div>
+        <div class="cat-grid">
+          <button type="button" class="cat-tile" data-blog-topic="lifestyle" data-cat-tile aria-pressed="false">
+            <h3>Lifestyle</h3>
+            <p>The ordinary hours outside the lab — what I notice, and what I decide to keep.</p>
+            <span class="n">three notes</span>
+          </button>
+          <button type="button" class="cat-tile" data-blog-topic="campus" data-cat-tile aria-pressed="false">
+            <h3>Campus Life</h3>
+            <p>Graduate school at BYU: the work, the people, and the pace of the place.</p>
+            <span class="n">one note</span>
+          </button>
+          <button type="button" class="cat-tile" data-blog-topic="Pod" data-cat-tile aria-pressed="false">
+            <h3>Inside The Pod</h3>
+            <p>Notes from the research pod — what we are building, and why it is built that way.</p>
+            <span class="n">one note</span>
+          </button>
+          <button type="button" class="cat-tile" data-blog-topic="The Movies" data-cat-tile aria-pressed="false">
+            <h3>The Movies</h3>
+            <p>Films and shows that shaped how I see things, watched again with older eyes.</p>
+            <span class="n">one note</span>
+          </button>
+        </div>
+      </section>
+
       <section class="notes-return pad">
         <p class="note">You found this by clicking the dot. <a class="text-link" href="/">Back to the front</a>.</p>
       </section>
-      <div class="pad">
 
-      </div>
     </main>
 
     <footer class="site-footer" id="contact">

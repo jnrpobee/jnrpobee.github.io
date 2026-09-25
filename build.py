@@ -382,12 +382,102 @@ def pub_groups():
 
 
 #==========================
+# ─── HOW TO ADD A CATEGORY ─────────────────────────────────────────────
+#
+# The key on the left is what a post's "category" must say. The right side
+# is either just the name readers see:
+#
+#     "campus": "Campus Life",
+#
+# or that name plus a line for its tile at the foot of the blog:
+#
+#     "campus": {"label": "Campus Life",
+#                "blurb": "Graduate school at BYU: the work and the pace."},
+#
+# Both forms work, so adding one in a hurry never breaks the build. A
+# category with no blurb still gets a tile; the tile just has nothing to
+# say under its name.
+#
+# Colour is not set here. Each category takes the next hue in the order
+# this dict declares them, which means a category keeps its colour when
+# you add another below it. There are six hues; the seventh category and
+# everything after it gets a pair of them in a diagonal stripe, which is
+# worth 21 categories before anything repeats. See _cat_slots().
 BLOG_CATEGORIES = {
-    "lifestyle": "Lifestyle",
-    "campus": "Campus Life",
-    "Pod": "Inside The Pod",
-    "The Movies": "The Movies",
+    "lifestyle": {
+        "label": "Lifestyle",
+        "blurb": "The ordinary hours outside the lab — what I notice, "
+                 "and what I decide to keep.",
+    },
+    "campus": {
+        "label": "Campus Life",
+        "blurb": "Graduate school at BYU: the work, the people, and the "
+                 "pace of the place.",
+    },
+    "Pod": {
+        "label": "Inside The Pod",
+        "blurb": "Notes from the research pod — what we are building, and "
+                 "why it is built that way.",
+    },
+    "The Movies": {
+        "label": "The Movies",
+        "blurb": "Films and shows that shaped how I see things, watched "
+                 "again with older eyes.",
+    },
 }
+
+
+def _cat_label(key):
+    """The name readers see, whichever form the category was written in."""
+    v = BLOG_CATEGORIES.get(key)
+    if isinstance(v, dict):
+        return v.get("label") or key
+    return v or "Notes"
+
+
+def _cat_blurb(key):
+    """The line under the name on the category's tile, if it has one."""
+    v = BLOG_CATEGORIES.get(key)
+    return (v.get("blurb") or "").strip() if isinstance(v, dict) else ""
+
+
+# How many distinct hues there are to hand out. Not a free dial: the six
+# were picked by search and then measured - every one clears 3:1 against
+# all nine surfaces the site puts them on, and every pair of them stays
+# apart under colour-blind vision with all six on screen at once, which
+# is what the tiles do. A seventh hue cannot be added without one of the
+# pairs failing. The values themselves live in styles.css, as --cat-1 to
+# --cat-6, stepped separately for each theme.
+CAT_HUES = 6
+
+
+def _cat_slots():
+    """Which hue, or which two, each category wears.
+
+    The first six take a hue each. After that a category takes a pair and
+    wears them as a diagonal stripe, because a seventh hue that nobody
+    can tell from the second one is worse than no seventh hue. The pairs
+    are generated in a fixed order, so category eleven keeps its stripe
+    when category five is renamed.
+
+    Returns {key: (primary, secondary or None)}, one-based to match the
+    --cat-N custom properties.
+    """
+    import itertools
+    pairs = itertools.combinations(range(1, CAT_HUES + 1), 2)
+    out = {}
+    for i, key in enumerate(BLOG_CATEGORIES):
+        if i < CAT_HUES:
+            out[key] = (i + 1, None)
+        else:
+            try:
+                out[key] = next(pairs)
+            except StopIteration:
+                # 21 categories in. Whatever this is, it is not a category
+                # scheme any more, so the rest share the last stripe
+                # rather than the build falling over.
+                out[key] = (CAT_HUES - 1, CAT_HUES)
+    return out
 
 POSTS = [
         {
@@ -681,6 +771,8 @@ def _post_figure(post):
 NOTE_CARDS_MARK = "<!--NOTECARDS-->"
 NOTE_COUNT_MARK = "<!--NOTECOUNT-->"
 NOTE_DATA_MARK = "<!--NOTEDATA-->"
+CAT_COLOURS_MARK = "<!--CATCOLOURS-->"
+CAT_TILES_MARK = "<!--CATTILES-->"
 
 # Shown when there are no posts yet, so the hero still looks designed
 # rather than empty.
@@ -706,7 +798,7 @@ def _card_rows(posts):
     where = dict((id(q), n) for n, q in enumerate(_ordered_posts()))
     out = []
     for post in posts:
-        label = BLOG_CATEGORIES.get(post.get("category", "lifestyle"), "Notes")
+        label = _cat_label(post.get("category", "lifestyle"))
         when = post.get("date", "")
         try:
             d = _dt.date.fromisoformat(when)
@@ -867,9 +959,12 @@ def blog_posts():
         # The id is what the board card links to, and what the shuffle
         # sends the reader to.
         out.append('        <details class="post" id="%s" data-blog-topic="%s"'
-                   ' data-fasten="%s" data-month="%s" data-in-year="%s" data-n="%d">'
+                   ' data-fasten="%s" data-month="%s" data-in-year="%s"'
+                   ' data-n="%d"%s>'
                    % (slugs[i], _html.escape(category), worn[i],
-                      _html.escape(month), _html.escape(year), i + 1))
+                      _html.escape(month), _html.escape(year), i + 1,
+                      ' data-stripe' if _cat_slots().get(category, (0, None))[1]
+                      else ''))
         out.append('          <summary class="post-head">')
         # The fastener lives inside the summary because anything else
         # inside a closed <details> is hidden.
@@ -881,7 +976,7 @@ def blog_posts():
         out.append('              <p class="post-read">%s</p>'
                    % _reading_time(post))
         out.append('              <p class="post-category">%s</p>'
-                   % _html.escape(BLOG_CATEGORIES[category]))
+                   % _html.escape(_cat_label(category)))
         out.append('            </div>')
         out.append('            <h2 class="post-title">%s</h2>'
                    % _html.escape(post.get("title", "Untitled")))
@@ -912,11 +1007,80 @@ def _category_counts():
     with how many notes each holds. A category nobody has written in yet
     gets no chip."""
     out = []
-    for key, label in BLOG_CATEGORIES.items():
+    for key in BLOG_CATEGORIES:
         n = len([p for p in POSTS if p.get("category", "lifestyle") == key])
         if n:
-            out.append((key, label, n))
+            out.append((key, _cat_label(key), n))
     return out
+
+
+def cat_colours():
+    """One small stylesheet handing each category its hue.
+
+    Written here rather than in styles.css because the mapping is a
+    property of the category list, not of the design: add a category and
+    it takes the next hue without anybody editing CSS. It names tokens
+    rather than colours, so the theme still decides what --cat-3 is.
+
+    A stripe carries two, which is what --cat-b is for; everything with a
+    single hue leaves it unset, and the rule that draws the stripe checks
+    for data-stripe rather than for the property.
+    """
+    slots = _cat_slots()
+    if not slots:
+        return ""
+    out = ['        <style>']
+    for key, (a, b) in slots.items():
+        sel = '[data-blog-topic="%s"]' % _html.escape(key, quote=True)
+        if b is None:
+            out.append('          %s{--cat:var(--cat-%d);}' % (sel, a))
+        else:
+            out.append('          %s{--cat:var(--cat-%d);--cat-b:var(--cat-%d);}'
+                       % (sel, a, b))
+    out.append('        </style>')
+    return "\n".join(out)
+
+
+def cat_tiles():
+    """The tiles at the foot of the blog: what is in here, and how much.
+
+    The page used to stop at the last note and leave a screen of empty
+    board above the footer. This fills it with the one thing a reader who
+    got that far might want, which is what else there is - and each tile
+    is the filter for its own category, so it answers the question and
+    then acts on it.
+
+    Only categories that have been written in appear. A tile for an empty
+    one would be a promise the list cannot keep.
+    """
+    rows = _category_counts()
+    if not rows:
+        return ""
+    slots = _cat_slots()
+    out = ['      <section class="cat-tiles pad" aria-labelledby="cat-tiles-title">']
+    out.append('        <div class="section-heading">')
+    out.append('          <p class="kicker" id="cat-tiles-title">WHAT IS IN HERE</p>')
+    out.append('          <p class="notes-order">%s &middot; TAP TO FILTER</p>'
+               % _html.escape(_spelled(len(rows)).upper() +
+                              (" CORNERS" if len(rows) != 1 else " CORNER") +
+                              " OF THE BOARD"))
+    out.append('        </div>')
+    out.append('        <div class="cat-grid">')
+    for key, label, n in rows:
+        stripe = ' data-stripe' if slots.get(key, (0, None))[1] else ''
+        out.append('          <button type="button" class="cat-tile" '
+                   'data-blog-topic="%s" data-cat-tile aria-pressed="false"%s>'
+                   % (_html.escape(key, quote=True), stripe))
+        out.append('            <h3>%s</h3>' % _html.escape(label))
+        blurb = _cat_blurb(key)
+        if blurb:
+            out.append('            <p>%s</p>' % _html.escape(blurb))
+        out.append('            <span class="n">%s note%s</span>'
+                   % (_spelled(n), "" if n == 1 else "s"))
+        out.append('          </button>')
+    out.append('        </div>')
+    out.append('      </section>')
+    return "\n".join(out)
 
 
 def _months_in_use():
@@ -1403,12 +1567,18 @@ def pager(active):
     nxt = NAV[i + 1] if i < len(NAV) - 1 else None
     if not prev and not nxt:
         return ""
-    out = ['      <nav class="pager" aria-label="Page navigation">']
+    # The padded wrapper belongs to the pager, not to the shell. It used
+    # to sit in the shell around {pager}, which meant a page that has no
+    # pager still carried an empty .pad - 128px of nothing above the
+    # footer on the blog and on 404.
+    out = ['      <div class="pad">',
+           '      <nav class="pager" aria-label="Page navigation">']
     if prev:
         out.append('        <a class="pg prev" href="%s"><span>Previous</span><strong>%s</strong></a>' % prev)
     if nxt:
         out.append('        <a class="pg next" href="%s"><span>Next</span><strong>%s</strong></a>' % nxt)
     out.append("      </nav>")
+    out.append("      </div>")
     return "\n".join(out)
 
 
@@ -1503,9 +1673,7 @@ SHELL = """<!DOCTYPE html>
 
     <main id="main">
 {body}
-      <div class="pad">
 {pager}
-      </div>
     </main>
 
     <footer class="site-footer" id="contact">
@@ -1942,12 +2110,15 @@ BODY["blog"] = """      <section class="notes-hero pad" aria-labelledby="notes-t
           <p class="kicker" id="recent-notes-title">ALL NOTES</p>
           <p class="notes-order">NEWEST FIRST &middot; TAP TO READ</p>
         </div>
+<!--CATCOLOURS-->
 <!--NOTESTALLY-->
         <div class="posts" id="blog-posts">
 <!--BLOGPOSTS-->
         </div>
 <!--NOTESEND-->
       </section>
+
+<!--CATTILES-->
 
       <section class="notes-return pad">
         <p class="note">You found this by clicking the dot. <a class="text-link" href="index.html">Back to the front</a>.</p>
@@ -2154,6 +2325,8 @@ for filename, key, title, desc in PAGES:
     page = page.replace(NOTE_CARDS_MARK, note_cards())
     page = page.replace(NOTE_COUNT_MARK, playground_attrs())
     page = page.replace(NOTE_DATA_MARK, note_data())
+    page = page.replace(CAT_COLOURS_MARK, cat_colours())
+    page = page.replace(CAT_TILES_MARK, cat_tiles())
     for _pid in CITATIONS:
         page = page.replace("<!--CITE:%s-->" % _pid, cite_panel(_pid))
     page = clean_links(page)
