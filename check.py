@@ -121,10 +121,16 @@ def check_reproducible():
     # like, and two builds a second apart will never catch one. But a post
     # written today legitimately carries today's date, so the date only
     # counts as a stamp when it appears nowhere in the sources - if it is
-    # in build.py or a data file, somebody typed it rather than the clock.
+    # in a source file, somebody typed it rather than the clock.
+    #
+    # Every .py in the folder and in pages/, not build.py alone: the posts
+    # moved out to posts.py when the generator was split up, and a check
+    # that still read only build.py called a note written today a build
+    # stamp and stopped the push.
     today = datetime.date.today().isoformat()
     sources = ""
-    for src in (HERE / "build.py", HERE / "leetcode.json"):
+    srcs = sorted(HERE.glob("*.py")) + sorted((HERE / "pages").glob("*.py"))
+    for src in srcs + [HERE / "leetcode.json"]:
         if src.exists():
             sources += src.read_text(encoding="utf-8")
     if today not in sources:
