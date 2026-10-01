@@ -2052,3 +2052,24 @@ p:last-child{margin-bottom:0;}
   :root{--glow-size:17rem;--glow-top:11rem;}
   .hero::after{border-color:var(--border-soft);}
 }
+
+/* ─── a picture beside the writing ─────────────────────────────────────
+   A figure used to sit across the top of a note, which pushed the words
+   down the card and turned a square photograph into a band. Floated, the
+   text runs beside it the way a figure sits in a printed page.
+
+   Only above 720px. Narrower than that there is no room for two columns,
+   so it goes back to full width above the text - stacking is the right
+   answer on a phone, not a smaller float. */
+@media (min-width:720px){
+  .post-body .post-figure{
+    float:right;width:min(42%,330px);margin:3px 0 16px 28px;
+  }
+  /* Centred under a narrow column reads as adrift; aligned with the
+     picture's own edge it reads as belonging to it. */
+  .post-body .post-figure figcaption{text-align:left;}
+  /* The note has to contain its own float, or a picture taller than the
+     writing hangs out past the card's padding and over whatever sits
+     below it. */
+  .post-body::after{content:"";display:block;clear:both;}
+}

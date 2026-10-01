@@ -14,6 +14,52 @@ import json as _json
 from core import BLOG_NAME, OUT
 from posts import BLOG_CATEGORIES, POSTS
 
+# ─── a key nobody reads ────────────────────────────────────────────────
+# A post is a plain dictionary, so a misspelled key is valid Python that
+# nothing ever looks at: "Image" with a capital I renders no picture, and
+# the build reports success. Nothing downstream can catch it either - the
+# page simply has no figure in it, which is also what a post with no
+# picture looks like.
+#
+# So the keys are listed, and anything else stops the build and says what
+# it probably meant. A key beginning with an underscore is left alone, so
+# "_todo" is still somewhere to leave yourself a note.
+_POST_KEYS = frozenset((
+    "date", "category", "title", "summary", "body", "image", "pin", "fasten",
+))
+_IMAGE_KEYS = frozenset(("src", "alt", "caption"))
+_CATEGORY_KEYS = frozenset(("label", "blurb"))
+
+
+def _reject_strays(where, given, allowed):
+    """Raise on the first key that is not one this code reads."""
+    import difflib
+    for key in given:
+        if not isinstance(key, str) or key.startswith("_") or key in allowed:
+            continue
+        near = difflib.get_close_matches(key.lower(), sorted(allowed), 1, 0.6)
+        hint = ' Did you mean "%s"?' % near[0] if near else ""
+        raise ValueError(
+            '%s has an unknown key "%s".%s\n'
+            "    Keys it may have: %s" % (where, key, hint, ", ".join(sorted(allowed)))
+        )
+
+
+def _check_shapes():
+    """Run at import, so a typo fails on `python build.py` and not later."""
+    for post in POSTS:
+        name = post.get("title") or post.get("date") or "a post"
+        _reject_strays('The post %r' % name, post, _POST_KEYS)
+        img = post.get("image")
+        if isinstance(img, dict):
+            _reject_strays('The image on %r' % name, img, _IMAGE_KEYS)
+    for key, value in BLOG_CATEGORIES.items():
+        if isinstance(value, dict):
+            _reject_strays('The category %r' % key, value, _CATEGORY_KEYS)
+
+
+_check_shapes()
+
 # ── the blog ──────────────────────────────────────────────────────────────
 # An unlisted page. It is not in the nav, not in sitemap.xml, and carries
 # a noindex tag, so it will not turn up in a search. It is reached by the

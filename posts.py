@@ -78,6 +78,21 @@ BLOG_CATEGORIES = {
 }
 
 POSTS = [
+    {
+    "date": "2026-10-01",
+    "category": "The Movies",
+    "title": "Who Raymond Reddington could be",
+    "image": {
+        "src": "assets/blog/reddington.jpeg",
+        "alt": "Raymond Reddington, the main character of The Blacklist",
+        "caption": "Raymond Reddington, the main character of The Blacklist",
+    },
+    "summary": "What I think about the identity of the Blacklist's main character, and why it matters.",
+    "body": """
+          <p> Raymond Reddington is a complex character with a mysterious past. He could be a former intelligence officer, a rogue agent, or someone with a hidden agenda. Initially, he appears to be a criminal, but as the series progresses, his true nature becomes more apparent. Elizabeth was trained to work with him, and their relationship is a key part of the show's narrative.  </p>
+          <p>An interesting aspect of the character is his ability to manipulate situations to his advantage. It makes him a formidable opponent in the series. The real Raymond Redditnton died in the line of duty. later in the series, his true identity is revealed. most especially in season 5 episodes 5 and 6. </p>
+    """,
+    },
         {
         "date": "2026-09-24",
         "category": "The Movies",

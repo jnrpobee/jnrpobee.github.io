@@ -19,7 +19,13 @@ VALID = re.compile(
     r'|mailto:[^\s"\'<>]+'             # mail
     r'|#[\w/\-]*'                      # in-page / route
     r'|data:[a-z]+/[a-z.+\-]+;base64,[A-Za-z0-9+/=]+'   # embedded asset
-    r'|[\w\-./%]+\.(html|css|js|svg|jpg|png|ico|xml|txt|pdf|webmanifest)(\?[\w=&\-]*)?'
+    # The formats a page on this site may legitimately point at. It is a
+    # list rather than a wildcard so that a stray word still reads as
+    # malformed - but it has to hold every extension actually in use, or
+    # a real image fails the deploy. jpeg, webp, avif and gif were all
+    # missing until a post used a .jpeg and the build stopped.
+    r'|[\w\-./%]+\.(html|css|js|svg|jpe?g|png|gif|webp|avif|ico|xml|txt'
+    r'|pdf|woff2?|mp4|webm|webmanifest)(\?[\w=&\-]*)?'
     r'|/(?:[\w\-]+(?:/[\w\-]+)*)?(?:[#?][^\s"\'<>]*)?'  # clean path: / or /research
     r')$'
 )
