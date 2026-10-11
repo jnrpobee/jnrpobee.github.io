@@ -10,11 +10,11 @@ BODY["about"] = """      <section class="pad">
 
       <section class="split pad">
         <div class="portrait-panel" style="min-height:520px;">
-          <img class="portrait-photo" src="assets/portrait.jpg" alt="Solomon B. Pobee" width="900" height="1349" loading="lazy" decoding="async">
+          <img class="portrait-photo" src="assets/portrait.jpg" alt="Solo Pobee (Solomon B. Pobee)" width="900" height="1349" loading="lazy" decoding="async">
         </div>
         <div class="body-copy" style="align-self:center;">
           <p class="kicker">HELLO</p>
-          <p style="font-family:var(--serif);font-size:clamp(1.8rem,3.2vw,2.8rem);line-height:1.08;color:var(--text);margin:18px 0 22px;max-width:none;">I&rsquo;m Solomon B. Pobee, a PhD student in Computer Science at Brigham Young University.</p>
+          <p style="font-family:var(--serif);font-size:clamp(1.8rem,3.2vw,2.8rem);line-height:1.08;color:var(--text);margin:18px 0 22px;max-width:none;">I&rsquo;m Solomon B. Pobee (Solo Pobee), a PhD student in Computer Science at Brigham Young University.</p>
           <p>My work sits at the intersection of human&ndash;computer interaction, sport, and human performance. I&rsquo;m interested in technology that helps people make better decisions in environments where resources, staffing, and technical infrastructure may be limited.</p>
           <p>A major focus of my research is adolescent sub-elite youth sports: understanding the needs of athletes and coaches, then designing interactive systems that can support performance, development, and injury prevention.</p>
           <p>I care about tools that work in practice &mdash; not just systems that look good in a lab.</p>

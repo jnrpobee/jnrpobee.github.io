@@ -45,7 +45,7 @@ SOCIALS = [
 
 PAGES = [
     ("index.html", "home", "Solomon B. Pobee — HCI Researcher",
-     "Solomon B. Pobee — PhD researcher in human–computer interaction, sports technology, and human performance."),
+     "Solomon B. Pobee (Solo Pobee) — PhD researcher in human–computer interaction, sports technology, and human performance."),
     ("research.html", "research", "Research — Solomon B. Pobee",
      "Research by Solomon B. Pobee in human–computer interaction, sports technology, and youth athletics."),
     ("projects.html", "projects", "Projects — Solomon B. Pobee",
@@ -117,6 +117,7 @@ JSONLD = """<script type="application/ld+json">
   "@context":"https://schema.org",
   "@type":"Person",
   "name":"Solomon B. Pobee",
+  "alternateName":["Solo Pobee","Solomon Pobee"],
   "jobTitle":"PhD Student, Computer Science",
   "email":"mailto:jnrpobee@byu.edu",
   "affiliation":{"@type":"CollegeOrUniversity","name":"Brigham Young University"},
