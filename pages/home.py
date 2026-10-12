@@ -17,7 +17,7 @@ BODY["home"] = """      <section class="hero pad" aria-labelledby="hero-title">
         <div class="hero-copy enter-1">
           <p class="eyebrow">RESEARCH <span>&times;</span> PEOPLE <span>&times;</span> PERFORMANCE</p>
           <h1 id="hero-title">Solomon B. Pobee</h1>
-          <p class="hero-statement">I design and study technology<br>for human performance.</p>
+          <p class="hero-statement">I explore the role of interactive systems and <br> data in sub-elite youth sports.</p>
           <p class="hero-summary">PhD researcher in human&ndash;computer interaction at Brigham Young University, exploring the use of data and interactive systems can support adolescent athletes, coaches,and parents to improve performance, and prevent injuries in sub-elite youth sports &mdash; that operate without a support staff.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="research.html">Explore research <span aria-hidden="true">&rarr;</span></a>
