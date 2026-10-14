@@ -52,7 +52,7 @@ BODY["about"] = """      <section class="pad">
           <span class="accent-line" style="margin-top:22px;"></span>
         </div>
         <div>
-          <p class="body-copy" style="margin:0;">Happy to talk research, collaboration, or anything at the intersection of HCI and youth sport. If you&rsquo;re a coach, club, or researcher working with under-resourced teams, I&rsquo;d particularly like to hear from you.</p>
+          <p class="body-copy" style="margin:0;">Happy to talk research, collaboration, or anything at the intersection of HCI and youth sport. If you&rsquo;re a coach, club, or researcher working with sub-elite teams (under-resourced teams), I would appreciate to hear from you.</p>
           <div class="mail-wrap">
             <a class="mail-big" href="mailto:jnrpobee@byu.edu">jnrpobee@byu.edu</a>
             <button type="button" class="btn-s" data-copy-mail>Copy</button>
