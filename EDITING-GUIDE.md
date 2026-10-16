@@ -434,6 +434,27 @@ cards, publications, the blog's board and notes, CV, footer, responsive rules,
 print rules, and the LeetCode panel. Place a new rule beside the component it
 affects and check both themes, narrow screens, and reduced-motion behavior.
 
+### Vertical rhythm — the space around the hairlines
+
+Almost every horizontal line on the site is the top or bottom edge of a padded
+band, so the gap above and below a line is that band's `padding-block`, not a
+margin on the line itself. The knobs, all in `styles.css`:
+
+| Rule | Controls |
+| --- | --- |
+| `.pad{padding-block:46px}` | The default band. Sets most section rules at once. |
+| `main > .pad:first-child:not(.hero):not(.notes-hero)` | The opening block of an interior page — `72px 40px`, with a smaller pair under 640px. |
+| `.focus-strip`, `.projects`, `.split`, `.research-question` | Sections that override the default with their own pair. |
+| `.pager` + `.pager-pad` | The Previous / Next block. The pager owns its margin and rule; its wrapper carries no top padding, or the gap is charged twice. |
+| `.site-footer` | `min-height` plus `padding-block` set the air around the footer's top rule. |
+| `.values-grid`, `.value` | The about page's three-column band. |
+
+Change a number here and the effect is site-wide, so look at `about.html`,
+`index.html` and `research.html` in both themes before committing. If a gap
+stays large after trimming the band, the space is coming from a child's margin
+or from a grid row stretching to its tallest cell — chase that instead of
+padding the number down further.
+
 ## Change interactive behavior
 
 All browser behavior is in `script.js`, using plain JavaScript with no build

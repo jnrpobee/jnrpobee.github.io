@@ -199,7 +199,7 @@ def pager(active):
     # to sit in the shell around {pager}, which meant a page that has no
     # pager still carried an empty .pad - 128px of nothing above the
     # footer on the blog and on 404.
-    out = ['      <div class="pad">',
+    out = ['      <div class="pad pager-pad">',
            '      <nav class="pager" aria-label="Page navigation">']
     if prev:
         out.append('        <a class="pg prev" href="%s"><span>Previous</span><strong>%s</strong></a>' % prev)

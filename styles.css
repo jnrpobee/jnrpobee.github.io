@@ -1354,15 +1354,19 @@ summary.post-head:focus-visible{
 .eyebrow span{margin:0 10px;color:var(--accent-50);}
 .accent-line{display:block;width:34px;height:2px;background:var(--accent);}
 
-.pad{padding-block:64px;}
+/* Every rule on the site is the edge of one of these bands, so this one
+   number sets how much air sits above and below most of the hairlines.
+   It was 64px; at that size the rules read as separators between two
+   empty rooms rather than between two blocks of content. */
+.pad{padding-block:46px;}
 
 /* The opening block of an interior page: more room above the eyebrow and a
    real gap between the title and its lead, so the head can breathe. */
-main > .pad:first-child:not(.hero):not(.notes-hero){padding-block:92px 52px;}
+main > .pad:first-child:not(.hero):not(.notes-hero){padding-block:72px 40px;}
 main > .pad:first-child:not(.hero):not(.notes-hero) h1{margin-bottom:26px;}
 main > .pad:first-child:not(.hero):not(.notes-hero) .eyebrow{margin-bottom:6px;}
 @media (max-width:640px){
-  main > .pad:first-child:not(.hero):not(.notes-hero){padding-block:56px 36px;}
+  main > .pad:first-child:not(.hero):not(.notes-hero){padding-block:48px 30px;}
   main > .pad:first-child:not(.hero):not(.notes-hero) h1{margin-bottom:20px;}
 }
 
@@ -1433,7 +1437,7 @@ p:last-child{margin-bottom:0;}
 .portrait-copy span{display:block;width:48px;height:2px;margin:16px 0 0 auto;background:var(--accent);}
 
 /* focus strip */
-.focus-strip{border-top:1px solid var(--border);padding-block:34px 48px;}
+.focus-strip{border-top:1px solid var(--border);padding-block:26px 38px;}
 .focus-list{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);}
 .focus-list p{margin:0;font-family:var(--serif);font-size:clamp(1.3rem,2vw,1.7rem);padding-right:44px;}
 .focus-list p + p{border-left:1px solid var(--border);padding-left:44px;}
@@ -1445,7 +1449,7 @@ p:last-child{margin-bottom:0;}
 .section-heading > a:hover{color:var(--accent);}
 
 /* ═══════════ project cards ═══════════ */
-.projects{border-top:1px solid var(--border);padding-block:38px 72px;}
+.projects{border-top:1px solid var(--border);padding-block:30px 52px;}
 .project-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:26px;margin-top:28px;}
 .project-card{
   border:1px solid var(--border);border-radius:15px;overflow:hidden;
@@ -1523,7 +1527,7 @@ p:last-child{margin-bottom:0;}
 .detail-card h3{margin:36px 0 10px;font-family:var(--serif);font-size:1.9rem;font-weight:400;letter-spacing:0;}
 .detail-card p{margin:0;color:var(--muted);line-height:1.7;}
 
-.research-question{border-top:1px solid var(--border);padding-block:70px 78px;}
+.research-question{border-top:1px solid var(--border);padding-block:50px 56px;}
 .research-question > p:last-child{
   max-width:1000px;margin:22px 0 0;font-family:var(--serif);
   font-size:clamp(2.2rem,5vw,4.6rem);line-height:1.02;
@@ -1532,16 +1536,16 @@ p:last-child{margin-bottom:0;}
 /* two-column split */
 .split{
   display:grid;grid-template-columns:.9fr 1.1fr;gap:80px;
-  border-top:1px solid var(--border);padding-block:62px;
+  border-top:1px solid var(--border);padding-block:46px;
 }
 .split-intro h2{margin:18px 0 0;font-family:var(--serif);font-size:clamp(2rem,3.6vw,3.4rem);font-weight:400;letter-spacing:0;line-height:1.05;}
 
 /* values */
 .values-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);margin-top:30px;
+  display:grid;grid-template-columns:repeat(3,1fr);margin-top:24px;
   border-top:1px solid var(--border);border-bottom:1px solid var(--border);
 }
-.value{padding:34px 30px 40px 0;}
+.value{padding:26px 30px 30px 0;}
 .value + .value{border-left:1px solid var(--border);padding-left:30px;}
 .value h3{margin:0 0 12px;font-family:var(--serif);font-size:1.9rem;font-weight:400;letter-spacing:0;}
 .value p{margin:0;color:var(--muted);line-height:1.7;}
@@ -1745,7 +1749,11 @@ p:last-child{margin-bottom:0;}
 .links a:hover .h{color:var(--accent);}
 
 /* ═══════════ pager + footer ═══════════ */
-.pager{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:64px;padding-top:32px;border-top:1px solid var(--border);}
+/* The pager brings its own rule and its own margin, so its wrapper must
+   not charge for the gap a second time - .pad's top padding plus this
+   margin used to leave 146px of nothing above the hairline. */
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:30px;padding-top:24px;border-top:1px solid var(--border);}
+.pager-pad{padding-block:0 46px;}
 .pg{
   display:flex;flex-direction:column;gap:5px;padding:20px 22px;
   border:1px solid var(--border);border-radius:12px;background:var(--surface);
@@ -1757,10 +1765,10 @@ p:last-child{margin-bottom:0;}
 .pg.next{text-align:right;align-items:flex-end;grid-column:2;}
 
 .site-footer{
-  min-height:114px;border-top:1px solid var(--border);
+  min-height:96px;border-top:1px solid var(--border);
   display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:30px;
   color:var(--dim-3);font-size:.9375rem;
-  padding-block:28px calc(32px + env(safe-area-inset-bottom,0px));
+  padding-block:22px calc(26px + env(safe-area-inset-bottom,0px));
 }
 .footer-brand{display:flex;align-items:center;gap:18px;}
 .footer-divider{width:1px;height:22px;background:var(--border);}
