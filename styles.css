@@ -1399,9 +1399,13 @@ p:last-child{margin-bottom:0;}
   border:1px solid var(--ring);border-radius:50%;pointer-events:none;
 }
 .hero-copy{position:relative;z-index:1;}
+/* The cap is 3.1rem, not the 3.7rem it reads at elsewhere. The text column
+   beside the portrait is 637px; at 3.7rem the sentence needs 740px for its
+   first line, so it broke after "of" and stranded "sports." on a fourth.
+   At 3.1rem it sets as three full lines, breaking after "interactive". */
 .hero-statement{
   margin:0;max-width:780px;font-family:var(--serif);
-  font-size:clamp(2.1rem,4vw,3.7rem);line-height:1.02;color:var(--text-2);
+  font-size:clamp(2.1rem,4vw,3.1rem);line-height:1.02;color:var(--text-2);
 }
 .hero-summary{max-width:640px;margin:26px 0 0;color:var(--dim);font-size:1.05rem;line-height:1.7;}
 .hero-actions{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap;}
