@@ -521,6 +521,14 @@ between entries is their `padding-block`. Before adding a border anywhere, ask
 what it is opening. If the answer is "nothing — it is closing something", do
 not add it.
 
+**The label sits in a tight band between the two rules.** A list is introduced
+by a label — RECENT PUBLICATIONS, SERVICE — with the section's rule above it
+and the list's own rule below. That label sits 20px under the first rule and
+8px above the second, everywhere: `.pubs`, `.news-list` and `.pub-group .pubs`
+all carry `margin-top:8px`, and `.sub` carries `margin-bottom:8px`. They were
+26, 22, 12 and 12 before — the same construction at four different sizes,
+which is the kind of drift nobody sees until two of them appear on one page.
+
 ## Change interactive behavior
 
 All browser behavior is in `script.js`, using plain JavaScript with no build
