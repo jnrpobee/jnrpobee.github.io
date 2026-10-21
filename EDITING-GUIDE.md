@@ -487,7 +487,8 @@ itself. The knobs, all in `styles.css`:
 | `.pad{padding-block:46px}` | The default band. Sets most section rules at once. |
 | `main > .pad:first-child:not(.hero):not(.notes-hero)` | The opening block of an interior page — `72px 40px`, with a smaller pair under 640px. |
 | `.focus-strip`, `.projects`, `.split`, `.research-question` | Sections that override the default with their own pair. |
-| `.pager` + `.pager-pad` | The Previous / Next block. The pager owns its margin and rule; its wrapper carries no top padding, or the gap is charged twice. |
+| `.pager` + `.pager-pad` | The Previous / Next block. It has no top margin and its wrapper no top padding: the gap above its rule is the previous section's `padding-block` alone. Give it either and the gap is paid for twice. |
+| `.hero` | The home page's opening block. Its `padding-bottom` is the gap above the Focus Areas rule. |
 | `.site-footer` | `min-height` plus `padding-block` set the air around the footer's top rule. |
 | `.values-grid`, `.value` | The about page's three-column band. |
 

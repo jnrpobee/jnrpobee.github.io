@@ -1390,7 +1390,7 @@ p:last-child{margin-bottom:0;}
 
 /* ═══════════ home hero ═══════════ */
 .hero{
-  position:relative;padding-top:66px;padding-bottom:62px;
+  position:relative;padding-top:66px;padding-bottom:38px;
   display:grid;grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);
   gap:62px;align-items:center;
 }
@@ -1441,7 +1441,7 @@ p:last-child{margin-bottom:0;}
 .portrait-copy span{display:block;width:48px;height:2px;margin:16px 0 0 auto;background:var(--accent);}
 
 /* focus strip */
-.focus-strip{border-top:1px solid var(--border);padding-block:26px 38px;}
+.focus-strip{border-top:1px solid var(--border);padding-block:19px 26px;}
 .focus-list{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);}
 .focus-list p{margin:0;font-family:var(--serif);font-size:clamp(1.3rem,2vw,1.7rem);padding-right:44px;}
 .focus-list p + p{border-left:1px solid var(--border);padding-left:44px;}
@@ -1453,7 +1453,7 @@ p:last-child{margin-bottom:0;}
 .section-heading > a:hover{color:var(--accent);}
 
 /* ═══════════ project cards ═══════════ */
-.projects{border-top:1px solid var(--border);padding-block:30px 52px;}
+.projects{border-top:1px solid var(--border);padding-block:21px 44px;}
 .project-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:26px;margin-top:28px;}
 .project-card{
   border:1px solid var(--border);border-radius:15px;overflow:hidden;
@@ -1771,7 +1771,7 @@ p:last-child{margin-bottom:0;}
    item beside it, a hairline between entries. The reuse is the point -
    the reader meets this layout on the publications page, so a dated
    list on the home page asks nothing new of them. */
-.news{border-top:1px solid var(--border);padding-block:30px 46px;}
+.news{border-top:1px solid var(--border);padding-block:21px 44px;}
 .news-list{margin-top:22px;}
 /* Bracketed, like the publications list above it. */
 .news-item{
@@ -1795,11 +1795,12 @@ p:last-child{margin-bottom:0;}
 .news-item a:hover,.news-item a:focus-visible{color:var(--accent);border-bottom-color:var(--accent);}
 
 /* ═══════════ pager + footer ═══════════ */
-/* The pager brings its own rule and its own margin, so its wrapper must
-   not charge for the gap a second time - .pad's top padding plus this
-   margin used to leave 146px of nothing above the hairline. */
-.pager{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:30px;padding-top:24px;border-top:1px solid var(--border);}
-.pager-pad{padding-block:0 46px;}
+/* The pager brings its own rule, and the section above it has already
+   paid for the gap: its own margin-top used to add 30px on top of that
+   and leave 76px of nothing above the hairline. Nothing on top now, and
+   the wrapper carries only the space beneath the cards. */
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:0;padding-top:22px;border-top:1px solid var(--border);}
+.pager-pad{padding-block:0 28px;}
 .pg{
   display:flex;flex-direction:column;gap:5px;padding:20px 22px;
   border:1px solid var(--border);border-radius:12px;background:var(--surface);
@@ -1814,7 +1815,7 @@ p:last-child{margin-bottom:0;}
   min-height:96px;border-top:1px solid var(--border);
   display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:30px;
   color:var(--dim-3);font-size:.9375rem;
-  padding-block:22px calc(26px + env(safe-area-inset-bottom,0px));
+  padding-block:18px calc(24px + env(safe-area-inset-bottom,0px));
 }
 .footer-brand{display:flex;align-items:center;gap:18px;}
 .footer-divider{width:1px;height:22px;background:var(--border);}
