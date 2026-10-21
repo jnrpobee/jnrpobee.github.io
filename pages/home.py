@@ -102,6 +102,10 @@ BODY["home"] = """      <section class="hero pad" aria-labelledby="hero-title">
         </div>
       </section>
 
+
+      <!--NEWS-->
+
+
       <section class="split pad" aria-labelledby="about-title">
         <div class="split-intro">
           <p class="kicker">ABOUT</p>

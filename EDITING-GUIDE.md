@@ -73,6 +73,7 @@ subject, so each file is short enough to read in one sitting.
 | `pubs.py` | Publications and the citation panel under each one | Yes |
 | `core.py` | Where the site lives (`BASE_URL`), the nav order, clean URLs | Occasionally |
 | `shell.py` | The frame every page is poured into: head, nav, footer, pager, structured data | Occasionally |
+| `news.py` | The home page's recent updates: the list and the markup it becomes | Yes |
 | `notes.py` | The blog's machinery — board, list, filters, calendar, tiles, colours | Rarely |
 | `leetcode.py` | The LeetCode panel on the projects page | Rarely |
 | `art.py` | The two drawings the home and projects pages share | Rarely |
@@ -99,6 +100,7 @@ Start from what you want to change:
 | Add a blog category | `posts.py` (`BLOG_CATEGORIES`) |
 | Change the words on a page | `pages/<name>.py` |
 | Add a publication | `pubs.py` |
+| Post a news update | `news.py` (`NEWS`) |
 | Add a project card | `pages/projects.py` |
 | Update the web CV | `pages/cv.py` |
 | Change the nav order or the domain | `core.py` |
@@ -248,6 +250,46 @@ immediately above `PUB_GROUPS`. The required steps are:
    DOI link in the preview.
 
 Keep newest publications first within their group.
+
+## Add a news update
+
+The home page carries a short **Recent updates** list — a month in the left
+rail, the item beside it, newest first. It is the publications layout reused,
+so a reader meets no new shape there.
+
+Everything is in `news.py`. Add a dict to `NEWS` and run `build.py`:
+
+```python
+    {
+        "date": "2026-11",
+        "title": "Paper accepted at CHI 2027",
+        "body": [
+            "Our paper on coach decision support was accepted to CHI 2027.",
+            'The preprint is on the <a href="publications.html">publications page</a>.',
+        ],
+    },
+```
+
+Three keys, and no others — a fourth key stops the build and tells you which
+word it thinks you meant.
+
+- `date` is `"YYYY-MM"`. It both sorts the list and prints, so `"2026-11"`
+  appears as NOV 2026. Any other shape fails the build with a message saying
+  so.
+- `title` is one plain line. It is escaped on the way out, so markup in it
+  will show as text rather than render.
+- `body` is a **list** of paragraphs, one string each, even when there is only
+  one. Each string is HTML, the same as a blog post's body, so a link is
+  written out in full. Writing the body as a single string instead of a list
+  fails the build rather than producing one run-on paragraph.
+
+Order inside `NEWS` does not matter; entries are sorted newest-first when the
+page is built. Only the newest `HOME_COUNT` (three, set at the top of the
+file) reach the home page, so there is no reason to delete an old entry when
+you add a new one — push it down the list and it simply stops being shown.
+
+If `NEWS` is ever empty the whole section disappears, heading included,
+rather than announcing updates and showing none.
 
 ## The blog
 
@@ -558,6 +600,25 @@ server supports the same extensionless URLs as the deployed site.
 
 Check its spelling, capitalization, and path. Web hosts are case-sensitive
 even when a Windows development machine is not.
+
+### A new block renders as an empty gap
+
+The section is in the HTML, it takes up space, and nothing is drawn in it.
+
+Blocks fade in as they scroll into view, and the list of what fades is written
+out **twice**: as `REVEAL_SELECTOR` in `script.js`, and inside the `.js-reveal`
+rules in `styles.css`. The CSS sets the starting `opacity:0`; the JavaScript is
+what adds `is-in` and brings it back. Put a selector in the CSS list and forget
+the JavaScript one and the block is hidden and never un-hidden — a gap where
+content should be.
+
+Add a selector to both lists, or to neither. The two are compared by eye, so
+copy the whole list across rather than editing each one by hand.
+
+It also hides from a quick check: `prefers-reduced-motion: reduce` forces
+everything visible, so on a machine set to reduce motion — and in a screenshot
+taken with that setting — the page looks perfect. Test a reveal change with
+motion on, and scroll down to the block rather than loading straight to it.
 
 ### The page looks right in one dark mode but not the other
 

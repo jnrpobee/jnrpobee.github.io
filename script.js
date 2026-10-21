@@ -158,8 +158,15 @@
   /* ── reveal on scroll ─────────────────────────────────────────
      Blocks ease up into place as they come into view. Anything that
      can't be observed is simply shown, so nothing is ever stranded
-     invisible. */
-  var REVEAL_SELECTOR = '.hero-copy, .portrait-panel, .focus-strip > .kicker, .focus-list, .section-heading, .project-card, .pub-group, .repo, .detail-card, .value, .cv-row, .split > div, .research-question > *, .slot, .inprogress, .pager, .links, .mail-wrap, .filters';
+     invisible.
+
+     REVEAL_SELECTOR below has a twin: the same list appears in
+     styles.css, in the .js-reveal rules that set the starting opacity.
+     Add a selector to one and not the other and the block is hidden by
+     the CSS and never un-hidden by the JS - it renders as an empty gap,
+     and only on a machine that is not set to reduce motion, which is
+     how it survives a quick check. Change both. */
+  var REVEAL_SELECTOR = '.hero-copy, .portrait-panel, .focus-strip > .kicker, .focus-list, .section-heading, .project-card, .pub-group, .repo, .detail-card, .value, .cv-row, .news-item, .split > div, .research-question > *, .slot, .inprogress, .pager, .links, .mail-wrap, .filters';
   (function revealOnScroll() {
     if (!root.classList.contains('js-reveal')) return;
     var els = $$(REVEAL_SELECTOR);

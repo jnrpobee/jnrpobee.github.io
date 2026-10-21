@@ -1752,6 +1752,32 @@ p:last-child{margin-bottom:0;}
 .links a:hover,.links a:focus-visible{color:var(--accent);}
 .links a:hover .h{color:var(--accent);}
 
+/* ═══════════ recent updates (home) ═══════════
+   A publication row's shape, reused: a mono rail holding the month, the
+   item beside it, a hairline between entries. The reuse is the point -
+   the reader meets this layout on the publications page, so a dated
+   list on the home page asks nothing new of them. */
+.news{border-top:1px solid var(--border);padding-block:30px 46px;}
+.news-list{margin-top:22px;}
+.news-item{
+  display:grid;grid-template-columns:150px minmax(0,1fr);gap:28px;
+  padding-block:26px;border-top:1px solid var(--border);
+}
+.news-date{
+  font-family:var(--mono);font-size:.8438rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);padding-top:6px;
+}
+.news-item h3{
+  margin:0 0 10px;font-family:var(--serif);font-size:1.5rem;
+  font-weight:400;letter-spacing:0;
+}
+/* 70ch, for the same reason .cv-row caps its measure: left alone these
+   run to about 120 characters on a wide screen. */
+.news-item p{margin:0 0 10px;color:var(--muted);line-height:1.7;max-width:70ch;}
+.news-item p:last-child{margin-bottom:0;}
+.news-item a{border-bottom:1px solid var(--border);}
+.news-item a:hover,.news-item a:focus-visible{color:var(--accent);border-bottom-color:var(--accent);}
+
 /* ═══════════ pager + footer ═══════════ */
 /* The pager brings its own rule and its own margin, so its wrapper must
    not charge for the gap a second time - .pad's top padding plus this
@@ -1919,6 +1945,8 @@ p:last-child{margin-bottom:0;}
   .portrait-copy{right:22px;top:26px;font-size:1.05rem;}
   .pub{grid-template-columns:1fr;gap:10px;}
   .pub-kind{padding-top:0;}
+  .news-item{grid-template-columns:1fr;gap:10px;}
+  .news-date{padding-top:0;}
   .count{margin-left:0;width:100%;}
   .cv-row{grid-template-columns:1fr;gap:12px;}
   .pager{grid-template-columns:1fr;}
@@ -1971,21 +1999,21 @@ p:last-child{margin-bottom:0;}
    added by a small script in <head>, so with JavaScript off — or if that
    script fails — every block renders normally and stays readable to people,
    crawlers and link previews. */
-.js-reveal :is(.hero-copy, .portrait-panel, .focus-strip > .kicker, .focus-list, .section-heading, .project-card, .pub-group, .repo, .detail-card, .value, .cv-row, .split > div, .research-question > *, .slot, .inprogress, .pager, .links, .mail-wrap, .filters){
+.js-reveal :is(.hero-copy, .portrait-panel, .focus-strip > .kicker, .focus-list, .section-heading, .project-card, .pub-group, .repo, .detail-card, .value, .cv-row, .news-item, .split > div, .research-question > *, .slot, .inprogress, .pager, .links, .mail-wrap, .filters){
   opacity:0;
   transform:translateY(18px);
 }
-.js-reveal :is(.hero-copy, .portrait-panel, .focus-strip > .kicker, .focus-list, .section-heading, .project-card, .pub-group, .repo, .detail-card, .value, .cv-row, .split > div, .research-question > *, .slot, .inprogress, .pager, .links, .mail-wrap, .filters).is-in{
+.js-reveal :is(.hero-copy, .portrait-panel, .focus-strip > .kicker, .focus-list, .section-heading, .project-card, .pub-group, .repo, .detail-card, .value, .cv-row, .news-item, .split > div, .research-question > *, .slot, .inprogress, .pager, .links, .mail-wrap, .filters).is-in{
   opacity:1;
   transform:none;
   transition:opacity 620ms ease, transform 620ms cubic-bezier(.2,.7,.3,1);
 }
 @media (prefers-reduced-motion:reduce){
-  .js-reveal :is(.hero-copy, .portrait-panel, .focus-strip > .kicker, .focus-list, .section-heading, .project-card, .pub-group, .repo, .detail-card, .value, .cv-row, .split > div, .research-question > *, .slot, .inprogress, .pager, .links, .mail-wrap, .filters),
-  .js-reveal :is(.hero-copy, .portrait-panel, .focus-strip > .kicker, .focus-list, .section-heading, .project-card, .pub-group, .repo, .detail-card, .value, .cv-row, .split > div, .research-question > *, .slot, .inprogress, .pager, .links, .mail-wrap, .filters).is-in{opacity:1;transform:none;transition:none;}
+  .js-reveal :is(.hero-copy, .portrait-panel, .focus-strip > .kicker, .focus-list, .section-heading, .project-card, .pub-group, .repo, .detail-card, .value, .cv-row, .news-item, .split > div, .research-question > *, .slot, .inprogress, .pager, .links, .mail-wrap, .filters),
+  .js-reveal :is(.hero-copy, .portrait-panel, .focus-strip > .kicker, .focus-list, .section-heading, .project-card, .pub-group, .repo, .detail-card, .value, .cv-row, .news-item, .split > div, .research-question > *, .slot, .inprogress, .pager, .links, .mail-wrap, .filters).is-in{opacity:1;transform:none;transition:none;}
 }
 @media print{
-  .js-reveal :is(.hero-copy, .portrait-panel, .focus-strip > .kicker, .focus-list, .section-heading, .project-card, .pub-group, .repo, .detail-card, .value, .cv-row, .split > div, .research-question > *, .slot, .inprogress, .pager, .links, .mail-wrap, .filters){opacity:1 !important;transform:none !important;}
+  .js-reveal :is(.hero-copy, .portrait-panel, .focus-strip > .kicker, .focus-list, .section-heading, .project-card, .pub-group, .repo, .detail-card, .value, .cv-row, .news-item, .split > div, .research-question > *, .slot, .inprogress, .pager, .links, .mail-wrap, .filters){opacity:1 !important;transform:none !important;}
 }
 
 /* ═══════════ leetcode panel ═══════════ */

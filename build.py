@@ -8,6 +8,7 @@ lives beside it:
     shell.py      the frame every page is poured into
     pages/        one module per page, holding that page's markup
     notes.py      the blog - posts, board, filters, tiles, colours
+    news.py       the recent-updates list on the home page
     pubs.py       publications and their citation panels
     leetcode.py   the LeetCode panel on the projects page
     art.py        the two drawings the home and projects pages share
@@ -22,6 +23,7 @@ from pages import BODY, CV_MARK, cv_actions
 from pubs import (CITATIONS, PUB_FILTERS_MARK, PUB_MARK, cite_panel,
                   pub_filters, pub_groups)
 from leetcode import LC_MARK, lc_section
+from news import NEWS_MARK, news_section
 from notes import (BLOG_POSTS_MARK, CAT_COLOURS_MARK, CAT_TILES_MARK,
                    NOTES_END_MARK, NOTES_TALLY_MARK, NOTE_CARDS_MARK,
                    NOTE_COUNT_MARK, NOTE_DATA_MARK, blog_posts, cat_colours,
@@ -92,6 +94,7 @@ for filename, key, title, desc in PAGES:
     page = page.replace(NOTE_DATA_MARK, note_data())
     page = page.replace(CAT_COLOURS_MARK, cat_colours())
     page = page.replace(CAT_TILES_MARK, cat_tiles())
+    page = page.replace(NEWS_MARK, news_section())
     for _pid in CITATIONS:
         page = page.replace("<!--CITE:%s-->" % _pid, cite_panel(_pid))
     # Last, so it catches links written anywhere above - in a page module,
