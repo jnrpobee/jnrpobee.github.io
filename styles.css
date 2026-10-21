@@ -1590,7 +1590,7 @@ p:last-child{margin-bottom:0;}
    padding, which is why it looks generous. */
 .pub{
   display:grid;grid-template-columns:110px minmax(0,1fr);gap:28px;
-  padding-block:28px;
+  padding-block:18px;
 }
 .pub:first-of-type{border-top:1px solid var(--border);}
 .pub-kind{font-family:var(--mono);font-size:.8438rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);padding-top:7px;}
@@ -1716,7 +1716,7 @@ p:last-child{margin-bottom:0;}
 /* ═══════════ cv ═══════════ */
 .cv-row{
   display:grid;grid-template-columns:225px 1fr;gap:44px;
-  padding:34px 0;
+  padding:18px 0;
 }
 /* Same as the publication list: lines open, they never close. The whole
    CV is one section split into runs by the .sub headings, so a run is
@@ -1776,7 +1776,7 @@ p:last-child{margin-bottom:0;}
 /* Bracketed, like the publications list above it. */
 .news-item{
   display:grid;grid-template-columns:150px minmax(0,1fr);gap:28px;
-  padding-block:26px;
+  padding-block:18px;
 }
 .news-item:first-of-type{border-top:1px solid var(--border);}
 .news-date{
