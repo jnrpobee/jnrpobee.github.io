@@ -478,9 +478,9 @@ affects and check both themes, narrow screens, and reduced-motion behavior.
 
 ### Vertical rhythm — the space around the hairlines
 
-Almost every horizontal line on the site is the top or bottom edge of a padded
-band, so the gap above and below a line is that band's `padding-block`, not a
-margin on the line itself. The knobs, all in `styles.css`:
+A hairline between two sections is the top edge of a padded band, so the gap
+above and below it is that band's `padding-block`, not a margin on the line
+itself. The knobs, all in `styles.css`:
 
 | Rule | Controls |
 | --- | --- |
@@ -496,6 +496,29 @@ Change a number here and the effect is site-wide, so look at `about.html`,
 stays large after trimming the band, the space is coming from a child's margin
 or from a grid row stretching to its tallest cell — chase that instead of
 padding the number down further.
+
+**Lines open a block. They never close one, and they never run between
+entries of the same list.**
+
+That one sentence decides every hairline on the site. A rule belongs where
+something starts — above a section, and under the label that names it. It does
+not belong under the last entry of a list, and it does not belong between two
+entries of the same list: a publication already announces itself with the
+kind-and-year rail on its left and a serif title on its own line, so a rule as
+well slices the list into boxes.
+
+In practice:
+
+| Selector | Why it has a line |
+| --- | --- |
+| `.focus-strip`, `.projects`, `.split`, `.research-question`, `.news` | Opens a section. |
+| `.pub:first-of-type`, `.news-item:first-of-type`, `.cv-row:first-of-type` | Opens a list, under the label that names it. |
+| `.sub` | Opens a CV group. The whole CV is one section divided by these headings, so each one opens its own run — the line sits above the heading, and `.sub + .cv-row` draws the second one below it. |
+
+`.pub`, `.news-item` and `.cv-row` themselves carry no border at all; the space
+between entries is their `padding-block`. Before adding a border anywhere, ask
+what it is opening. If the answer is "nothing — it is closing something", do
+not add it.
 
 ## Change interactive behavior
 
