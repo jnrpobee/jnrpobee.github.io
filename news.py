@@ -15,6 +15,8 @@ publications page, so a dated list needs no new vocabulary from them.
 import html as _html
 import re as _re
 
+# from notes import _IMAGE_KEYS
+
 NEWS_MARK = "<!--NEWS-->"
 
 # How many entries reach the home page. Three fills the space without
@@ -42,6 +44,11 @@ NEWS = [
             "am looking forward to collaborating with them on future research "
             "projects.",
         ],
+        "image": {                           
+            "src": "assets/news/cscw-26.jpg",
+            "alt": "Conference hall at CSCW 2026 in Salt Lake City",
+            "caption": "Salt Lake City, October 2026",
+        },
     },
 ]
 
@@ -50,8 +57,8 @@ NEWS = [
 # misspelled key is valid Python that nothing ever looks at, and the
 # build reports success while the page quietly lacks the thing. Listing
 # the keys turns that into an error that says what you probably meant.
-_NEWS_KEYS = frozenset(("date", "title", "body"))
-
+_NEWS_KEYS = frozenset(("date", "title", "body", "image"))
+_IMAGE_KEYS = frozenset(("src", "alt", "caption")) 
 
 def _reject_strays(where, given, allowed):
     """Raise on the first key that is not one this code reads."""
@@ -85,6 +92,19 @@ def _check_shapes():
                 "The update %r has its body written as one string. It should be a "
                 'list of paragraphs, even for one: ["..."].' % name
             )
+        img = item.get("image")
+        if img is not None:
+            if not isinstance(img, dict):
+                raise ValueError(
+                    'The update %r has its image written as %r. It should be a '
+                    'dictionary: {"src": "assets/news/talk.jpg", "alt": "..."}.'
+                    % (name, img))
+            _reject_strays("The image on %r" % name, img, _IMAGE_KEYS)
+            for key in ("src", "alt"):
+                if not img.get(key):
+                    raise ValueError(
+                        'The image on %r has no "%s". Both are required: alt is '
+                        "what a screen reader reads out." % (name, key))
 
 
 _check_shapes()
@@ -122,13 +142,23 @@ def news_section():
     ]
     newest = sorted(NEWS, key=lambda i: i["date"], reverse=True)[:HOME_COUNT]
     for item in newest:
-        out.append('          <article class="news-item">')
+        img = item.get("image")
+        out.append('          <article class="news-item%s">'
+                   % (" has-figure" if img else ""))
         out.append('            <p class="news-date">%s</p>' % _label(item["date"]))
         out.append("            <div>")
         out.append("              <h3>%s</h3>" % _html.escape(item["title"]))
         for para in item["body"]:
             out.append("              <p>%s</p>" % para.strip())
         out.append("            </div>")
+        if img:
+            out.append('            <figure class="news-figure">')
+            out.append('              <img src="%s" alt="%s" loading="lazy" decoding="async">'
+                       % (_html.escape(img["src"]), _html.escape(img["alt"])))
+            if img.get("caption"):
+                out.append("              <figcaption>%s</figcaption>"
+                           % _html.escape(img["caption"]))
+            out.append("            </figure>")
         out.append("          </article>")
     out.append("        </div>")
     out.append("      </section>")

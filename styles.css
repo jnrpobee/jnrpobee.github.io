@@ -1786,6 +1786,26 @@ p:last-child{margin-bottom:0;}
   padding-block:18px;
 }
 .news-item:first-of-type{border-top:1px solid var(--border);}
+/* Only an entry that brought a picture grows a third column. */
+/* auto, not 1fr: the text column sizes to the text rather than
+   stretching to the page, so the picture sits beside the words
+   instead of out at the right margin. With 1fr the column was
+   694px wide while the measure only used about 490 of it, which
+   left 230px of nothing between the last word and the photo.
+   justify-content packs the row left so the slack ends up after
+   the picture rather than inside the entry. */
+.news-item.has-figure{
+  grid-template-columns:150px auto 300px;justify-content:start;
+}
+.news-figure{margin:0;}
+.news-figure img{
+  display:block;width:100%;aspect-ratio:4/3;object-fit:cover;
+  border-radius:12px;border:1px solid var(--border);background:var(--surface-2);
+}
+.news-figure figcaption{
+  margin-top:9px;font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;
+  color:var(--faint);line-height:1.5;
+}
 .news-date{
   font-family:var(--mono);font-size:.8438rem;letter-spacing:.16em;
   text-transform:uppercase;color:var(--faint);padding-top:6px;
@@ -1809,13 +1829,13 @@ p:last-child{margin-bottom:0;}
 .pager{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:0;padding-top:22px;border-top:1px solid var(--border);}
 .pager-pad{padding-block:0 28px;}
 .pg{
-  display:flex;flex-direction:column;gap:5px;padding:20px 22px;
-  border:1px solid var(--border);border-radius:12px;background:var(--surface);
+  display:flex;flex-direction:column;gap:2px;padding:11px 16px;
+  border:1px solid var(--border);border-radius:10px;background:var(--surface);
   transition:border-color 180ms ease,transform 180ms ease;
 }
 .pg:hover,.pg:focus-visible{border-color:var(--accent-40);transform:translateY(-2px);}
-.pg span{font-family:var(--mono);font-size:.8438rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);}
-.pg strong{font-family:var(--serif);font-size:1.35rem;font-weight:400;letter-spacing:0;}
+.pg span{font-family:var(--mono);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);}
+.pg strong{font-family:var(--serif);font-size:1.02rem;font-weight:400;letter-spacing:0;}
 .pg.next{text-align:right;align-items:flex-end;grid-column:2;}
 
 .site-footer{
@@ -1970,6 +1990,7 @@ p:last-child{margin-bottom:0;}
   .pub{grid-template-columns:1fr;gap:10px;}
   .pub-kind{padding-top:0;}
   .news-item{grid-template-columns:1fr;gap:10px;}
+  .news-item.has-figure{grid-template-columns:1fr;}
   .news-date{padding-top:0;}
   .count{margin-left:0;width:100%;}
   .cv-row{grid-template-columns:1fr;gap:12px;}
