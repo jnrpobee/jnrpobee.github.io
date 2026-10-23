@@ -51,7 +51,7 @@ BODY["research"] = """      <section class="pad">
 
       <section class="research-question pad">
         <p class="kicker">GUIDING QUESTION</p>
-        <p>How can we build technology that gives athletes and coaches useful insight without making their work harder?</p>
+        <p>How can we build technology that gives athletes and coaches of Sub-elite youth sports useful insight without making their work harder?</p>
       </section>
 
       <section class="pad" style="padding-top:0;">
