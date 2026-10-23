@@ -1421,7 +1421,8 @@ p:last-child{margin-bottom:0;}
 .button-secondary:hover{border-color:var(--border-strong);}
 
 .portrait-panel{
-  position:relative;min-height:470px;border:1px solid var(--border);border-radius:18px;
+  position:relative;min-height:372px;width:min(400px,100%);justify-self:end;
+  border:1px solid var(--border);border-radius:18px;
   overflow:hidden;background:var(--portrait-bg);z-index:1;display:flex;
 }
 .portrait-photo{
@@ -1522,13 +1523,13 @@ p:last-child{margin-bottom:0;}
 /* ═══════════ detail cards (research) ═══════════ */
 .detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:30px;}
 .detail-card{
-  min-height:230px;padding:28px;border:1px solid var(--border);border-radius:14px;
+  padding:24px;border:1px solid var(--border);border-radius:14px;
   background:var(--hairline);transition:border-color 200ms ease;
   display:flex;flex-direction:column;
 }
 .detail-card:hover{border-color:var(--accent-35);}
 .detail-card > .n{display:inline-block;color:var(--accent);font-size:.875rem;letter-spacing:.18em;font-family:var(--mono);}
-.detail-card h3{margin:36px 0 10px;font-family:var(--serif);font-size:1.9rem;font-weight:400;letter-spacing:0;}
+.detail-card h3{margin:20px 0 9px;font-family:var(--serif);font-size:1.9rem;font-weight:400;letter-spacing:0;}
 .detail-card p{margin:0;color:var(--muted);line-height:1.7;}
 
 .research-question{border-top:1px solid var(--border);padding-block:50px 56px;}
@@ -1963,7 +1964,7 @@ p:last-child{margin-bottom:0;}
 
   .hero{grid-template-columns:1fr;padding-top:48px;gap:44px;}
   .hero::after{right:-250px;top:260px;}
-  .portrait-panel{min-height:420px;}
+  .portrait-panel{min-height:420px;width:100%;}
   .split{grid-template-columns:1fr;gap:34px;}
   .detail-grid,.project-grid{grid-template-columns:1fr;}
   .values-grid{grid-template-columns:1fr;}
