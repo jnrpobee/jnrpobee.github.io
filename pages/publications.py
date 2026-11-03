@@ -29,7 +29,7 @@ BODY["publications"] = """      <section class="pad">
         <div class="filters" role="group" aria-label="Filter publications by kind">
 <!--PUBFILTERS-->
           <div class="counts">
-            <span class="count" id="pub-count" role="status" aria-live="polite">2 publications</span>
+            <span class="count" id="pub-count" role="status" aria-live="polite">3 publications</span>
             <span class="count count-note">Peer reviewer for 5 papers</span>
           </div>
         </div>
