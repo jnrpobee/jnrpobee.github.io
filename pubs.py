@@ -269,7 +269,7 @@ PUBS = {
       <article class="pub" data-topic="sub-elite">
         <div class="pub-kind">CONFERENCE<br>2026</div>
         <div>
-          <a class="pub-title" href="https://doi.org/10.1145/3838843.3838858" target="_blank" rel="noopener">“They don't tell the full story”: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States</a>
+          <a class="pub-title" href="https://doi.org/10.1145/3838843.3838858" target="_blank" rel="noopener">“They don&rsquo;t tell the full story”: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States</a>
           <p class="pub-authors"><strong>Solomon B. Pobee</strong>, Mary Seeley, Marissa Stephens, Seth Y. Christensen, Ethan T. Hawkes, Matthew K. Seeley, Michael D. Jones</p>
           <p class="pub-venue">SportsHCI 2026 &middot; 1&ndash;14</p>
           <p class="pub-desc">Sub-Elite youth coaches find value in data, what additional data they would like, and the risks they see when using data.</p>

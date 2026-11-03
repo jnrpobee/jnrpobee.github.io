@@ -72,6 +72,28 @@ SCHOLAR_LD = """<script type="application/ld+json">
       "@type":"ListItem","position":1,
       "item":{
         "@type":"ScholarlyArticle",
+        "name":"\u201cThey don\u2019t tell the full story\u201d: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States",
+        "author":[
+          {"@type":"Person","name":"Solomon B. Pobee"},
+          {"@type":"Person","name":"Mary Seeley"},
+          {"@type":"Person","name":"Marissa Stephens"},
+          {"@type":"Person","name":"Seth Y. Christensen"},
+          {"@type":"Person","name":"Ethan T. Hawkes"},
+          {"@type":"Person","name":"Matthew K. Seeley"},
+          {"@type":"Person","name":"Michael D. Jones"}
+        ],
+        "datePublished":"2026",
+        "isPartOf":{"@type":"PublicationVolume","name":"SportsHCI 2026: Proceedings of the Second Annual Conference on Sports and Human-Computer Interaction"},
+        "publisher":{"@type":"Organization","name":"Association for Computing Machinery"},
+        "pagination":"1-14",
+        "identifier":"https://doi.org/10.1145/3838843.3838858",
+        "url":"https://doi.org/10.1145/3838843.3838858"
+      }
+    },
+    {
+      "@type":"ListItem","position":2,
+      "item":{
+        "@type":"ScholarlyArticle",
         "name":"MathBuddy: An LLM-Based Chatbot for Elementary Math Education",
         "author":[
           {"@type":"Person","name":"Saba Iqbal"},
@@ -88,7 +110,7 @@ SCHOLAR_LD = """<script type="application/ld+json">
       }
     },
     {
-      "@type":"ListItem","position":2,
+      "@type":"ListItem","position":3,
       "item":{
         "@type":"ScholarlyArticle",
         "name":"Toward a Framework for the Design of Interactive Technology for Nature Recreation",
