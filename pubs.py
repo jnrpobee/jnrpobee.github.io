@@ -227,8 +227,8 @@ def cite_panel(pid):
 #   it; the Copy DOI button adds that itself.
 # ────────────────────────────────────────────────────────────────────────
 PUB_GROUPS = [
-    ("journal", "Journal Articles"),
     ("conference", "Conference Papers"),
+    ("journal", "Journal Articles"),
     ("chapter", "Book Chapters"),
     ("workshop", "Workshop Papers"),
     ("poster", "Posters"),
@@ -237,27 +237,6 @@ PUB_GROUPS = [
 PUB_MARK = "<!--PUBGROUPS-->"
 
 PUBS = {
-    # ── JOURNAL ARTICLES ────────────────────────────────────────────────
-    # A peer-reviewed article in a journal.
-    "journal": [
-        """\
-          <article class="pub" data-topic="nature">
-            <div class="pub-kind">Journal<br>2025</div>
-            <div>
-              <a class="pub-title" href="https://doi.org/10.1080/10447318.2024.2443808" target="_blank" rel="noopener">Toward a Framework for the Design of Interactive Technology for Nature Recreation</a>
-              <p class="pub-authors">Michael Jones, Tuomas Kari, Daniel Reich, Barrett Ens, Siyi Liu, <strong>Solomon B. Pobee</strong>, Florian Mueller</p>
-              <p class="pub-venue">Int. Journal of Human&ndash;Computer Interaction &middot; 41(18), 11691&ndash;11711</p>
-              <p class="pub-desc">A framework for building technology that enhances rather than diminishes the wellness benefits of outdoor recreation, decomposing engagement into nine facets tied to place, time, and community, and grounded in philosophy-of-technology perspectives.</p>
-              <div class="cite-row">
-                <a class="btn-s btn-go" href="https://doi.org/10.1080/10447318.2024.2443808" target="_blank" rel="noopener">Read paper <span aria-hidden="true">&#8599;</span></a>
-                <button type="button" class="btn-s" data-cite="c1" aria-expanded="false" aria-controls="c1">Cite</button>
-                <button type="button" class="btn-s" data-copy-doi="10.1080/10447318.2024.2443808">Copy DOI</button>
-              </div>
-<!--CITE:c1-->
-            </div>
-          </article>
-""",
-    ],
     # ── CONFERENCE PAPERS ───────────────────────────────────────────────
     # A full paper presented at a conference: CHI, CSCW, UIST, IEEE VR,
     # ASSETS and the like. Not the same as a Book Chapter below, even when
@@ -281,6 +260,27 @@ PUBS = {
           <!--CITE:c3-->
         </div>
       </article>
+    """,
+    ],
+    # ── JOURNAL ARTICLES ────────────────────────────────────────────────
+    # A peer-reviewed article in a journal.
+    "journal": [
+        """\
+          <article class="pub" data-topic="nature">
+            <div class="pub-kind">Journal<br>2025</div>
+            <div>
+              <a class="pub-title" href="https://doi.org/10.1080/10447318.2024.2443808" target="_blank" rel="noopener">Toward a Framework for the Design of Interactive Technology for Nature Recreation</a>
+              <p class="pub-authors">Michael Jones, Tuomas Kari, Daniel Reich, Barrett Ens, Siyi Liu, <strong>Solomon B. Pobee</strong>, Florian Mueller</p>
+              <p class="pub-venue">Int. Journal of Human&ndash;Computer Interaction &middot; 41(18), 11691&ndash;11711</p>
+              <p class="pub-desc">A framework for building technology that enhances rather than diminishes the wellness benefits of outdoor recreation, decomposing engagement into nine facets tied to place, time, and community, and grounded in philosophy-of-technology perspectives.</p>
+              <div class="cite-row">
+                <a class="btn-s btn-go" href="https://doi.org/10.1080/10447318.2024.2443808" target="_blank" rel="noopener">Read paper <span aria-hidden="true">&#8599;</span></a>
+                <button type="button" class="btn-s" data-cite="c1" aria-expanded="false" aria-controls="c1">Cite</button>
+                <button type="button" class="btn-s" data-copy-doi="10.1080/10447318.2024.2443808">Copy DOI</button>
+              </div>
+<!--CITE:c1-->
+            </div>
+          </article>
 """,
     ],
     # ── BOOK CHAPTERS ───────────────────────────────────────────────────
