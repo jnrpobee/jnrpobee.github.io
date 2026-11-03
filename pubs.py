@@ -266,22 +266,22 @@ PUBS = {
     # brackets.
     "conference": [
         """\
-#       <article class="pub" data-topic="sub-elite">
-#         <div class="pub-kind">KIND<br>YEAR</div>
-#         <div>
-#           <a class="pub-title" href="https://doi.org/10.1145/3838843.3838858" target="_blank" rel="noopener">“They don't tell the full story”: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States</a>
-#           <p class="pub-authors"><strong>Solomon B. Pobee</strong>, Mary Seeley, Marissa Stephens, Seth Y. Christensen, Ethan T. Hawkes, Matthew K. Seeley, Michael D. Jones</p>
-#           <p class="pub-venue">SportsHCI 2026 &middot; 1&ndash;14</p>
-#           <p class="pub-desc">Sub-Elite youth coaches find value in data, what additional data they would like, and the risks they see when using data.</p>
-#           <div class="cite-row">
-#             <a class="btn-s btn-go" href="https://doi.org/10.1145/3838843.3838858" target="_blank" rel="noopener">Read paper <span aria-hidden="true">&#8599;</span></a>
-#             <button type="button" class="btn-s" data-cite="c3" aria-expanded="false" aria-controls="c3">Cite</button>
-#             <button type="button" class="btn-s" data-copy-doi="10.1145/3838843.3838858">Copy DOI</button>
-#           </div>
-#           <!--CITE:c3-->
-#         </div>
-#       </article>
-# """,
+      <article class="pub" data-topic="sub-elite">
+        <div class="pub-kind">KIND<br>YEAR</div>
+        <div>
+          <a class="pub-title" href="https://doi.org/10.1145/3838843.3838858" target="_blank" rel="noopener">“They don't tell the full story”: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States</a>
+          <p class="pub-authors"><strong>Solomon B. Pobee</strong>, Mary Seeley, Marissa Stephens, Seth Y. Christensen, Ethan T. Hawkes, Matthew K. Seeley, Michael D. Jones</p>
+          <p class="pub-venue">SportsHCI 2026 &middot; 1&ndash;14</p>
+          <p class="pub-desc">Sub-Elite youth coaches find value in data, what additional data they would like, and the risks they see when using data.</p>
+          <div class="cite-row">
+            <a class="btn-s btn-go" href="https://doi.org/10.1145/3838843.3838858" target="_blank" rel="noopener">Read paper <span aria-hidden="true">&#8599;</span></a>
+            <button type="button" class="btn-s" data-cite="c3" aria-expanded="false" aria-controls="c3">Cite</button>
+            <button type="button" class="btn-s" data-copy-doi="10.1145/3838843.3838858">Copy DOI</button>
+          </div>
+          <!--CITE:c3-->
+        </div>
+      </article>
+""",
     ],
     # ── BOOK CHAPTERS ───────────────────────────────────────────────────
     # A chapter in an edited volume. The MathBuddy paper sits here because
