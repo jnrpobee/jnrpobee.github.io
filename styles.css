@@ -1767,12 +1767,31 @@ p:last-child{margin-bottom:0;}
   transition:color 180ms ease;
 }
 .mail-big:hover,.mail-big:focus-visible{color:var(--accent);}
-.links{list-style:none;margin:40px 0 0;padding:0;border-top:1px solid var(--border);}
-.links li{border-bottom:1px solid var(--border-soft);}
-.links a{display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding-block:16px;font-size:1rem;font-weight:500;transition:color 180ms ease;}
-.links .h{font-family:var(--mono);font-size:.8438rem;color:var(--faint);text-align:right;overflow-wrap:anywhere;}
-.links a:hover,.links a:focus-visible{color:var(--accent);}
-.links a:hover .h{color:var(--accent);}
+/* The profile links, grouped. This used to be seven full-width rows with
+   a hairline under each - a table of accounts, 417px tall, and the one
+   place on the site where a rule closed an item instead of opening it.
+   It is now the publication row's shape: the group name in a mono rail,
+   the links beside it as chips. Two patterns the reader already knows,
+   and the grouping says which of these are scholarly, which this page's
+   visitors are usually looking for.
+
+   .linkchip has to come after .chip in this file: both :hover rules
+   weigh the same, so source order is what decides the colour. */
+.links{margin:40px 0 0;padding:0;list-style:none;}
+/* max-content, not a fixed rail: the widest label sets the column for
+   every row, so a longer group name later ("SOCIAL NETWORK" already
+   overran 150px) widens the rail instead of wrapping onto two lines. */
+.link-row{
+  display:grid;grid-template-columns:max-content minmax(0,1fr);gap:22px;
+  align-items:start;padding-block:13px;
+}
+.link-row + .link-row{border-top:1px solid var(--border-soft);}
+.link-row .kicker{margin:0;padding-top:7px;}
+.link-chips{display:flex;flex-wrap:wrap;gap:9px;}
+.linkchip{display:inline-flex;align-items:baseline;gap:8px;text-decoration:none;}
+.linkchip em{font-style:normal;font-family:var(--mono);font-size:.76rem;color:var(--faint);}
+.linkchip:hover,.linkchip:focus-visible{border-color:var(--accent-50);color:var(--accent);}
+.linkchip:hover em,.linkchip:focus-visible em{color:var(--accent);}
 
 /* ═══════════ recent updates (home) ═══════════
    A publication row's shape, reused: a mono rail holding the month, the
@@ -1990,6 +2009,8 @@ p:last-child{margin-bottom:0;}
   .portrait-copy{right:22px;top:26px;font-size:1.05rem;}
   .pub{grid-template-columns:1fr;gap:10px;}
   .pub-kind{padding-top:0;}
+  .link-row{grid-template-columns:1fr;gap:10px;}
+  .link-row .kicker{padding-top:0;}
   .news-item{grid-template-columns:1fr;gap:10px;}
   .news-item.has-figure{grid-template-columns:1fr;}
   .news-date{padding-top:0;}
