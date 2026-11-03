@@ -95,6 +95,45 @@ CITATIONS = {
                 "Computer Science. Springer Nature Switzerland, 2026, pp. 392–403, "
                 "doi: 10.1007/978-3-032-13174-4_25.",
     },
+    "c3": {
+        "bibtex": """@inproceedings{Pobee2026sub-elite,
+        author = {Pobee, Solomon B. and Seeley, Mary and Stephens, Marissa and Christensen, Seth Y. and Hawkes, Ethan T. and Seeley, Matthew K. and Jones, Michael D.},
+        title = {“They don't tell the full story”: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States},
+        year = {2026},
+        isbn = {9798400725593},
+        publisher = {Association for Computing Machinery},
+        address = {New York, NY, USA},
+        url = {https://doi.org/10.1145/3838843.3838858},
+        doi = {10.1145/3838843.3838858},
+        booktitle = {Proceedings of the Second Annual Conference on Sports and Human-Computer Interaction},
+        articleno = {12},
+        numpages = {14},
+        keywords = {SportsHCI, Youth Sports, Sub-elite Adolescent Athletes, Youth Sports Coaching, Athlete Self-report Data, Human-data Interaction, Coach Perception, Social Negotiation of Data, Athlete Wellbeing, Qualitative Interview Study},
+        location = {Saarbr{\"u}cken, Germany},
+        series = {SportsHCI 2026}
+}""",
+        "apa": "Pobee, S. B., Seeley, M., Stephens, M., Christensen, S. Y., Hawkes, E. T., "
+               "Seeley, M. K., & Jones, M. D. (2026). “They don't tell the full story”: "
+               "Data, perception, and communication among sub-elite youth coaches in "
+               "the United States. In Proceedings of the Second Annual Conference on "
+               "Sports and Human-Computer Interaction (Article 12, 14 pages). Association "
+               "for Computing Machinery. https://doi.org/10.1145/3838843.3838858",
+        "mla": "Pobee, Solomon B., et al. ““They don't tell the full story”: Data, "
+               "Perception, and Communication among Sub-Elite Youth Coaches in the "
+               "United States.” Proceedings of the Second Annual Conference on Sports "
+               "and Human-Computer Interaction, Association for Computing Machinery, "
+               "2026, Article 12, 14 pages. https://doi.org/10.1145/3838843.3838858.",
+        "chicago": "Pobee, Solomon B., Mary Seeley, Marissa Stephens, Seth Y. Christensen, "
+                   "Ethan T. Hawkes, Matthew K. Seeley, and Michael D. Jones. ““They don't "
+                   "tell the full story”: Data, Perception, and Communication among Sub-Elite "
+                   "Youth Coaches in the United States.” In Proceedings of the Second Annual "
+                   "Conference on Sports and Human-Computer Interaction, Article 12, 14 pages. "
+                   "Association for Computing Machinery, 2026. https://doi.org/10.1145/3838843.3838858.",
+        "ieee": "S. B. Pobee et al., ““They don't tell the full story”: Data, Perception, and "
+                "Communication among Sub-Elite Youth Coaches in the United States,” in Proc. "
+                "Second Annu. Conf. Sports Hum.-Comput. Interact., Saarbrücken, Germany, 2026, "
+                "Articleno. 12, pp. 1–14, doi: 10.1145/3838843.3838858.",
+    }
 }
 
 
@@ -225,7 +264,25 @@ PUBS = {
     # the proceedings are published as a book — file it by how you would
     # cite it. Paste the template from the comment above between these
     # brackets.
-    "conference": [],
+    "conference": [
+        """\
+#       <article class="pub" data-topic="sub-elite">
+#         <div class="pub-kind">KIND<br>YEAR</div>
+#         <div>
+#           <a class="pub-title" href="https://doi.org/10.1145/3838843.3838858" target="_blank" rel="noopener">“They don't tell the full story”: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States</a>
+#           <p class="pub-authors"><strong>Solomon B. Pobee</strong>, Mary Seeley, Marissa Stephens, Seth Y. Christensen, Ethan T. Hawkes, Matthew K. Seeley, Michael D. Jones</p>
+#           <p class="pub-venue">SportsHCI 2026 &middot; 1&ndash;14</p>
+#           <p class="pub-desc">Sub-Elite youth coaches find value in data, what additional data they would like, and the risks they see when using data.</p>
+#           <div class="cite-row">
+#             <a class="btn-s btn-go" href="https://doi.org/10.1145/3838843.3838858" target="_blank" rel="noopener">Read paper <span aria-hidden="true">&#8599;</span></a>
+#             <button type="button" class="btn-s" data-cite="c3" aria-expanded="false" aria-controls="c3">Cite</button>
+#             <button type="button" class="btn-s" data-copy-doi="10.1145/3838843.3838858">Copy DOI</button>
+#           </div>
+#           <!--CITE:c3-->
+#         </div>
+#       </article>
+# """,
+    ],
     # ── BOOK CHAPTERS ───────────────────────────────────────────────────
     # A chapter in an edited volume. The MathBuddy paper sits here because
     # it is published as an LNCS chapter; if you would rather cite it as a

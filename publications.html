@@ -120,6 +120,7 @@
         <div class="filters" role="group" aria-label="Filter publications by kind">
           <button type="button" class="chip" data-filter="all" aria-pressed="true">All</button>
           <button type="button" class="chip" data-filter="journal" aria-pressed="false">Journal Articles</button>
+          <button type="button" class="chip" data-filter="conference" aria-pressed="false">Conference Papers</button>
           <button type="button" class="chip" data-filter="chapter" aria-pressed="false">Book Chapters</button>
           <div class="counts">
             <span class="count" id="pub-count" role="status" aria-live="polite">2 publications</span>
@@ -172,6 +173,57 @@
               </div>
             </div>
           </article>
+          </div>
+        </section>
+
+        <section class="pub-group" data-group="conference">
+          <h3 class="group-head">Conference Papers <span class="group-count" data-group-count>1</span></h3>
+          <div class="pubs">
+#       <article class="pub" data-topic="sub-elite">
+#         <div class="pub-kind">KIND<br>YEAR</div>
+#         <div>
+#           <a class="pub-title" href="https://doi.org/10.1145/3838843.3838858" target="_blank" rel="noopener">“They don't tell the full story”: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States</a>
+#           <p class="pub-authors"><strong>Solomon B. Pobee</strong>, Mary Seeley, Marissa Stephens, Seth Y. Christensen, Ethan T. Hawkes, Matthew K. Seeley, Michael D. Jones</p>
+#           <p class="pub-venue">SportsHCI 2026 &middot; 1&ndash;14</p>
+#           <p class="pub-desc">Sub-Elite youth coaches find value in data, what additional data they would like, and the risks they see when using data.</p>
+#           <div class="cite-row">
+#             <a class="btn-s btn-go" href="https://doi.org/10.1145/3838843.3838858" target="_blank" rel="noopener">Read paper <span aria-hidden="true">&#8599;</span></a>
+#             <button type="button" class="btn-s" data-cite="c3" aria-expanded="false" aria-controls="c3">Cite</button>
+#             <button type="button" class="btn-s" data-copy-doi="10.1145/3838843.3838858">Copy DOI</button>
+#           </div>
+#                         <div class="cite-panel" id="c3" hidden>
+        <div class="cite-tabs" role="tablist" aria-label="Citation format">
+          <button type="button" class="cite-tab" role="tab" id="c3-bibtex-tab" aria-controls="c3-bibtex" aria-selected="true" data-cite-style="bibtex" data-cite-panel="c3">BibTeX</button>
+          <button type="button" class="cite-tab" role="tab" id="c3-apa-tab" aria-controls="c3-apa" aria-selected="false" data-cite-style="apa" data-cite-panel="c3">APA</button>
+          <button type="button" class="cite-tab" role="tab" id="c3-mla-tab" aria-controls="c3-mla" aria-selected="false" data-cite-style="mla" data-cite-panel="c3">MLA</button>
+          <button type="button" class="cite-tab" role="tab" id="c3-chicago-tab" aria-controls="c3-chicago" aria-selected="false" data-cite-style="chicago" data-cite-panel="c3">Chicago</button>
+          <button type="button" class="cite-tab" role="tab" id="c3-ieee-tab" aria-controls="c3-ieee" aria-selected="false" data-cite-style="ieee" data-cite-panel="c3">IEEE</button>
+        </div>
+<pre id="c3-bibtex" role="tabpanel" aria-labelledby="c3-bibtex" data-cite-style="bibtex">@inproceedings{Pobee2026sub-elite,
+        author = {Pobee, Solomon B. and Seeley, Mary and Stephens, Marissa and Christensen, Seth Y. and Hawkes, Ethan T. and Seeley, Matthew K. and Jones, Michael D.},
+        title = {“They don&#x27;t tell the full story”: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States},
+        year = {2026},
+        isbn = {9798400725593},
+        publisher = {Association for Computing Machinery},
+        address = {New York, NY, USA},
+        url = {https://doi.org/10.1145/3838843.3838858},
+        doi = {10.1145/3838843.3838858},
+        booktitle = {Proceedings of the Second Annual Conference on Sports and Human-Computer Interaction},
+        articleno = {12},
+        numpages = {14},
+        keywords = {SportsHCI, Youth Sports, Sub-elite Adolescent Athletes, Youth Sports Coaching, Athlete Self-report Data, Human-data Interaction, Coach Perception, Social Negotiation of Data, Athlete Wellbeing, Qualitative Interview Study},
+        location = {Saarbr{&quot;u}cken, Germany},
+        series = {SportsHCI 2026}
+}</pre>
+<pre id="c3-apa" role="tabpanel" aria-labelledby="c3-apa" data-cite-style="apa" class="cite-prose" hidden>Pobee, S. B., Seeley, M., Stephens, M., Christensen, S. Y., Hawkes, E. T., Seeley, M. K., &amp; Jones, M. D. (2026). “They don&#x27;t tell the full story”: Data, perception, and communication among sub-elite youth coaches in the United States. In Proceedings of the Second Annual Conference on Sports and Human-Computer Interaction (Article 12, 14 pages). Association for Computing Machinery. https://doi.org/10.1145/3838843.3838858</pre>
+<pre id="c3-mla" role="tabpanel" aria-labelledby="c3-mla" data-cite-style="mla" class="cite-prose" hidden>Pobee, Solomon B., et al. ““They don&#x27;t tell the full story”: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States.” Proceedings of the Second Annual Conference on Sports and Human-Computer Interaction, Association for Computing Machinery, 2026, Article 12, 14 pages. https://doi.org/10.1145/3838843.3838858.</pre>
+<pre id="c3-chicago" role="tabpanel" aria-labelledby="c3-chicago" data-cite-style="chicago" class="cite-prose" hidden>Pobee, Solomon B., Mary Seeley, Marissa Stephens, Seth Y. Christensen, Ethan T. Hawkes, Matthew K. Seeley, and Michael D. Jones. ““They don&#x27;t tell the full story”: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States.” In Proceedings of the Second Annual Conference on Sports and Human-Computer Interaction, Article 12, 14 pages. Association for Computing Machinery, 2026. https://doi.org/10.1145/3838843.3838858.</pre>
+<pre id="c3-ieee" role="tabpanel" aria-labelledby="c3-ieee" data-cite-style="ieee" class="cite-prose" hidden>S. B. Pobee et al., ““They don&#x27;t tell the full story”: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States,” in Proc. Second Annu. Conf. Sports Hum.-Comput. Interact., Saarbrücken, Germany, 2026, Articleno. 12, pp. 1–14, doi: 10.1145/3838843.3838858.</pre>
+                <div class="copy-wrap"><button type="button" class="btn-s" data-copy-bib="c3">Copy citation</button></div>
+              </div>
+#         </div>
+#       </article>
+# 
           </div>
         </section>
 
