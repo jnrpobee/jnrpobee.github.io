@@ -135,6 +135,13 @@ Every page has its own file:
 Research and About are the simple ones: prose and headings, nothing generated,
 no marks. Editing the file is the whole job.
 
+**Adding a project to Research.** Under ACTIVE RESEARCH, each study is one
+`<article class="project-entry">`: an `<h3>` title, a paragraph of roughly
+70&ndash;95 words, then optional `<p class="meta">` rows. Copy a whole
+`<article>` to add another; space separates them, never a line. In a meta row
+the value has to be wrapped in `<em>` &mdash; a loose text node after the
+`<span>` label starts a third grid row instead of sitting beside it.
+
 **The home page duplicates two project cards** that also live in
 `pages/projects.py` — the same drawings, a shorter description. Rename a
 project or change its link and there are two files to edit. Nothing checks
