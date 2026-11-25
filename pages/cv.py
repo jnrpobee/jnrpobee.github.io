@@ -98,7 +98,16 @@ BODY["cv"] = """      <section class="pad">
           <div>
             <h3>Brigham Young University</h3>
             <p><strong>PhD, Computer Science</strong> &mdash; emphasis in Human&ndash;Computer Interaction. Provo, Utah.<br>
+            Advised by <a class="text-link" href="https://cs.byu.edu/directory/michael-jones" target="_blank" rel="noopener">Michael D. Jones</a> in the Advanced Interactive Lab.<br>
             Academic Scholarship. Member of the Graduate Studies Association. Coursework in human&ndash;computer interaction, privacy, outdoor and recreation HCI, algorithm design and analysis, software engineering, and agentic AI systems.</p>
+          </div>
+        </div>
+        <div class="cv-row">
+          <p class="kicker">DEC 2026</p>
+          <div>
+            <h3>Brigham Young University</h3>
+            <p><strong>MS, Computer Science</strong> &mdash; expected December 2026. Provo, Utah.<br>
+            Earned en route to the doctorate.</p>
           </div>
         </div>
         <div class="cv-row">

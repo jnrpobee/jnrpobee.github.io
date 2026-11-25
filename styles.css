@@ -1739,8 +1739,13 @@ p:last-child{margin-bottom:0;}
    120 characters a line on a wide screen, which is roughly double a
    comfortable reading width and makes the type feel smaller than it is. */
 .cv-row p{margin:0;color:var(--dim);font-size:1.0625rem;line-height:1.75;max-width:68ch;}
-.cv-row a.text-link{border-bottom:1px solid var(--accent);}
-.cv-row a.text-link:hover{color:var(--accent);}
+/* A link inside running prose, anywhere on the site. The base rule strips
+   colour and underline from every <a>, so a link in a paragraph without
+   this class is invisible as a link - it reads as ordinary text and
+   nobody clicks it. Was scoped to .cv-row, which meant the same class
+   silently did nothing on every other page. */
+a.text-link{border-bottom:1px solid var(--accent);}
+a.text-link:hover,a.text-link:focus-visible{color:var(--accent);}
 
 .slot{border:1px dashed var(--border);border-radius:12px;background:var(--surface);padding:20px 22px;}
 .slot .tag{
