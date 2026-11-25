@@ -10,12 +10,13 @@ one <p class="meta"> row per attribute - the row's first <span> is the
 label in the left rail and the <em> after it is the value. Add a second
 project by copying the whole <article>.
 
-Two things in the entry below are placeholders to replace:
-  * the title "Adolescent athletes and their data" was written here, not
-    by you - rename it to whatever the study is actually called;
-  * neither entry has a METHODS row. Add one when you know what to put in it:
-    <p class="meta"><span>Methods</span> <em>semi-structured interviews,
-    thematic analysis</em></p>
+One thing in the first entry is still a placeholder: the title
+"Adolescent athletes and their data" was written here, not by you -
+rename it to whatever the study is actually called.
+
+The hiking entry has no METHODS row. Add one the same way when you know
+what to put in it:
+    <p class="meta"><span>Methods</span> <em>Interview study</em></p>
 """
 BODY = {}
 
@@ -41,6 +42,7 @@ BODY["research"] = """      <section class="pad">
         <article class="project-entry">
           <h3>Adolescent athletes and their data</h3>
           <p>This study explores adolescent athletes&rsquo; experiences, perceptions, and concerns regarding the collection, use, sharing, and management of their personal and performance data in U.S.&nbsp;organized youth sports. Where earlier work looked at how sub-elite coaches read and act on that data, this one puts the athletes themselves at the centre: what they know is being gathered, who they believe sees it, and what they would want to change about how it is handled.</p>
+          <p class="meta"><span>Methods</span> <em>Interview study</em></p>
           <p class="meta"><span>Related work</span> <em><a class="text-link" href="publications.html">&ldquo;They don&rsquo;t tell the full story&rdquo;: Data, Perception, and Communication among Sub-Elite Youth Coaches in the United States</a> &middot; SportsHCI 2026</em></p>
         </article>
 
